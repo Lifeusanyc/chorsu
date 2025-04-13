@@ -90,7 +90,7 @@
 
   <div class="phone-input">
     📞 Telefon raqamingiz:<br>
-    <input type="tel" id="phone" placeholder="+998 90 123 45 67">
+    <input type="tel" id="phone" placeholder="+998901234567">
   </div>
 
   <div class="phone-input">
@@ -100,11 +100,13 @@
 
   <div class="phone-input">
     🕒 Qaysi vaqtga kerak:<br>
-    <input type="time" id="time">
+    <input type="time" id="time" min="09:00" max="21:00">
   </div>
 
   <div class="total" id="total">💰 Umumiy summa: $0</div>
   <button class="submit-btn" onclick="submitOrder()">📥 Buyurtmani yuborish</button>
+
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
   <script>
     const menu = {
@@ -119,6 +121,12 @@
     };
 
     const order = {};
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const today = new Date().toISOString().split("T")[0];
+      document.getElementById("date").setAttribute("min", today);
+      renderMenu();
+    });
 
     function renderMenu() {
       const container = document.getElementById("menu");
@@ -169,8 +177,13 @@
         return;
       }
 
-      if (!date || !time) {
-        alert("📅 Iltimos, kerakli sana va vaqtni kiriting.");
+      if (!date) {
+        alert("📅 Iltimos, kerakli sanani tanlang.");
+        return;
+      }
+
+      if (!time) {
+        alert("🕒 Iltimos, kerakli vaqtni tanlang.");
         return;
       }
 
@@ -182,12 +195,7 @@
       const orderText = selected.map(([item, qty]) => `${item} x${qty} - $${menu[item] * qty}`).join("\n");
       const total = selected.reduce((sum, [item, qty]) => sum + menu[item] * qty, 0);
 
-      const message = `📥 Yangi buyurtma:
-${orderText}
-💰 Umumiy summa: $${total}
-📞 Tel: ${phone}
-📅 Kun: ${date}
-🕒 Vaqt: ${time}`;
+      const message = `📥 Yangi buyurtma:\n${orderText}\n💰 Umumiy summa: $${total}\n📞 Tel: ${phone}\n📅 Sana: ${date}\n🕒 Vaqt: ${time}`;
 
       const botToken = "7840378650:AAHCgR8CxegoUnTKGzJZCB4RorIJuKXbhaQ";
       const adminId = "5161274048";
@@ -203,7 +211,7 @@ ${orderText}
         })
       });
 
-      alert(`✅ Buyurtmangiz yuborildi!\n\n📋 Buyurtma:\n${orderText}\n💰 $${total}\n📞 Tel: ${phone}\n📅 ${date} 🕒 ${time}`);
+      alert(`✅ Buyurtmangiz yuborildi!\n\n📋 Buyurtma:\n${orderText}\n💰 $${total}\n📞 Tel: ${phone}\n📅 Sana: ${date}\n🕒 Vaqt: ${time}`);
 
       // Tozalash
       for (let item in order) {
@@ -216,10 +224,6 @@ ${orderText}
 
       Telegram.WebApp.close();
     }
-
-    renderMenu();
   </script>
-
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </body>
 </html>
