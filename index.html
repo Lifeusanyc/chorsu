@@ -124,7 +124,7 @@
       renderMenu();
     }
 
-    function submitOrder() {
+    async function submitOrder() {
       const selected = Object.entries(order).filter(([_, qty]) => qty > 0);
       if (selected.length === 0) {
         alert("❗ Вы не выбрали ни одного блюда.");
@@ -134,16 +134,25 @@
       const orderText = selected.map(([item, qty]) => `${item} x${qty} - $${menu[item] * qty}`).join("\n");
       const total = selected.reduce((sum, [item, qty]) => sum + menu[item] * qty, 0);
 
-      Telegram.WebApp.sendData(JSON.stringify({
-        order: orderText,
-        total: total
-      }));
+      // Bu yerda POST yuboriladi
+      await fetch('https://chorsu.vercel.app/api/telegram', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          order: orderText,
+          total: total
+        })
+      });
 
+      alert("✅ Buyurtmangiz yuborildi!");
       Telegram.WebApp.close();
     }
 
     renderMenu();
   </script>
+
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </body>
 </html>
