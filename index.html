@@ -69,11 +69,30 @@
     .submit-btn:hover {
       background-color: #45a049;
     }
+
+    .phone-input {
+      margin-top: 20px;
+    }
+
+    .phone-input input {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-top: 5px;
+    }
   </style>
 </head>
 <body>
   <h2>🍽 Taomni tanlang:</h2>
   <div id="menu"></div>
+
+  <div class="phone-input">
+    📞 Telefon raqamingiz: <br>
+    <input type="tel" id="phone" placeholder="+998901234567">
+  </div>
+
   <div class="total" id="total">💰 Umumiy summa: $0</div>
   <button class="submit-btn" onclick="submitOrder()">📥 Buyurtmani yuborish</button>
 
@@ -124,9 +143,15 @@
       renderMenu();
     }
 
-    // Buyurtmani adminiga yuborish funksiyasi
     async function submitOrder() {
+      const phone = document.getElementById("phone").value.trim();
       const selected = Object.entries(order).filter(([_, qty]) => qty > 0);
+
+      if (!phone || !/^\+998\d{9}$/.test(phone)) {
+        alert("📵 Iltimos, to‘g‘ri telefon raqamingizni kiriting! (masalan: +998901234567)");
+        return;
+      }
+
       if (selected.length === 0) {
         alert("❗ Hech qanday taom tanlamadingiz.");
         return;
@@ -135,10 +160,10 @@
       const orderText = selected.map(([item, qty]) => `${item} x${qty} - $${menu[item] * qty}`).join("\n");
       const total = selected.reduce((sum, [item, qty]) => sum + menu[item] * qty, 0);
 
-      // Telegram botga buyurtmani yuborish
+      const message = `📥 Yangi buyurtma:\n${orderText}\n💰 Umumiy summa: $${total}\n📞 Telefon: ${phone}`;
+
       const botToken = "7840378650:AAHCgR8CxegoUnTKGzJZCB4RorIJuKXbhaQ";
       const adminId = "5161274048";
-      const message = `Yangi buyurtma:\n${orderText}\n💰 Umumiy summa: $${total}`;
 
       await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
         method: 'POST',
@@ -151,17 +176,14 @@
         })
       });
 
-      // Buyurtma ma'lumotlarini foydalanuvchiga yuborish
-      const userOrderText = `Sizning buyurtmangiz:\n${orderText}\n💰 Umumiy summa: $${total}`;
-      alert(`✅ Buyurtmangiz yuborildi!\n\n${userOrderText}`);
+      alert(`✅ Buyurtmangiz yuborildi!\n\n📋 Sizning buyurtmangiz:\n${orderText}\n💰 Umumiy summa: $${total}\n📞 Telefon: ${phone}`);
 
-      // Buyurtmani tozalash va yangilash
       for (let item in order) {
         order[item] = 0;
       }
+      document.getElementById("phone").value = "";
       renderMenu();
 
-      // Telegram Web Appni yopish
       Telegram.WebApp.close();
     }
 
