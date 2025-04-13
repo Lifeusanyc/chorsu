@@ -2,7 +2,7 @@
 <html lang="uz">
 <head>
   <meta charset="UTF-8">
-  <title>Menu</title>
+  <title>Меню</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body {
@@ -69,25 +69,95 @@
     .submit-btn:hover {
       background-color: #45a049;
     }
-
-    .phone-input {
-      margin-top: 20px;
-    }
-
-    .phone-input input {
-      width: 100%;
-      padding: 10px;
-      font-size: 16px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      margin-top: 5px;
-    }
   </style>
 </head>
 <body>
   <h2>🍽 Taomni tanlang:</h2>
   <div id="menu"></div>
+  <div class="total" id="total">💰 Umumiy summa: $0</div>
+  <button class="submit-btn" onclick="submitOrder()">📥 Buyurtmani yuborish</button>
 
-  <div class="phone-input">
-    📞 Telefon raqamingiz:<br>
-    <input
+  <script>
+    const menu = {
+      "🥩 Норин": 25,
+      "🌭 Хасип": 35,
+      "🥟 Гумма": 4,
+      "🍲 Бозор хоним": 10,
+      "🥩 Нон кабоб": 10,
+      "🥟 Юпка": 2,
+      "🍗 Табака": 10,
+      "🍜 Кукси": 17,
+    };
+
+    const order = {};
+
+    function renderMenu() {
+      const container = document.getElementById("menu");
+      container.innerHTML = "";
+      let total = 0;
+
+      for (let item in menu) {
+        if (!(item in order)) order[item] = 0;
+        const price = menu[item];
+        const quantity = order[item];
+        total += price * quantity;
+
+        const itemDiv = document.createElement("div");
+        itemDiv.className = "item";
+        itemDiv.innerHTML = `
+          <div class="item-name">${item}</div>
+          <div class="item-price">$${price}</div>
+          <div class="quantity-control">
+            <button onclick="changeQty('${item}', -1)">➖</button>
+            <span style="margin: 0 10px;">${quantity}</span>
+            <button onclick="changeQty('${item}', 1)">➕</button>
+          </div>
+        `;
+        container.appendChild(itemDiv);
+      }
+
+      document.getElementById("total").innerText = `💰 Umumiy summa: $${total}`;
+    }
+
+    function changeQty(item, delta) {
+      order[item] = Math.max(0, order[item] + delta);
+      renderMenu();
+    }
+
+    // Buyurtmani adminiga yuborish funksiyasi
+    async function submitOrder() {
+      const selected = Object.entries(order).filter(([_, qty]) => qty > 0);
+      if (selected.length === 0) {
+        alert("❗ Hech qanday taom tanlamadingiz.");
+        return;
+      }
+
+      const orderText = selected.map(([item, qty]) => `${item} x${qty} - $${menu[item] * qty}`).join("\n");
+      const total = selected.reduce((sum, [item, qty]) => sum + menu[item] * qty, 0);
+
+      // Telegram botga buyurtmani yuborish
+      const botToken = "7840378650:AAHCgR8CxegoUnTKGzJZCB4RorIJuKXbhaQ";
+      const adminId = "5161274048";
+      const message = `Yangi buyurtma:\n${orderText}\n💰 Umumiy summa: $${total}`;
+
+      await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          chat_id: adminId,
+          text: message
+        })
+      });
+
+      alert("✅ Buyurtmangiz yuborildi!");
+      Telegram.WebApp.close();
+    }
+
+    renderMenu();
+  </script>
+
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</body>
+</html>
