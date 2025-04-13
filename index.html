@@ -70,17 +70,21 @@
       background-color: #45a049;
     }
 
-    .phone-input {
+    .input-group {
       margin-top: 20px;
     }
 
-    .phone-input input {
+    .input-group label {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .input-group input {
       width: 100%;
       padding: 10px;
       font-size: 16px;
       border-radius: 8px;
       border: 1px solid #ccc;
-      margin-top: 5px;
     }
   </style>
 </head>
@@ -88,9 +92,14 @@
   <h2>🍽 Taomni tanlang:</h2>
   <div id="menu"></div>
 
-  <div class="phone-input">
-    📞 Telefon raqamingiz:<br>
-    <input type="tel" id="phone" placeholder="+1 (123) 456-7890">
+  <div class="input-group">
+    <label for="phone">📞 Telefon raqamingiz:</label>
+    <input type="tel" id="phone" placeholder="+998901234567">
+  </div>
+
+  <div class="input-group">
+    <label for="delivery-time">⏰ Yetkazib berish vaqti:</label>
+    <input type="time" id="delivery-time">
   </div>
 
   <div class="total" id="total">💰 Umumiy summa: $0</div>
@@ -144,17 +153,26 @@
     }
 
     function formatPhone(phone) {
-      // Faqat raqamlar va "+" belgisi qoldiriladi
       return phone.replace(/[^\d+]/g, '');
+    }
+
+    function isValidPhone(phone) {
+      return /^\+?\d{10,15}$/.test(phone);
     }
 
     async function submitOrder() {
       const rawPhone = document.getElementById("phone").value.trim();
       const phone = formatPhone(rawPhone);
+      const deliveryTime = document.getElementById("delivery-time").value;
       const selected = Object.entries(order).filter(([_, qty]) => qty > 0);
 
-      if (!phone || phone.length < 10) {
+      if (!isValidPhone(phone)) {
         alert("📵 Iltimos, to'g'ri telefon raqamini kiriting.");
+        return;
+      }
+
+      if (!deliveryTime) {
+        alert("⏰ Iltimos, yetkazib berish vaqtini tanlang.");
         return;
       }
 
@@ -166,10 +184,14 @@
       const orderText = selected.map(([item, qty]) => `${item} x${qty} - $${menu[item] * qty}`).join("\n");
       const total = selected.reduce((sum, [item, qty]) => sum + menu[item] * qty, 0);
 
-      const message = `📥 Yangi buyurtma:\n${orderText}\n💰 Umumiy summa: $${total}\n📞 Tel: ${phone}`;
+      const message = `📥 Yangi buyurtma:\n${orderText}\n💰 Umumiy summa: $${total}\n📞 Tel: ${phone}\n⏰ Vaqt: ${deliveryTime}`;
 
       const botToken = "7840378650:AAHCgR8CxegoUnTKGzJZCB4RorIJuKXbhaQ";
       const adminId = "5161274048";
+
+      const btn = document.querySelector(".submit-btn");
+      btn.disabled = true;
+      btn.innerText = "⏳ Yuborilmoqda...";
 
       await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
         method: 'POST',
@@ -182,16 +204,28 @@
         })
       });
 
-      alert(`✅ Buyurtmangiz yuborildi!\n\n📋 Buyurtma:\n${orderText}\n💰 $${total}\n📞 Tel: ${phone}`);
+      alert(`✅ Buyurtmangiz yuborildi!\n\n📋 Buyurtma:\n${orderText}\n💰 $${total}\n📞 Tel: ${phone}\n⏰ ${deliveryTime}`);
 
       // Tozalash
       for (let item in order) {
         order[item] = 0;
       }
       document.getElementById("phone").value = "";
+      document.getElementById("delivery-time").value = "";
       renderMenu();
 
+      btn.disabled = false;
+      btn.innerText = "📥 Buyurtmani yuborish";
+
+      Telegram.WebApp.ready();
       Telegram.WebApp.close();
+    }
+
+    // Tiklash
+    document.getElementById("phone").value = localStorage.getItem("userPhone") || "";
+    const savedOrder = localStorage.getItem("orderData");
+    if (savedOrder) {
+      Object.assign(order, JSON.parse(savedOrder));
     }
 
     renderMenu();
