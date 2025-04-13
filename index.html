@@ -98,17 +98,8 @@
   </div>
 
   <div class="input-group">
-    <label for="delivery-day">📅 Yetkazib berish kuni:</label>
-    <select id="delivery-day">
-      <option value="">Kunni tanlang</option>
-      <option value="Dushanba">Dushanba</option>
-      <option value="Seshanba">Seshanba</option>
-      <option value="Chorshanba">Chorshanba</option>
-      <option value="Payshanba">Payshanba</option>
-      <option value="Juma">Juma</option>
-      <option value="Shanba">Shanba</option>
-      <option value="Yakshanba">Yakshanba</option>
-    </select>
+    <label for="delivery-date">📅 Yetkazib berish kuni:</label>
+    <input type="date" id="delivery-date">
   </div>
 
   <div class="input-group">
@@ -182,7 +173,7 @@
     async function submitOrder() {
       const rawPhone = document.getElementById("phone").value.trim();
       const phone = formatPhone(rawPhone);
-      const deliveryDay = document.getElementById("delivery-day").value;
+      const deliveryDate = document.getElementById("delivery-date").value;
       const deliveryTime = document.getElementById("delivery-time").value;
       const specialNote = document.getElementById("special-note").value.trim();
       const selected = Object.entries(order).filter(([_, qty]) => qty > 0);
@@ -192,7 +183,7 @@
         return;
       }
 
-      if (!deliveryDay) {
+      if (!deliveryDate) {
         alert("📅 Iltimos, yetkazib berish kunini tanlang.");
         return;
       }
@@ -210,7 +201,7 @@
       const orderText = selected.map(([item, qty]) => `${item} x${qty} - $${menu[item] * qty}`).join("\n");
       const total = selected.reduce((sum, [item, qty]) => sum + menu[item] * qty, 0);
 
-      let message = `📥 Yangi buyurtma:\n${orderText}\n💰 Umumiy summa: $${total}\n📞 Tel: ${phone}\n⏰ Vaqt: ${deliveryTime}\n📅 Kun: ${deliveryDay}`;
+      let message = `📥 Yangi buyurtma:\n${orderText}\n💰 Umumiy summa: $${total}\n📞 Tel: ${phone}\n⏰ Vaqt: ${deliveryTime}\n📅 Kun: ${deliveryDate}`;
       if (specialNote) {
         message += `\n📝 Maxsus izoh: ${specialNote}`;
       }
@@ -233,7 +224,7 @@
         })
       });
 
-      alert(`✅ Buyurtmangiz yuborildi!\n\n📋 Buyurtma:\n${orderText}\n💰 $${total}\n📞 Tel: ${phone}\n⏰ ${deliveryTime}\n📅 ${deliveryDay}\n📝 ${specialNote}`);
+      alert(`✅ Buyurtmangiz yuborildi!\n\n📋 Buyurtma:\n${orderText}\n💰 $${total}\n📞 Tel: ${phone}\n⏰ ${deliveryTime}\n📅 ${deliveryDate}\n📝 ${specialNote}`);
 
       // Tozalash
       for (let item in order) {
@@ -241,7 +232,7 @@
       }
       document.getElementById("phone").value = "";
       document.getElementById("delivery-time").value = "";
-      document.getElementById("delivery-day").value = "";
+      document.getElementById("delivery-date").value = "";
       document.getElementById("special-note").value = "";
       renderMenu();
 
@@ -250,13 +241,6 @@
 
       Telegram.WebApp.ready();
       Telegram.WebApp.close();
-    }
-
-    // Tiklash
-    document.getElementById("phone").value = localStorage.getItem("userPhone") || "";
-    const savedOrder = localStorage.getItem("orderData");
-    if (savedOrder) {
-      Object.assign(order, JSON.parse(savedOrder));
     }
 
     renderMenu();
