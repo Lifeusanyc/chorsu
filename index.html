@@ -117,14 +117,14 @@
 
   <script>
     const menu = {
-      "🥩 Norin (Pound) ": 25,
-      "🌭 Khasip  (Pound) ": 35,
-      "🥟 Gumma (Dona)": 4,
-      "🍲 Bozor Khanim (Dona) ": 10,
-      "🥩 Non Kabob (Dona)": 10,
-      "🥟 Yupka (Dona) ": 2,
-      "🍗 Tabaka" (Pound): 10,
-      "🍜 Kuksi (Dona)": 17,
+      "🥩 Norin - Pound": 25,
+      "🌭 Khasip": 35,
+      "🥟 Gumma": 4,
+      "🍲 Bozor Khanim": 10,
+      "🥩 Non Kabob": 10,
+      "🥟 Yupka": 2,
+      "🍗 Tabaka": 10,
+      "🍜 Kuksi": 17,
     };
 
     const order = {};
@@ -198,13 +198,10 @@
         return;
       }
 
-      // Generate order number using current timestamp
-      const orderNumber = new Date().getTime(); // Unique timestamp-based order number
-
       const orderText = selected.map(([item, qty]) => `${item} x${qty} - $${menu[item] * qty}`).join("\n");
       const total = selected.reduce((sum, [item, qty]) => sum + menu[item] * qty, 0);
 
-      let message = `📥 Yangi buyurtma:\n#${orderNumber}\n${orderText}\n💰 Umumiy summa: $${total}\n📞 Tel: ${phone}\n⏰ Vaqt: ${deliveryTime}\n📅 Kun: ${deliveryDate}`;
+      let message = `📥 Yangi buyurtma:\n${orderText}\n💰 Umumiy summa: $${total}\n📞 Tel: ${phone}\n⏰ Vaqt: ${deliveryTime}\n📅 Kun: ${deliveryDate}`;
       if (specialNote) {
         message += `\n📝 Maxsus izoh: ${specialNote}`;
       }
@@ -227,7 +224,7 @@
         })
       });
 
-      alert(`✅ Buyurtmangiz yuborildi!\n\n📋 Buyurtma:\n#${orderNumber}\n${orderText}\n💰 $${total}\n📞 Tel: ${phone}\n⏰ ${deliveryTime}\n📅 ${deliveryDate}\n📝 ${specialNote}`);
+      alert(`✅ Buyurtmangiz yuborildi!\n\n📋 Buyurtma:\n${orderText}\n💰 $${total}\n📞 Tel: ${phone}\n⏰ ${deliveryTime}\n📅 ${deliveryDate}\n📝 ${specialNote}`);
 
       // Tozalash
       for (let item in order) {
