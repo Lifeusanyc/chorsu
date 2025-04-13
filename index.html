@@ -243,6 +243,12 @@
       Telegram.WebApp.close();
     }
 
+    // Bugungi sanani olish va min atributini qo‘shish
+    document.addEventListener("DOMContentLoaded", function () {
+      const today = new Date().toISOString().split("T")[0];
+      document.getElementById("delivery-date").setAttribute("min", today);
+    });
+
     renderMenu();
   </script>
 
