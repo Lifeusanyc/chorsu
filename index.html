@@ -147,8 +147,8 @@
       const phone = document.getElementById("phone").value.trim();
       const selected = Object.entries(order).filter(([_, qty]) => qty > 0);
 
-      if (!phone || !/^\+998\d{9}$/.test(phone)) {
-        alert("📵 Iltimos, to‘g‘ri telefon raqamingizni kiriting! (masalan: +998901234567)");
+      if (!phone || !/^\+1\d{9}$/.test(phone)) {
+        alert("📵 Iltimos, to‘g‘ri telefon raqamingizni kiriting! (masalan: +11234567890)");
         return;
       }
 
