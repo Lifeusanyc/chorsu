@@ -79,7 +79,7 @@
       margin-bottom: 5px;
     }
 
-    .input-group input, .input-group select, .input-group textarea {
+    .input-group input, .input-group select {
       width: 100%;
       padding: 10px;
       font-size: 16px;
@@ -112,17 +112,6 @@
     <textarea id="special-note" rows="4" placeholder="Buyurtmangizga maxsus izohlar yoki talablar kiritish..."></textarea>
   </div>
 
-  <div class="input-group">
-    <label for="rating">⭐ Buyurtma baholash:</label>
-    <select id="rating">
-      <option value="1">1 - Yomon</option>
-      <option value="2">2 - Qoniqarli</option>
-      <option value="3">3 - Yaxshi</option>
-      <option value="4">4 - Juda yaxshi</option>
-      <option value="5">5 - Ajoyib</option>
-    </select>
-  </div>
-
   <div class="total" id="total">💰 Umumiy summa: $0</div>
   <button class="submit-btn" onclick="submitOrder()">📥 Buyurtmani yuborish</button>
 
@@ -138,7 +127,6 @@
       "🍜 Kuksi": 17,
     };
 
-    
     const order = {};
 
     function renderMenu() {
@@ -166,38 +154,12 @@
         container.appendChild(itemDiv);
       }
 
-      // Vegetarian menu
-      for (let item in vegetarianMenu) {
-        if (!(item in order)) order[item] = 0;
-        const price = vegetarianMenu[item];
-        const quantity = order[item];
-        total += price * quantity;
-
-        const itemDiv = document.createElement("div");
-        itemDiv.className = "item";
-        itemDiv.innerHTML = `
-          <div class="item-name">${item}</div>
-          <div class="item-price">$${price}</div>
-          <div class="quantity-control">
-            <button onclick="changeQty('${item}', -1)">➖</button>
-            <span style="margin: 0 10px;">${quantity}</span>
-            <button onclick="changeQty('${item}', 1)">➕</button>
-          </div>
-        `;
-        container.appendChild(itemDiv);
-      }
-
       document.getElementById("total").innerText = `💰 Umumiy summa: $${total}`;
     }
 
     function changeQty(item, delta) {
       order[item] = Math.max(0, order[item] + delta);
       renderMenu();
-    }
-
-    function applyDiscount(total) {
-      const discount = 0.1; // 10% chegirma
-      return total - total * discount;
     }
 
     function formatPhone(phone) {
@@ -208,50 +170,12 @@
       return /^\+?\d{10,15}$/.test(phone);
     }
 
-    function saveCustomerInfo(phone) {
-      localStorage.setItem("customerPhone", phone);
-    }
-
-    function loadCustomerInfo() {
-      document.getElementById("phone").value = localStorage.getItem("customerPhone") || "";
-    }
-
-    function startCountdown() {
-      const deliveryTime = new Date(document.getElementById("delivery-time").value);
-      const countdown = setInterval(() => {
-        const timeLeft = deliveryTime - new Date();
-        if (timeLeft <= 0) {
-          clearInterval(countdown);
-          alert("Buyurtma yetkazib berilmoqda!");
-        }
-      }, 1000);
-    }
-
-    function showOrderConfirmation() {
-      const orderText = Object.entries(order)
-        .map(([item, qty]) => `${item} x${qty} - $${menu[item] * qty}`)
-        .join("\n");
-      const total = Object.entries(order)
-        .reduce((sum, [item, qty]) => sum + menu[item] * qty, 0);
-      const totalWithDiscount = applyDiscount(total);
-      const confirmationMessage = `
-        Buyurtma tasdiqlash:
-        Taomlar: ${orderText}
-        Umumiy summa: $${totalWithDiscount}
-      `;
-      const confirmed = confirm(confirmationMessage);
-      if (confirmed) {
-        submitOrder();
-      }
-    }
-
     async function submitOrder() {
       const rawPhone = document.getElementById("phone").value.trim();
       const phone = formatPhone(rawPhone);
       const deliveryDate = document.getElementById("delivery-date").value;
       const deliveryTime = document.getElementById("delivery-time").value;
       const specialNote = document.getElementById("special-note").value.trim();
-      const rating = document.getElementById("rating").value;
       const selected = Object.entries(order).filter(([_, qty]) => qty > 0);
 
       if (!isValidPhone(phone)) {
@@ -276,9 +200,8 @@
 
       const orderText = selected.map(([item, qty]) => `${item} x${qty} - $${menu[item] * qty}`).join("\n");
       const total = selected.reduce((sum, [item, qty]) => sum + menu[item] * qty, 0);
-      const totalWithDiscount = applyDiscount(total);
 
-      let message = `📥 Yangi buyurtma:\n${orderText}\n💰 Umumiy summa: $${totalWithDiscount}\n📞 Tel: ${phone}\n⏰ Vaqt: ${deliveryTime}\n📅 Kun: ${deliveryDate}\n⭐ Baholash: ${rating}`;
+      let message = `📥 Yangi buyurtma:\n${orderText}\n💰 Umumiy summa: $${total}\n📞 Tel: ${phone}\n⏰ Vaqt: ${deliveryTime}\n📅 Kun: ${deliveryDate}`;
       if (specialNote) {
         message += `\n📝 Maxsus izoh: ${specialNote}`;
       }
@@ -301,12 +224,12 @@
         })
       });
 
-      alert(`✅ Buyurtmangiz yuborildi!\n\n📋 Buyurtma:\n${orderText}\n💰 $${totalWithDiscount}\n📞 Tel: ${phone}\n⏰ ${deliveryTime}\n📅 ${deliveryDate}\n📝 ${specialNote}`);
+      alert(`✅ Buyurtmangiz yuborildi!\n\n📋 Buyurtma:\n${orderText}\n💰 $${total}\n📞 Tel: ${phone}\n⏰ ${deliveryTime}\n📅 ${deliveryDate}\n📝 ${specialNote}`);
 
+      // Tozalash
       for (let item in order) {
         order[item] = 0;
       }
-
       document.getElementById("phone").value = "";
       document.getElementById("delivery-time").value = "";
       document.getElementById("delivery-date").value = "";
@@ -320,10 +243,10 @@
       Telegram.WebApp.close();
     }
 
+    // Bugungi sanani olish va min atributini qo‘shish
     document.addEventListener("DOMContentLoaded", function () {
       const today = new Date().toISOString().split("T")[0];
       document.getElementById("delivery-date").setAttribute("min", today);
-      loadCustomerInfo();
     });
 
     renderMenu();
