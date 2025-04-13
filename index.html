@@ -79,7 +79,7 @@
       margin-bottom: 5px;
     }
 
-    .input-group input {
+    .input-group input, .input-group select {
       width: 100%;
       padding: 10px;
       font-size: 16px;
@@ -98,8 +98,27 @@
   </div>
 
   <div class="input-group">
+    <label for="delivery-day">📅 Yetkazib berish kuni:</label>
+    <select id="delivery-day">
+      <option value="">Kunni tanlang</option>
+      <option value="Dushanba">Dushanba</option>
+      <option value="Seshanba">Seshanba</option>
+      <option value="Chorshanba">Chorshanba</option>
+      <option value="Payshanba">Payshanba</option>
+      <option value="Juma">Juma</option>
+      <option value="Shanba">Shanba</option>
+      <option value="Yakshanba">Yakshanba</option>
+    </select>
+  </div>
+
+  <div class="input-group">
     <label for="delivery-time">⏰ Yetkazib berish vaqti:</label>
     <input type="time" id="delivery-time">
+  </div>
+
+  <div class="input-group">
+    <label for="special-note">📝 Maxsus izoh:</label>
+    <textarea id="special-note" rows="4" placeholder="Buyurtmangizga maxsus izohlar yoki talablar kiritish..."></textarea>
   </div>
 
   <div class="total" id="total">💰 Umumiy summa: $0</div>
@@ -163,11 +182,18 @@
     async function submitOrder() {
       const rawPhone = document.getElementById("phone").value.trim();
       const phone = formatPhone(rawPhone);
+      const deliveryDay = document.getElementById("delivery-day").value;
       const deliveryTime = document.getElementById("delivery-time").value;
+      const specialNote = document.getElementById("special-note").value.trim();
       const selected = Object.entries(order).filter(([_, qty]) => qty > 0);
 
       if (!isValidPhone(phone)) {
         alert("📵 Iltimos, to'g'ri telefon raqamini kiriting.");
+        return;
+      }
+
+      if (!deliveryDay) {
+        alert("📅 Iltimos, yetkazib berish kunini tanlang.");
         return;
       }
 
@@ -184,7 +210,10 @@
       const orderText = selected.map(([item, qty]) => `${item} x${qty} - $${menu[item] * qty}`).join("\n");
       const total = selected.reduce((sum, [item, qty]) => sum + menu[item] * qty, 0);
 
-      const message = `📥 Yangi buyurtma:\n${orderText}\n💰 Umumiy summa: $${total}\n📞 Tel: ${phone}\n⏰ Vaqt: ${deliveryTime}`;
+      let message = `📥 Yangi buyurtma:\n${orderText}\n💰 Umumiy summa: $${total}\n📞 Tel: ${phone}\n⏰ Vaqt: ${deliveryTime}\n📅 Kun: ${deliveryDay}`;
+      if (specialNote) {
+        message += `\n📝 Maxsus izoh: ${specialNote}`;
+      }
 
       const botToken = "7840378650:AAHCgR8CxegoUnTKGzJZCB4RorIJuKXbhaQ";
       const adminId = "5161274048";
@@ -204,7 +233,7 @@
         })
       });
 
-      alert(`✅ Buyurtmangiz yuborildi!\n\n📋 Buyurtma:\n${orderText}\n💰 $${total}\n📞 Tel: ${phone}\n⏰ ${deliveryTime}`);
+      alert(`✅ Buyurtmangiz yuborildi!\n\n📋 Buyurtma:\n${orderText}\n💰 $${total}\n📞 Tel: ${phone}\n⏰ ${deliveryTime}\n📅 ${deliveryDay}\n📝 ${specialNote}`);
 
       // Tozalash
       for (let item in order) {
@@ -212,6 +241,8 @@
       }
       document.getElementById("phone").value = "";
       document.getElementById("delivery-time").value = "";
+      document.getElementById("delivery-day").value = "";
+      document.getElementById("special-note").value = "";
       renderMenu();
 
       btn.disabled = false;
