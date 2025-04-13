@@ -104,7 +104,7 @@
 
         const itemDiv = document.createElement("div");
         itemDiv.className = "item";
-        itemDiv.innerHTML = 
+        itemDiv.innerHTML = `
           <div class="item-name">${item}</div>
           <div class="item-price">$${price}</div>
           <div class="quantity-control">
@@ -112,11 +112,11 @@
             <span style="margin: 0 10px;">${quantity}</span>
             <button onclick="changeQty('${item}', 1)">➕</button>
           </div>
-        ;
+        `;
         container.appendChild(itemDiv);
       }
 
-      document.getElementById("total").innerText = 💰 Итого: $${total};
+      document.getElementById("total").innerText = `💰 Итого: $${total}`;
     }
 
     function changeQty(item, delta) {
@@ -131,7 +131,7 @@
         return;
       }
 
-      const orderText = selected.map(([item, qty]) => ${item} x${qty} - $${menu[item] * qty}).join("\n");
+      const orderText = selected.map(([item, qty]) => `${item} x${qty} - $${menu[item] * qty}`).join("\n");
       const total = selected.reduce((sum, [item, qty]) => sum + menu[item] * qty, 0);
 
       // Bu yerda POST yuboriladi
