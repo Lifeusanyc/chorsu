@@ -151,7 +151,17 @@
         })
       });
 
-      alert("✅ Buyurtmangiz yuborildi!");
+      // Buyurtma ma'lumotlarini foydalanuvchiga yuborish
+      const userOrderText = `Sizning buyurtmangiz:\n${orderText}\n💰 Umumiy summa: $${total}`;
+      alert(`✅ Buyurtmangiz yuborildi!\n\n${userOrderText}`);
+
+      // Buyurtmani tozalash va yangilash
+      for (let item in order) {
+        order[item] = 0;
+      }
+      renderMenu();
+
+      // Telegram Web Appni yopish
       Telegram.WebApp.close();
     }
 
