@@ -90,7 +90,17 @@
 
   <div class="phone-input">
     📞 Telefon raqamingiz:<br>
-    <input type="tel" id="phone" placeholder="+1 (123) 456-7890">
+    <input type="tel" id="phone" placeholder="+998 90 123 45 67">
+  </div>
+
+  <div class="phone-input">
+    📅 Qaysi kunga kerak:<br>
+    <input type="date" id="date">
+  </div>
+
+  <div class="phone-input">
+    🕒 Qaysi vaqtga kerak:<br>
+    <input type="time" id="time">
   </div>
 
   <div class="total" id="total">💰 Umumiy summa: $0</div>
@@ -144,17 +154,23 @@
     }
 
     function formatPhone(phone) {
-      // Faqat raqamlar va "+" belgisi qoldiriladi
       return phone.replace(/[^\d+]/g, '');
     }
 
     async function submitOrder() {
       const rawPhone = document.getElementById("phone").value.trim();
       const phone = formatPhone(rawPhone);
+      const date = document.getElementById("date").value;
+      const time = document.getElementById("time").value;
       const selected = Object.entries(order).filter(([_, qty]) => qty > 0);
 
       if (!phone || phone.length < 10) {
         alert("📵 Iltimos, to'g'ri telefon raqamini kiriting.");
+        return;
+      }
+
+      if (!date || !time) {
+        alert("📅 Iltimos, kerakli sana va vaqtni kiriting.");
         return;
       }
 
@@ -166,7 +182,12 @@
       const orderText = selected.map(([item, qty]) => `${item} x${qty} - $${menu[item] * qty}`).join("\n");
       const total = selected.reduce((sum, [item, qty]) => sum + menu[item] * qty, 0);
 
-      const message = `📥 Yangi buyurtma:\n${orderText}\n💰 Umumiy summa: $${total}\n📞 Tel: ${phone}`;
+      const message = `📥 Yangi buyurtma:
+${orderText}
+💰 Umumiy summa: $${total}
+📞 Tel: ${phone}
+📅 Kun: ${date}
+🕒 Vaqt: ${time}`;
 
       const botToken = "7840378650:AAHCgR8CxegoUnTKGzJZCB4RorIJuKXbhaQ";
       const adminId = "5161274048";
@@ -182,13 +203,15 @@
         })
       });
 
-      alert(`✅ Buyurtmangiz yuborildi!\n\n📋 Buyurtma:\n${orderText}\n💰 $${total}\n📞 Tel: ${phone}`);
+      alert(`✅ Buyurtmangiz yuborildi!\n\n📋 Buyurtma:\n${orderText}\n💰 $${total}\n📞 Tel: ${phone}\n📅 ${date} 🕒 ${time}`);
 
       // Tozalash
       for (let item in order) {
         order[item] = 0;
       }
       document.getElementById("phone").value = "";
+      document.getElementById("date").value = "";
+      document.getElementById("time").value = "";
       renderMenu();
 
       Telegram.WebApp.close();
