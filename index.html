@@ -2,7 +2,7 @@
 <html lang="uz">
 <head>
   <meta charset="UTF-8">
-  <title>Меню</title>
+  <title>Menu</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body {
@@ -69,24 +69,43 @@
     .submit-btn:hover {
       background-color: #45a049;
     }
+
+    .phone-input {
+      margin-top: 20px;
+    }
+
+    .phone-input input {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-top: 5px;
+    }
   </style>
 </head>
 <body>
   <h2>🍽 Taomni tanlang:</h2>
   <div id="menu"></div>
+
+  <div class="phone-input">
+    📞 Telefon raqamingiz:<br>
+    <input type="tel" id="phone" placeholder="+1 (123) 456-7890">
+  </div>
+
   <div class="total" id="total">💰 Umumiy summa: $0</div>
   <button class="submit-btn" onclick="submitOrder()">📥 Buyurtmani yuborish</button>
 
   <script>
     const menu = {
-      "🥩 Норин": 25,
-      "🌭 Хасип": 35,
-      "🥟 Гумма": 4,
-      "🍲 Бозор хоним": 10,
-      "🥩 Нон кабоб": 10,
-      "🥟 Юпка": 2,
-      "🍗 Табака": 10,
-      "🍜 Кукси": 17,
+      "🥩 Norin": 25,
+      "🌭 Khasip": 35,
+      "🥟 Gumma": 4,
+      "🍲 Bozor Khanim": 10,
+      "🥩 Non Kabob": 10,
+      "🥟 Yupka": 2,
+      "🍗 Tabaka": 10,
+      "🍜 Kuksi": 17,
     };
 
     const order = {};
@@ -124,9 +143,21 @@
       renderMenu();
     }
 
-    // Buyurtmani adminiga yuborish funksiyasi
+    function formatPhone(phone) {
+      // Faqat raqamlar va "+" belgisi qoldiriladi
+      return phone.replace(/[^\d+]/g, '');
+    }
+
     async function submitOrder() {
+      const rawPhone = document.getElementById("phone").value.trim();
+      const phone = formatPhone(rawPhone);
       const selected = Object.entries(order).filter(([_, qty]) => qty > 0);
+
+      if (!phone || phone.length < 10) {
+        alert("📵 Iltimos, to'g'ri telefon raqamini kiriting.");
+        return;
+      }
+
       if (selected.length === 0) {
         alert("❗ Hech qanday taom tanlamadingiz.");
         return;
@@ -135,10 +166,10 @@
       const orderText = selected.map(([item, qty]) => `${item} x${qty} - $${menu[item] * qty}`).join("\n");
       const total = selected.reduce((sum, [item, qty]) => sum + menu[item] * qty, 0);
 
-      // Telegram botga buyurtmani yuborish
+      const message = `📥 Yangi buyurtma:\n${orderText}\n💰 Umumiy summa: $${total}\n📞 Tel: ${phone}`;
+
       const botToken = "7840378650:AAHCgR8CxegoUnTKGzJZCB4RorIJuKXbhaQ";
       const adminId = "5161274048";
-      const message = `Yangi buyurtma:\n${orderText}\n💰 Umumiy summa: $${total}`;
 
       await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
         method: 'POST',
@@ -151,7 +182,15 @@
         })
       });
 
-      alert("✅ Buyurtmangiz yuborildi!");
+      alert(`✅ Buyurtmangiz yuborildi!\n\n📋 Buyurtma:\n${orderText}\n💰 $${total}\n📞 Tel: ${phone}`);
+
+      // Tozalash
+      for (let item in order) {
+        order[item] = 0;
+      }
+      document.getElementById("phone").value = "";
+      renderMenu();
+
       Telegram.WebApp.close();
     }
 
