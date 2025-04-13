@@ -2,7 +2,7 @@
 <html lang="uz">
 <head>
   <meta charset="UTF-8">
-  <title>Меню</title>
+  <title>Menu</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body {
@@ -85,27 +85,27 @@
   </style>
 </head>
 <body>
-  <h2>🍽 Taomni tanlang:</h2>
+  <h2>🍽 Select your meal:</h2>
   <div id="menu"></div>
 
   <div class="phone-input">
-    📞 Telefon raqamingiz: <br>
-    <input type="tel" id="phone" placeholder="+998901234567">
+    📞 Your phone number (US): <br>
+    <input type="tel" id="phone" placeholder="+11234567890">
   </div>
 
-  <div class="total" id="total">💰 Umumiy summa: $0</div>
-  <button class="submit-btn" onclick="submitOrder()">📥 Buyurtmani yuborish</button>
+  <div class="total" id="total">💰 Total: $0</div>
+  <button class="submit-btn" onclick="submitOrder()">📥 Submit Order</button>
 
   <script>
     const menu = {
-      "🥩 Норин": 25,
-      "🌭 Хасип": 35,
-      "🥟 Гумма": 4,
-      "🍲 Бозор хоним": 10,
-      "🥩 Нон кабоб": 10,
-      "🥟 Юпка": 2,
-      "🍗 Табака": 10,
-      "🍜 Кукси": 17,
+      "🥩 Norin": 25,
+      "🌭 Khasip": 35,
+      "🥟 Gumma": 4,
+      "🍲 Bozor Khanim": 10,
+      "🥩 Non Kabob": 10,
+      "🥟 Yupka": 2,
+      "🍗 Tabaka": 10,
+      "🍜 Kuksi": 17,
     };
 
     const order = {};
@@ -135,7 +135,7 @@
         container.appendChild(itemDiv);
       }
 
-      document.getElementById("total").innerText = `💰 Umumiy summa: $${total}`;
+      document.getElementById("total").innerText = `💰 Total: $${total}`;
     }
 
     function changeQty(item, delta) {
@@ -147,20 +147,21 @@
       const phone = document.getElementById("phone").value.trim();
       const selected = Object.entries(order).filter(([_, qty]) => qty > 0);
 
-      if (!phone || !/^\+1\d{9}$/.test(phone)) {
-        alert("📵 Iltimos, to‘g‘ri telefon raqamingizni kiriting! (masalan: +11234567890)");
+      // US phone number validation
+      if (!phone || !/^\+1\d{10}$/.test(phone)) {
+        alert("📵 Please enter a valid US phone number. Example: +11234567890");
         return;
       }
 
       if (selected.length === 0) {
-        alert("❗ Hech qanday taom tanlamadingiz.");
+        alert("❗ You haven't selected any meals.");
         return;
       }
 
       const orderText = selected.map(([item, qty]) => `${item} x${qty} - $${menu[item] * qty}`).join("\n");
       const total = selected.reduce((sum, [item, qty]) => sum + menu[item] * qty, 0);
 
-      const message = `📥 Yangi buyurtma:\n${orderText}\n💰 Umumiy summa: $${total}\n📞 Telefon: ${phone}`;
+      const message = `📥 New Order:\n${orderText}\n💰 Total: $${total}\n📞 Phone: ${phone}`;
 
       const botToken = "7840378650:AAHCgR8CxegoUnTKGzJZCB4RorIJuKXbhaQ";
       const adminId = "5161274048";
@@ -176,7 +177,7 @@
         })
       });
 
-      alert(`✅ Buyurtmangiz yuborildi!\n\n📋 Sizning buyurtmangiz:\n${orderText}\n💰 Umumiy summa: $${total}\n📞 Telefon: ${phone}`);
+      alert(`✅ Your order has been submitted!\n\n📋 Order summary:\n${orderText}\n💰 Total: $${total}\n📞 Phone: ${phone}`);
 
       for (let item in order) {
         order[item] = 0;
