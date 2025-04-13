@@ -106,11 +106,152 @@
   <div class="total" id="total">💰 Umumiy summa: $0</div>
   <button class="submit-btn" onclick="submitOrder()">📥 Buyurtmani yuborish</button>
 
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script>
     const menu = {
       "🥩 Norin": 25,
       "🌭 Khasip": 35,
       "🥟 Gumma": 4,
       "🍲 Bozor Khanim": 10,
-      "🥩 Non Kabob":
+      "🥩 Non Kabob": 10,
+      "🥟 Yupka": 2,
+      "🍗 Tabaka": 10,
+      "🍜 Kuksi": 17,
+    };
+
+    const order = {};
+
+    function renderMenu() {
+      const container = document.getElementById("menu");
+      container.innerHTML = "";
+      let total = 0;
+
+      for (let item in menu) {
+        if (!(item in order)) order[item] = 0;
+        const price = menu[item];
+        const quantity = order[item];
+        total += price * quantity;
+
+        const itemDiv = document.createElement("div");
+        itemDiv.className = "item";
+        itemDiv.innerHTML = 
+          <div class="item-name">${item}</div>
+          <div class="item-price">$${price}</div>
+          <div class="quantity-control">
+            <button onclick="changeQty('${item}', -1)">➖</button>
+            <span style="margin: 0 10px;">${quantity}</span>
+            <button onclick="changeQty('${item}', 1)">➕</button>
+          </div>
+        ;
+        container.appendChild(itemDiv);
+      }
+
+      document.getElementById("total").innerText = 💰 Umumiy summa: $${total};
+    }
+
+    function changeQty(item, delta) {
+      order[item] = Math.max(0, order[item] + delta);
+      renderMenu();
+      saveToLocal();
+    }
+
+    function formatPhone(phone) {
+      return phone.replace(/[^\d+]/g, '');
+    }
+
+    async function submitOrder() {
+      const rawPhone = document.getElementById("phone").value.trim();
+      const phone = formatPhone(rawPhone);
+      const date = document.getElementById("date").value;
+      const time = document.getElementById("time").value;
+      const selected = Object.entries(order).filter(([_, qty]) => qty > 0);
+
+      if (!phone || phone.length < 10) {
+        alert("📵 Iltimos, to'g'ri telefon raqamini kiriting.");
+        return;
+      }
+
+      if (!date || !time) {
+        alert("📅 Iltimos, sana va vaqtni tanlang.");
+        return;
+      }
+
+      if (selected.length === 0) {
+        alert("❗ Hech qanday taom tanlamadingiz.");
+        return;
+      }
+
+      const orderText = selected.map(([item, qty]) => ${item} x${qty} - $${menu[item] * qty}).join("\n");
+      const total = selected.reduce((sum, [item, qty]) => sum + menu[item] * qty, 0);
+
+      const message = 📥 Yangi buyurtma:\n${orderText}\n💰 Umumiy summa: $${total}\n📞 Tel: ${phone}\n📅 Sana: ${date}\n⏰ Vaqt: ${time};
+
+      const botToken = "7840378650:AAHCgR8CxegoUnTKGzJZCB4RorIJuKXbhaQ";
+      const adminId = "5161274048";
+
+      await fetch(https://api.telegram.org/bot${botToken}/sendMessage, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: adminId, text: message })
+      });
+
+      alert(✅ Buyurtmangiz yuborildi!\n\n📋 Buyurtma:\n${orderText}\n💰 $${total}\n📞 Tel: ${phone}\n📅 Sana: ${date}\n⏰ Vaqt: ${time});
+
+      for (let item in order) {
+        order[item] = 0;
+      }
+      document.getElementById("phone").value = "";
+      document.getElementById("date").value = "";
+      document.getElementById("time").value = "";
+
+      localStorage.clear();
+      renderMenu();
+
+      Telegram.WebApp.close();
+    }
+
+    function setDefaultDateTime() {
+      const dateInput = document.getElementById("date");
+      const timeInput = document.getElementById("time");
+
+      const now = new Date();
+      const today = now.toISOString().split("T")[0];
+      dateInput.setAttribute("min", today);
+      dateInput.value = today;
+
+      now.setHours(now.getHours() + 1);
+      const h = String(now.getHours()).padStart(2, '0');
+      const m = String(now.getMinutes()).padStart(2, '0');
+      timeInput.value = ${h}:${m};
+    }
+
+    function saveToLocal() {
+      localStorage.setItem("savedOrder", JSON.stringify(order));
+      localStorage.setItem("savedPhone", document.getElementById("phone").value);
+      localStorage.setItem("savedDate", document.getElementById("date").value);
+      localStorage.setItem("savedTime", document.getElementById("time").value);
+    }
+
+    function loadFromLocal() {
+      const savedOrder = JSON.parse(localStorage.getItem("savedOrder") || "{}");
+      for (let item in savedOrder) {
+        order[item] = savedOrder[item];
+      }
+      document.getElementById("phone").value = localStorage.getItem("savedPhone") || "";
+      document.getElementById("date").value = localStorage.getItem("savedDate") || "";
+      document.getElementById("time").value = localStorage.getItem("savedTime") || "";
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      loadFromLocal();
+      renderMenu();
+      setDefaultDateTime();
+
+      document.getElementById("phone").addEventListener("input", saveToLocal);
+      document.getElementById("date").addEventListener("input", saveToLocal);
+      document.getElementById("time").addEventListener("input", saveToLocal);
+    });
+  </script>
+
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</body>
+</html>
