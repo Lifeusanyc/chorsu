@@ -75,16 +75,24 @@
       border: 1px solid #ccc;
       resize: vertical;
     }
+    .language-selector {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .flag {
+      width: 30px;
+      height: 20px;
+      margin: 0 10px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
-  <div class="input-group">
-    <label for="language">🌐 Tilni tanlang / Выберите язык / Choose Language:</label>
-    <select id="language" onchange="changeLanguage(this.value)">
-      <option value="uz">O'zbekcha</option>
-      <option value="ru">Русский</option>
-      <option value="en">English</option>
-    </select>
+  <div class="language-selector">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/7/71/Flag_of_Uzbekistan.svg" alt="Uzbek Flag" class="flag" onclick="changeLanguage('uz')">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/f/f3/Flag_of_Russia.svg" alt="Russian Flag" class="flag" onclick="changeLanguage('ru')">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/a/a4/Flag_of_the_United_States.svg" alt="English Flag" class="flag" onclick="changeLanguage('en')">
   </div>
 
   <h2 id="selectMeal">🍽 Taomni tanlang:</h2>
@@ -251,21 +259,6 @@
       renderMenu();
     }
 
-    function formatPhone(phone) {
-      phone = phone.replace(/[^\d]/g, '');
-      if (phone.startsWith("998")) {
-        return "+" + phone;
-      }
-      if (!phone.startsWith("+")) {
-        return "+" + phone;
-      }
-      return phone;
-    }
-
-    function isValidPhone(phone) {
-      return /^\+?\d{10,15}$/.test(phone);
-    }
-
     async function submitOrder() {
       const t = translations[currentLang];
       const rawPhone = document.getElementById("phone").value.trim();
@@ -321,13 +314,4 @@
       document.getElementById("language").value = currentLang;
 
       if (window.Telegram && Telegram.WebApp) {
-        Telegram.WebApp.ready();
-      }
-
-      loadOrderFromStorage();
-      updateTexts();
-      renderMenu();
-    });
-  </script>
-</body>
-</html>
+        Telegram.Web
