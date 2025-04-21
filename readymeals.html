@@ -15,6 +15,17 @@
       text-align: center;
     }
 
+    .flag-container {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .flag {
+      margin: 0 10px;
+      cursor: pointer;
+      width: 30px;
+    }
+
     .item {
       display: flex;
       align-items: center;
@@ -98,34 +109,39 @@
   </style>
 </head>
 <body>
-  <h2>🍽 Taomni tanlang:</h2>
+  <div class="flag-container">
+    <img class="flag" src="uzbekistan-flag.png" alt="O'zbekcha" onclick="changeLanguage('uz')">
+    <img class="flag" src="russia-flag.png" alt="Russian" onclick="changeLanguage('ru')">
+    <img class="flag" src="uk-flag.png" alt="English" onclick="changeLanguage('en')">
+  </div>
+  <h2 id="menu-title">🍽 Taomni tanlang:</h2>
   <div id="menu"></div>
 
   <div class="input-group">
-    <label for="phone">📞 Telefon raqamingiz:</label>
+    <label for="phone" id="phone-label">📞 Telefon raqamingiz:</label>
     <input type="tel" id="phone" placeholder="+1234567890">
   </div>
 
   <div class="input-group">
-    <label for="delivery-date">📅 Yetkazib berish kuni:</label>
+    <label for="delivery-date" id="delivery-date-label">📅 Yetkazib berish kuni:</label>
     <input type="date" id="delivery-date">
   </div>
 
   <div class="input-group">
-    <label for="delivery-time">⏰ Yetkazib berish vaqti:</label>
+    <label for="delivery-time" id="delivery-time-label">⏰ Yetkazib berish vaqti:</label>
     <input type="time" id="delivery-time">
   </div>
 
   <div class="input-group">
-    <label for="special-note">📝 Maxsus izoh:</label>
+    <label for="special-note" id="special-note-label">📝 Maxsus izoh:</label>
     <textarea id="special-note" rows="4" placeholder="Buyurtmangizga maxsus izohlar yoki talablar kiritish..."></textarea>
   </div>
 
   <div class="total" id="total">💰 Umumiy summa: $0</div>
-  <button class="submit-btn" onclick="submitOrder()">📥 Buyurtmani yuborish</button>
+  <button class="submit-btn" onclick="submitOrder()" id="submit-btn">📥 Buyurtmani yuborish</button>
 
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <script src="config.js"></script> <!-- Include the config file here -->
+  <script src="config.js"></script>
 
   <script>
     const menu = {
@@ -140,21 +156,66 @@
     };
 
     const order = {};
+    let currentLanguage = 'uz';
 
-    function saveOrderToStorage() {
-      localStorage.setItem('order', JSON.stringify(order));
-    }
-
-    function loadOrderFromStorage() {
-      const saved = localStorage.getItem('order');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        for (let item in parsed) {
-          if (menu.hasOwnProperty(item)) {
-            order[item] = parsed[item];
-          }
-        }
+    const translations = {
+      uz: {
+        title: '🍽 Taomni tanlang:',
+        phoneLabel: '📞 Telefon raqamingiz:',
+        deliveryDateLabel: '📅 Yetkazib berish kuni:',
+        deliveryTimeLabel: '⏰ Yetkazib berish vaqti:',
+        specialNoteLabel: '📝 Maxsus izoh:',
+        submitBtn: '📥 Buyurtmani yuborish',
+        total: '💰 Umumiy summa: $',
+        noPhone: '📵 Iltimos, to\'g\'ri telefon raqamini kiriting.',
+        noDate: '📅 Iltimos, yetkazib berish kunini tanlang.',
+        noTime: '⏰ Iltimos, yetkazib berish vaqtini tanlang.',
+        noItems: '❗ Hech qanday taom tanlamadingiz.',
+        orderSent: '✅ Buyurtmangiz yuborildi!',
+        orderMessage: '📥 Yangi buyurtma:',
+      },
+      ru: {
+        title: '🍽 Выберите блюдо:',
+        phoneLabel: '📞 Ваш телефонный номер:',
+        deliveryDateLabel: '📅 Дата доставки:',
+        deliveryTimeLabel: '⏰ Время доставки:',
+        specialNoteLabel: '📝 Особые примечания:',
+        submitBtn: '📥 Отправить заказ',
+        total: '💰 Общая сумма: ₽',
+        noPhone: '📵 Пожалуйста, введите правильный номер телефона.',
+        noDate: '📅 Пожалуйста, выберите дату доставки.',
+        noTime: '⏰ Пожалуйста, выберите время доставки.',
+        noItems: '❗ Вы не выбрали ни одного блюда.',
+        orderSent: '✅ Ваш заказ отправлен!',
+        orderMessage: '📥 Новый заказ:',
+      },
+      en: {
+        title: '🍽 Select a dish:',
+        phoneLabel: '📞 Your phone number:',
+        deliveryDateLabel: '📅 Delivery date:',
+        deliveryTimeLabel: '⏰ Delivery time:',
+        specialNoteLabel: '📝 Special notes:',
+        submitBtn: '📥 Submit order',
+        total: '💰 Total amount: $',
+        noPhone: '📵 Please enter a valid phone number.',
+        noDate: '📅 Please select a delivery date.',
+        noTime: '⏰ Please select a delivery time.',
+        noItems: '❗ No dishes selected.',
+        orderSent: '✅ Your order has been sent!',
+        orderMessage: '📥 New order:',
       }
+    };
+
+    function changeLanguage(lang) {
+      currentLanguage = lang;
+      document.getElementById("menu-title").innerText = translations[lang].title;
+      document.getElementById("phone-label").innerText = translations[lang].phoneLabel;
+      document.getElementById("delivery-date-label").innerText = translations[lang].deliveryDateLabel;
+      document.getElementById("delivery-time-label").innerText = translations[lang].deliveryTimeLabel;
+      document.getElementById("special-note-label").innerText = translations[lang].specialNoteLabel;
+      document.getElementById("submit-btn").innerText = translations[lang].submitBtn;
+      document.getElementById("total").innerText = `${translations[lang].total} 0`;
+      renderMenu();
     }
 
     function renderMenu() {
@@ -182,28 +243,13 @@
         container.appendChild(itemDiv);
       }
 
-      document.getElementById("total").innerText = `💰 Umumiy summa: $${total}`;
+      document.getElementById("total").innerText = `${translations[currentLanguage].total} $${total}`;
     }
 
     function changeQty(item, delta) {
       order[item] = Math.max(0, order[item] + delta);
       saveOrderToStorage();
       renderMenu();
-    }
-
-    function formatPhone(phone) {
-      phone = phone.replace(/[^\d]/g, '');
-      if (phone.startsWith("998")) {
-        return "+" + phone;
-      }
-      if (!phone.startsWith("+")) {
-        return "+" + phone;
-      }
-      return phone;
-    }
-
-    function isValidPhone(phone) {
-      return /^\+?\d{10,15}$/.test(phone);
     }
 
     async function submitOrder() {
@@ -215,35 +261,35 @@
       const selected = Object.entries(order).filter(([_, qty]) => qty > 0);
 
       if (!isValidPhone(phone)) {
-        alert("📵 Iltimos, to'g'ri telefon raqamini kiriting.");
+        alert(translations[currentLanguage].noPhone);
         return;
       }
 
       if (!deliveryDate) {
-        alert("📅 Iltimos, yetkazib berish kunini tanlang.");
+        alert(translations[currentLanguage].noDate);
         return;
       }
 
       if (!deliveryTime) {
-        alert("⏰ Iltimos, yetkazib berish vaqtini tanlang.");
+        alert(translations[currentLanguage].noTime);
         return;
       }
 
       if (selected.length === 0) {
-        alert("❗ Hech qanday taom tanlamadingiz.");
+        alert(translations[currentLanguage].noItems);
         return;
       }
 
       const orderText = selected.map(([item, qty]) => `${item} x${qty} - $${menu[item] * qty}`).join("\n");
       const total = selected.reduce((sum, [item, qty]) => sum + menu[item] * qty, 0);
 
-      let message = `📥 Yangi buyurtma:\n${orderText}\n💰 Umumiy summa: $${total}\n📞 Tel: ${phone}\n⏰ Vaqt: ${deliveryTime}\n📅 Kun: ${deliveryDate}`;
+      let message = `${translations[currentLanguage].orderMessage}\n${orderText}\n💰 ${translations[currentLanguage].total}: $${total}\n📞 Tel: ${phone}\n⏰ Time: ${deliveryTime}\n📅 Date: ${deliveryDate}`;
       if (specialNote) {
-        message += `\n📝 Maxsus izoh: ${specialNote}`;
+        message += `\n📝 Special note: ${specialNote}`;
       }
 
-      const botToken = config.botToken;  // Use botToken from config
-      const adminId = config.adminId;    // Use adminId from config
+      const botToken = config.botToken;
+      const adminId = config.adminId;
 
       const btn = document.querySelector(".submit-btn");
       btn.disabled = true;
@@ -260,9 +306,8 @@
         })
       });
 
-      alert(`✅ Buyurtmangiz yuborildi!\n\n📋 Buyurtma:\n${orderText}\n💰 $${total}\n📞 Tel: ${phone}\n⏰ ${deliveryTime}\n📅 ${deliveryDate}\n📝 ${specialNote}`);
+      alert(`${translations[currentLanguage].orderSent}\n\n📋 Order:\n${orderText}\n💰 $${total}\n📞 Tel: ${phone}\n⏰ ${deliveryTime}\n📅 ${deliveryDate}\n📝 ${specialNote}`);
 
-      // Tozalash
       for (let item in order) {
         order[item] = 0;
       }
@@ -275,7 +320,7 @@
       renderMenu();
 
       btn.disabled = false;
-      btn.innerText = "📥 Buyurtmani yuborish";
+      btn.innerText = translations[currentLanguage].submitBtn;
 
       Telegram.WebApp.close();
     }
