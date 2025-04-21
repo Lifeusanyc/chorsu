@@ -10,11 +10,9 @@
       padding: 20px;
       background: #f1f1f1;
     }
-
     h2 {
       text-align: center;
     }
-
     .item {
       display: flex;
       align-items: center;
@@ -25,34 +23,28 @@
       border-radius: 10px;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
-
     .item-name {
       flex: 2;
     }
-
     .item-price {
       flex: 1;
       text-align: right;
     }
-
     .quantity-control {
       flex: 2;
       display: flex;
       align-items: center;
       justify-content: flex-end;
     }
-
     .quantity-control button {
       padding: 5px 10px;
       font-size: 16px;
     }
-
     .total {
       font-size: 18px;
       text-align: center;
       margin-top: 20px;
     }
-
     .submit-btn {
       display: block;
       width: 100%;
@@ -65,29 +57,17 @@
       border-radius: 10px;
       cursor: pointer;
     }
-
     .submit-btn:hover {
       background-color: #45a049;
     }
-
     .input-group {
       margin-top: 20px;
     }
-
     .input-group label {
       display: block;
       margin-bottom: 5px;
     }
-
-    .input-group input, .input-group select {
-      width: 100%;
-      padding: 10px;
-      font-size: 16px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-    }
-
-    .input-group textarea {
+    .input-group input, .input-group select, .input-group textarea {
       width: 100%;
       padding: 10px;
       font-size: 16px;
@@ -98,34 +78,95 @@
   </style>
 </head>
 <body>
-  <h2>🍽 Taomni tanlang:</h2>
+  <div class="input-group">
+    <label for="language">🌐 Tilni tanlang / Выберите язык / Choose Language:</label>
+    <select id="language" onchange="changeLanguage(this.value)">
+      <option value="uz">O'zbekcha</option>
+      <option value="ru">Русский</option>
+      <option value="en">English</option>
+    </select>
+  </div>
+
+  <h2 id="selectMeal">🍽 Taomni tanlang:</h2>
   <div id="menu"></div>
 
   <div class="input-group">
-    <label for="phone">📞 Telefon raqamingiz:</label>
+    <label for="phone" id="phoneLabel">📞 Telefon raqamingiz:</label>
     <input type="tel" id="phone" placeholder="+998901234567">
   </div>
 
   <div class="input-group">
-    <label for="delivery-date">📅 Yetkazib berish kuni:</label>
+    <label for="delivery-date" id="deliveryDateLabel">📅 Yetkazib berish kuni:</label>
     <input type="date" id="delivery-date">
   </div>
 
   <div class="input-group">
-    <label for="delivery-time">⏰ Yetkazib berish vaqti:</label>
+    <label for="delivery-time" id="deliveryTimeLabel">⏰ Yetkazib berish vaqti:</label>
     <input type="time" id="delivery-time">
   </div>
 
   <div class="input-group">
-    <label for="special-note">📝 Maxsus izoh:</label>
-    <textarea id="special-note" rows="4" placeholder="Buyurtmangizga maxsus izohlar yoki talablar kiritish..."></textarea>
+    <label for="special-note" id="specialNoteLabel">📝 Maxsus izoh:</label>
+    <textarea id="special-note" rows="4" placeholder=""></textarea>
   </div>
 
   <div class="total" id="total">💰 Umumiy summa: $0</div>
-  <button class="submit-btn" onclick="submitOrder()">📥 Buyurtmani yuborish</button>
+  <button class="submit-btn" onclick="submitOrder()" id="submitBtn">📥 Buyurtmani yuborish</button>
 
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script>
+    const translations = {
+      uz: {
+        selectMeal: "🍽 Taomni tanlang:",
+        phoneLabel: "📞 Telefon raqamingiz:",
+        deliveryDate: "📅 Yetkazib berish kuni:",
+        deliveryTime: "⏰ Yetkazib berish vaqti:",
+        specialNote: "📝 Maxsus izoh:",
+        total: "💰 Umumiy summa",
+        submitOrder: "📥 Buyurtmani yuborish",
+        sending: "⏳ Yuborilmoqda...",
+        success: "✅ Buyurtmangiz yuborildi!",
+        errorPhone: "📵 Iltimos, to'g'ri telefon raqamini kiriting.",
+        errorDate: "📅 Iltimos, yetkazib berish kunini tanlang.",
+        errorTime: "⏰ Iltimos, yetkazib berish vaqtini tanlang.",
+        errorNoMeal: "❗ Hech qanday taom tanlamadingiz.",
+        placeholderNote: "Buyurtmangizga maxsus izohlar yoki talablar kiritish..."
+      },
+      ru: {
+        selectMeal: "🍽 Выберите блюдо:",
+        phoneLabel: "📞 Ваш номер телефона:",
+        deliveryDate: "📅 Дата доставки:",
+        deliveryTime: "⏰ Время доставки:",
+        specialNote: "📝 Особые пожелания:",
+        total: "💰 Общая сумма",
+        submitOrder: "📥 Отправить заказ",
+        sending: "⏳ Отправка...",
+        success: "✅ Ваш заказ отправлен!",
+        errorPhone: "📵 Пожалуйста, введите правильный номер телефона.",
+        errorDate: "📅 Пожалуйста, выберите дату доставки.",
+        errorTime: "⏰ Пожалуйста, выберите время доставки.",
+        errorNoMeal: "❗ Вы не выбрали ни одного блюда.",
+        placeholderNote: "Введите специальные пожелания к заказу..."
+      },
+      en: {
+        selectMeal: "🍽 Select your meal:",
+        phoneLabel: "📞 Your phone number:",
+        deliveryDate: "📅 Delivery date:",
+        deliveryTime: "⏰ Delivery time:",
+        specialNote: "📝 Special instructions:",
+        total: "💰 Total price",
+        submitOrder: "📥 Submit Order",
+        sending: "⏳ Sending...",
+        success: "✅ Your order has been sent!",
+        errorPhone: "📵 Please enter a valid phone number.",
+        errorDate: "📅 Please select a delivery date.",
+        errorTime: "⏰ Please select a delivery time.",
+        errorNoMeal: "❗ You have not selected any meal.",
+        placeholderNote: "Any special instructions for your order..."
+      }
+    };
+
+    let currentLang = localStorage.getItem("lang") || "uz";
     const menu = {
       "🥩 Norin": 25,
       "🌭 Khasip": 35,
@@ -136,8 +177,25 @@
       "🍗 Tabaka": 10,
       "🍜 Kuksi": 17,
     };
-
     const order = {};
+
+    function updateTexts() {
+      const t = translations[currentLang];
+      document.getElementById("selectMeal").innerText = t.selectMeal;
+      document.getElementById("phoneLabel").innerText = t.phoneLabel;
+      document.getElementById("deliveryDateLabel").innerText = t.deliveryDate;
+      document.getElementById("deliveryTimeLabel").innerText = t.deliveryTime;
+      document.getElementById("specialNoteLabel").innerText = t.specialNote;
+      document.getElementById("special-note").placeholder = t.placeholderNote;
+      document.getElementById("submitBtn").innerText = t.submitOrder;
+      updateTotal();
+    }
+
+    function changeLanguage(lang) {
+      currentLang = lang;
+      localStorage.setItem("lang", lang);
+      updateTexts();
+    }
 
     function saveOrderToStorage() {
       localStorage.setItem('order', JSON.stringify(order));
@@ -158,13 +216,11 @@
     function renderMenu() {
       const container = document.getElementById("menu");
       container.innerHTML = "";
-      let total = 0;
 
       for (let item in menu) {
         if (!(item in order)) order[item] = 0;
         const price = menu[item];
         const quantity = order[item];
-        total += price * quantity;
 
         const itemDiv = document.createElement("div");
         itemDiv.className = "item";
@@ -180,7 +236,13 @@
         container.appendChild(itemDiv);
       }
 
-      document.getElementById("total").innerText = `💰 Umumiy summa: $${total}`;
+      updateTotal();
+    }
+
+    function updateTotal() {
+      const t = translations[currentLang];
+      const total = Object.entries(order).reduce((sum, [item, qty]) => sum + menu[item] * qty, 0);
+      document.getElementById("total").innerText = `${t.total}: $${total}`;
     }
 
     function changeQty(item, delta) {
@@ -205,6 +267,7 @@
     }
 
     async function submitOrder() {
+      const t = translations[currentLang];
       const rawPhone = document.getElementById("phone").value.trim();
       const phone = formatPhone(rawPhone);
       const deliveryDate = document.getElementById("delivery-date").value;
@@ -212,60 +275,34 @@
       const specialNote = document.getElementById("special-note").value.trim();
       const selected = Object.entries(order).filter(([_, qty]) => qty > 0);
 
-      if (!isValidPhone(phone)) {
-        alert("📵 Iltimos, to'g'ri telefon raqamini kiriting.");
-        return;
-      }
-
-      if (!deliveryDate) {
-        alert("📅 Iltimos, yetkazib berish kunini tanlang.");
-        return;
-      }
-
-      if (!deliveryTime) {
-        alert("⏰ Iltimos, yetkazib berish vaqtini tanlang.");
-        return;
-      }
-
-      if (selected.length === 0) {
-        alert("❗ Hech qanday taom tanlamadingiz.");
-        return;
-      }
+      if (!isValidPhone(phone)) return alert(t.errorPhone);
+      if (!deliveryDate) return alert(t.errorDate);
+      if (!deliveryTime) return alert(t.errorTime);
+      if (selected.length === 0) return alert(t.errorNoMeal);
 
       const orderText = selected.map(([item, qty]) => `${item} x${qty} - $${menu[item] * qty}`).join("\n");
       const total = selected.reduce((sum, [item, qty]) => sum + menu[item] * qty, 0);
 
       let message = `📥 Yangi buyurtma:\n${orderText}\n💰 Umumiy summa: $${total}\n📞 Tel: ${phone}\n⏰ Vaqt: ${deliveryTime}\n📅 Kun: ${deliveryDate}`;
-      if (specialNote) {
-        message += `\n📝 Maxsus izoh: ${specialNote}`;
-      }
+      if (specialNote) message += `\n📝 ${specialNote}`;
 
       const botToken = "7840378650:AAHCgR8CxegoUnTKGzJZCB4RorIJuKXbhaQ";
       const adminId = "5161274048";
 
-      const btn = document.querySelector(".submit-btn");
+      const btn = document.getElementById("submitBtn");
       btn.disabled = true;
-      btn.innerText = "⏳ Yuborilmoqda...";
+      btn.innerText = t.sending;
 
       await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          chat_id: adminId,
-          text: message
-        })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: adminId, text: message })
       });
 
-      alert(`✅ Buyurtmangiz yuborildi!\n\n📋 Buyurtma:\n${orderText}\n💰 $${total}\n📞 Tel: ${phone}\n⏰ ${deliveryTime}\n📅 ${deliveryDate}\n📝 ${specialNote}`);
+      alert(`${t.success}\n\n📋 ${orderText}\n💰 $${total}\n📞 ${phone}\n⏰ ${deliveryTime}\n📅 ${deliveryDate}\n📝 ${specialNote}`);
 
-      // Tozalash
-      for (let item in order) {
-        order[item] = 0;
-      }
+      for (let item in order) order[item] = 0;
       localStorage.removeItem('order');
-
       document.getElementById("phone").value = "";
       document.getElementById("delivery-time").value = "";
       document.getElementById("delivery-date").value = "";
@@ -273,7 +310,7 @@
       renderMenu();
 
       btn.disabled = false;
-      btn.innerText = "📥 Buyurtmani yuborish";
+      btn.innerText = t.submitOrder;
 
       Telegram.WebApp.close();
     }
@@ -281,13 +318,14 @@
     document.addEventListener("DOMContentLoaded", function () {
       const today = new Date().toISOString().split("T")[0];
       document.getElementById("delivery-date").setAttribute("min", today);
-
-      loadOrderFromStorage();
+      document.getElementById("language").value = currentLang;
 
       if (window.Telegram && Telegram.WebApp) {
         Telegram.WebApp.ready();
       }
 
+      loadOrderFromStorage();
+      updateTexts();
       renderMenu();
     });
   </script>
