@@ -86,6 +86,15 @@
       border-radius: 8px;
       border: 1px solid #ccc;
     }
+
+    .input-group textarea {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      resize: vertical;
+    }
   </style>
 </head>
 <body>
@@ -115,6 +124,7 @@
   <div class="total" id="total">💰 Umumiy summa: $0</div>
   <button class="submit-btn" onclick="submitOrder()">📥 Buyurtmani yuborish</button>
 
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script>
     const menu = {
       "🥩 Norin": 25,
@@ -128,6 +138,22 @@
     };
 
     const order = {};
+
+    function saveOrderToStorage() {
+      localStorage.setItem('order', JSON.stringify(order));
+    }
+
+    function loadOrderFromStorage() {
+      const saved = localStorage.getItem('order');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        for (let item in parsed) {
+          if (menu.hasOwnProperty(item)) {
+            order[item] = parsed[item];
+          }
+        }
+      }
+    }
 
     function renderMenu() {
       const container = document.getElementById("menu");
@@ -159,11 +185,19 @@
 
     function changeQty(item, delta) {
       order[item] = Math.max(0, order[item] + delta);
+      saveOrderToStorage();
       renderMenu();
     }
 
     function formatPhone(phone) {
-      return phone.replace(/[^\d+]/g, '');
+      phone = phone.replace(/[^\d]/g, '');
+      if (phone.startsWith("998")) {
+        return "+" + phone;
+      }
+      if (!phone.startsWith("+")) {
+        return "+" + phone;
+      }
+      return phone;
     }
 
     function isValidPhone(phone) {
@@ -230,6 +264,8 @@
       for (let item in order) {
         order[item] = 0;
       }
+      localStorage.removeItem('order');
+
       document.getElementById("phone").value = "";
       document.getElementById("delivery-time").value = "";
       document.getElementById("delivery-date").value = "";
@@ -239,19 +275,21 @@
       btn.disabled = false;
       btn.innerText = "📥 Buyurtmani yuborish";
 
-      Telegram.WebApp.ready();
       Telegram.WebApp.close();
     }
 
-    // Bugungi sanani olish va min atributini qo‘shish
     document.addEventListener("DOMContentLoaded", function () {
       const today = new Date().toISOString().split("T")[0];
       document.getElementById("delivery-date").setAttribute("min", today);
+
+      loadOrderFromStorage();
+
+      if (window.Telegram && Telegram.WebApp) {
+        Telegram.WebApp.ready();
+      }
+
+      renderMenu();
     });
-
-    renderMenu();
   </script>
-
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </body>
 </html>
