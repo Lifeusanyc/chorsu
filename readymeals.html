@@ -75,24 +75,16 @@
       border: 1px solid #ccc;
       resize: vertical;
     }
-    .language-selector {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 20px;
-    }
-    .flag {
-      width: 30px;
-      height: 20px;
-      margin: 0 10px;
-      cursor: pointer;
-    }
   </style>
 </head>
 <body>
-  <div class="language-selector">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/7/71/Flag_of_Uzbekistan.svg" alt="Uzbek Flag" class="flag" onclick="changeLanguage('uz')">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/f/f3/Flag_of_Russia.svg" alt="Russian Flag" class="flag" onclick="changeLanguage('ru')">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/a/a4/Flag_of_the_United_States.svg" alt="English Flag" class="flag" onclick="changeLanguage('en')">
+  <div class="input-group">
+    <label for="language">🌐 Tilni tanlang / Выберите язык / Choose Language:</label>
+    <select id="language" onchange="changeLanguage(this.value)">
+      <option value="uz">O'zbekcha</option>
+      <option value="ru">Русский</option>
+      <option value="en">English</option>
+    </select>
   </div>
 
   <h2 id="selectMeal">🍽 Taomni tanlang:</h2>
@@ -232,7 +224,7 @@
 
         const itemDiv = document.createElement("div");
         itemDiv.className = "item";
-        itemDiv.innerHTML = `
+        itemDiv.innerHTML = 
           <div class="item-name">${item}</div>
           <div class="item-price">$${price}</div>
           <div class="quantity-control">
@@ -240,7 +232,7 @@
             <span style="margin: 0 10px;">${quantity}</span>
             <button onclick="changeQty('${item}', 1)">➕</button>
           </div>
-        `;
+        ;
         container.appendChild(itemDiv);
       }
 
@@ -250,13 +242,28 @@
     function updateTotal() {
       const t = translations[currentLang];
       const total = Object.entries(order).reduce((sum, [item, qty]) => sum + menu[item] * qty, 0);
-      document.getElementById("total").innerText = `${t.total}: $${total}`;
+      document.getElementById("total").innerText = ${t.total}: $${total};
     }
 
     function changeQty(item, delta) {
       order[item] = Math.max(0, order[item] + delta);
       saveOrderToStorage();
       renderMenu();
+    }
+
+    function formatPhone(phone) {
+      phone = phone.replace(/[^\d]/g, '');
+      if (phone.startsWith("998")) {
+        return "+" + phone;
+      }
+      if (!phone.startsWith("+")) {
+        return "+" + phone;
+      }
+      return phone;
+    }
+
+    function isValidPhone(phone) {
+      return /^\+?\d{10,15}$/.test(phone);
     }
 
     async function submitOrder() {
@@ -273,26 +280,26 @@
       if (!deliveryTime) return alert(t.errorTime);
       if (selected.length === 0) return alert(t.errorNoMeal);
 
-      const orderText = selected.map(([item, qty]) => `${item} x${qty} - $${menu[item] * qty}`).join("\n");
+      const orderText = selected.map(([item, qty]) => ${item} x${qty} - $${menu[item] * qty}).join("\n");
       const total = selected.reduce((sum, [item, qty]) => sum + menu[item] * qty, 0);
 
-      let message = `📥 Yangi buyurtma:\n${orderText}\n💰 Umumiy summa: $${total}\n📞 Tel: ${phone}\n⏰ Vaqt: ${deliveryTime}\n📅 Kun: ${deliveryDate}`;
-      if (specialNote) message += `\n📝 ${specialNote}`;
+      let message = 📥 Yangi buyurtma:\n${orderText}\n💰 Umumiy summa: $${total}\n📞 Tel: ${phone}\n⏰ Vaqt: ${deliveryTime}\n📅 Kun: ${deliveryDate};
+      if (specialNote) message += \n📝 ${specialNote};
 
-      const botToken = "7840378650:AAHCgR8CxegoUnTKGzJZCB4RorIJuKXbhaQ";
-      const adminId = "5161274048";
+      const botToken = "YOUR_BOT_TOKEN";
+      const adminId = "YOUR_ADMIN_ID";
 
       const btn = document.getElementById("submitBtn");
       btn.disabled = true;
       btn.innerText = t.sending;
 
-      await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+      await fetch(https://api.telegram.org/bot${botToken}/sendMessage, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ chat_id: adminId, text: message })
       });
 
-      alert(`${t.success}\n\n📋 ${orderText}\n💰 $${total}\n📞 ${phone}\n⏰ ${deliveryTime}\n📅 ${deliveryDate}\n📝 ${specialNote}`);
+      alert(${t.success}\n\n📋 ${orderText}\n💰 $${total}\n📞 ${phone}\n⏰ ${deliveryTime}\n📅 ${deliveryDate}\n📝 ${specialNote});
 
       for (let item in order) order[item] = 0;
       localStorage.removeItem('order');
@@ -314,4 +321,13 @@
       document.getElementById("language").value = currentLang;
 
       if (window.Telegram && Telegram.WebApp) {
-        Telegram.Web
+        Telegram.WebApp.ready();
+      }
+
+      loadOrderFromStorage();
+      updateTexts();
+      renderMenu();
+    });
+  </script>
+</body>
+</html>
