@@ -1,1 +1,257 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <title>Menu</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f1f1f1;
+    }
 
+    h2 {
+      text-align: center;
+    }
+
+    .item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: white;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .item-name {
+      flex: 2;
+    }
+
+    .item-price {
+      flex: 1;
+      text-align: right;
+    }
+
+    .quantity-control {
+      flex: 2;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .quantity-control button {
+      padding: 5px 10px;
+      font-size: 16px;
+    }
+
+    .total {
+      font-size: 18px;
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .submit-btn {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      font-size: 18px;
+      margin-top: 10px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .submit-btn:hover {
+      background-color: #45a049;
+    }
+
+    .input-group {
+      margin-top: 20px;
+    }
+
+    .input-group label {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .input-group input, .input-group select {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+  <h2>🍽 Taomni tanlang:</h2>
+  <div id="menu"></div>
+
+  <div class="input-group">
+    <label for="phone">📞 Telefon raqamingiz:</label>
+    <input type="tel" id="phone" placeholder="+1234567890">
+  </div>
+
+  <div class="input-group">
+    <label for="delivery-date">📅 Yetkazib berish kuni:</label>
+    <input type="date" id="delivery-date">
+  </div>
+
+  <div class="input-group">
+    <label for="delivery-time">⏰ Yetkazib berish vaqti:</label>
+    <input type="time" id="delivery-time">
+  </div>
+
+  <div class="input-group">
+    <label for="special-note">📝 Maxsus izoh:</label>
+    <textarea id="special-note" rows="4" placeholder="Buyurtmangizga maxsus izohlar yoki talablar kiritish..."></textarea>
+  </div>
+
+  <div class="total" id="total">💰 Umumiy summa: $0</div>
+  <button class="submit-btn" onclick="submitOrder()">📥 Buyurtmani yuborish</button>
+
+  <script>
+    const menu = {
+      "🥩 Norin": 25,
+      "🌭 Khasip": 35,
+      "🥟 Gumma": 4,
+      "🍲 Bozor Khanim": 10,
+      "🥩 Non Kabob": 10,
+      "🥟 Yupka": 2,
+      "🍗 Tabaka": 10,
+      "🍜 Kuksi": 17,
+    };
+
+    const order = {};
+
+    function renderMenu() {
+      const container = document.getElementById("menu");
+      container.innerHTML = "";
+      let total = 0;
+
+      for (let item in menu) {
+        if (!(item in order)) order[item] = 0;
+        const price = menu[item];
+        const quantity = order[item];
+        total += price * quantity;
+
+        const itemDiv = document.createElement("div");
+        itemDiv.className = "item";
+        itemDiv.innerHTML = `
+          <div class="item-name">${item}</div>
+          <div class="item-price">$${price}</div>
+          <div class="quantity-control">
+            <button onclick="changeQty('${item}', -1)">➖</button>
+            <span style="margin: 0 10px;">${quantity}</span>
+            <button onclick="changeQty('${item}', 1)">➕</button>
+          </div>
+        `;
+        container.appendChild(itemDiv);
+      }
+
+      document.getElementById("total").innerText = `💰 Umumiy summa: $${total}`;
+    }
+
+    function changeQty(item, delta) {
+      order[item] = Math.max(0, order[item] + delta);
+      renderMenu();
+    }
+
+    function formatPhone(phone) {
+      return phone.replace(/[^\d+]/g, '');
+    }
+
+    function isValidPhone(phone) {
+      return /^\+?\d{10,15}$/.test(phone);
+    }
+
+    async function submitOrder() {
+      const rawPhone = document.getElementById("phone").value.trim();
+      const phone = formatPhone(rawPhone);
+      const deliveryDate = document.getElementById("delivery-date").value;
+      const deliveryTime = document.getElementById("delivery-time").value;
+      const specialNote = document.getElementById("special-note").value.trim();
+      const selected = Object.entries(order).filter(([_, qty]) => qty > 0);
+
+      if (!isValidPhone(phone)) {
+        alert("📵 Iltimos, to'g'ri telefon raqamini kiriting.");
+        return;
+      }
+
+      if (!deliveryDate) {
+        alert("📅 Iltimos, yetkazib berish kunini tanlang.");
+        return;
+      }
+
+      if (!deliveryTime) {
+        alert("⏰ Iltimos, yetkazib berish vaqtini tanlang.");
+        return;
+      }
+
+      if (selected.length === 0) {
+        alert("❗ Hech qanday taom tanlamadingiz.");
+        return;
+      }
+
+      const orderText = selected.map(([item, qty]) => `${item} x${qty} - $${menu[item] * qty}`).join("\n");
+      const total = selected.reduce((sum, [item, qty]) => sum + menu[item] * qty, 0);
+
+      let message = `📥 Yangi buyurtma:\n${orderText}\n💰 Umumiy summa: $${total}\n📞 Tel: ${phone}\n⏰ Vaqt: ${deliveryTime}\n📅 Kun: ${deliveryDate}`;
+      if (specialNote) {
+        message += `\n📝 Maxsus izoh: ${specialNote}`;
+      }
+
+      const botToken = "7840378650:AAHCgR8CxegoUnTKGzJZCB4RorIJuKXbhaQ";
+      const adminId = "5161274048";
+
+      const btn = document.querySelector(".submit-btn");
+      btn.disabled = true;
+      btn.innerText = "⏳ Yuborilmoqda...";
+
+      await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          chat_id: adminId,
+          text: message
+        })
+      });
+
+      alert(`✅ Buyurtmangiz yuborildi!\n\n📋 Buyurtma:\n${orderText}\n💰 $${total}\n📞 Tel: ${phone}\n⏰ ${deliveryTime}\n📅 ${deliveryDate}\n📝 ${specialNote}`);
+
+      // Tozalash
+      for (let item in order) {
+        order[item] = 0;
+      }
+      document.getElementById("phone").value = "";
+      document.getElementById("delivery-time").value = "";
+      document.getElementById("delivery-date").value = "";
+      document.getElementById("special-note").value = "";
+      renderMenu();
+
+      btn.disabled = false;
+      btn.innerText = "📥 Buyurtmani yuborish";
+
+      Telegram.WebApp.ready();
+      Telegram.WebApp.close();
+    }
+
+    // Bugungi sanani olish va min atributini qo‘shish
+    document.addEventListener("DOMContentLoaded", function () {
+      const today = new Date().toISOString().split("T")[0];
+      document.getElementById("delivery-date").setAttribute("min", today);
+    });
+
+    renderMenu();
+  </script>
+
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</body>
+</html>
