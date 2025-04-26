@@ -1,63 +1,29 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Budget Tracker</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f0f0f0;
-        }
-        .balance {
-            font-size: 2em;
-            margin-bottom: 20px;
-        }
-        .time {
-            font-size: 1.5em;
-        }
-    </style>
-</head>
-<body>
-    <div class="balance">Balance: $0</div>
-    <div class="time">Time: 00:00:00</div>
+import time
+from datetime import datetime, timedelta
 
-    <script>
-        const startDate = new Date("April 4, 2023 00:00:00");
-        const totalAmount = 120000;
-        const totalDays = 751;
+# Boshlang'ich parametrlar
+starting_balance = 15000  # Boshlang'ich balans
+start_date = datetime(2023, 4, 4)  # Boshlang'ich sana
+total_days = 751  # Jami kunlar
+total_income = 120000  # Jami daromad
+weekly_income = 1200  # Haftalik daromad
 
-        // Calculate total seconds in 751 days
-        const totalSeconds = totalDays * 24 * 60 * 60;
+# Jami kunlarning o'rtacha kunlik daromadi
+daily_income = total_income / total_days  # Kunlik daromad
 
-        // Calculate the amount earned per second
-        const amountPerSecond = totalAmount / totalSeconds;
+# Hozirgi sana va vaqt
+current_time = datetime.now()
+elapsed_time = current_time - start_date  # Boshlang'ich sanadan hozirgi kungacha o'tgan vaqt
+elapsed_seconds = elapsed_time.total_seconds()
 
-        let currentTime = new Date();
-        let elapsedTimeInSeconds = Math.floor((currentTime - startDate) / 1000);
+# Boshlang'ich balansga har bir sekundda o'sayotgan daromadni qo'shamiz
+income_from_elapsed_time = daily_income * (elapsed_seconds / (60 * 60 * 24))  # Sekundga asoslangan daromad
 
-        function updateBalance() {
-            currentTime = new Date();
-            elapsedTimeInSeconds = Math.floor((currentTime - startDate) / 1000);
+# Jami daromad
+current_balance = starting_balance + income_from_elapsed_time
 
-            const currentBalance = amountPerSecond * elapsedTimeInSeconds;
-
-            document.querySelector('.balance').innerText = `Balance: $${currentBalance.toFixed(2)}`;
-
-            const hours = String(Math.floor(elapsedTimeInSeconds / 3600)).padStart(2, '0');
-            const minutes = String(Math.floor((elapsedTimeInSeconds % 3600) / 60)).padStart(2, '0');
-            const seconds = String(elapsedTimeInSeconds % 60).padStart(2, '0');
-
-            document.querySelector('.time').innerText = `Time: ${hours}:${minutes}:${seconds}`;
-        }
-
-        setInterval(updateBalance, 1000);
-    </script>
-</body>
-</html>
+# Natijani ko'rsatish
+print(f"Boshlang'ich sana: {start_date.strftime('%Y-%m-%d')}")
+print(f"Hozirgi sana: {current_time.strftime('%Y-%m-%d %H:%M:%S')}")
+print(f"Jami o'tgan vaqt: {elapsed_time.days} kun, {elapsed_time.seconds // 3600} soat, {(elapsed_time.seconds // 60) % 60} minut")
+print(f"Jami daromad: ${current_balance:.2f}")
