@@ -264,7 +264,7 @@
         });
 
         // Sending message to channel
-        await fetch(`https://t.me/+9bVsqFLR7Po4NzJk`, {
+       await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
