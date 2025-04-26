@@ -2,7 +2,7 @@
 <html lang="uz">
 <head>
   <meta charset="UTF-8">
-  <title>Menu</title>
+  <title>Menu </title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body {
@@ -31,11 +31,6 @@
       flex-direction: column;
       align-items: center;
       text-align: center;
-      transition: box-shadow 0.3s ease;
-    }
-
-    .item:hover {
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
 
     .item img {
@@ -142,14 +137,14 @@
 
   <script>
     const menu = {
-      "🥩 Norin-pound": { price: 22, img: "https://example.com/images/norin-pound.jpg" },
-      "🌭 Xasip-pound": { price: 14, img: "https://example.com/images/xasip-pound.jpg" },
-      "🥟 Gumma": { price: 3, img: "https://example.com/images/gumma.jpg" },
-      "🍲 Bozor Xonim": { price: 3, img: "https://example.com/images/bozor-xonim.jpg" },
-      "🥩 Non Kabob": { price: 15, img: "https://example.com/images/non-kabob.jpg" },
-      "🥟 Yupqa": { price: 4, img: "https://example.com/images/yupqa.jpg" },
-      "🍗 Tabaka": { price: 15, img: "https://example.com/images/tabaka.jpg" },
-      "🍜 Kuksi": { price: 15, img: "https://example.com/images/kuksi.jpg" },
+      "🥩 Norin-pound": { price: 22, img: "https://via.placeholder.com/300x200.png?text=Norin+Pound" },
+      "🌭 Xasip-pound": { price: 14, img: "https://via.placeholder.com/300x200.png?text=Xasip+Pound" },
+      "🥟 Gumma": { price: 3, img: "https://via.placeholder.com/300x200.png?text=Gumma" },
+      "🍲 Bozor Xonim": { price: 3, img: "https://via.placeholder.com/300x200.png?text=Bozor+Xonim" },
+      "🥩 Non Kabob": { price: 15, img: "https://via.placeholder.com/300x200.png?text=Non+Kabob" },
+      "🥟 Yupqa": { price: 4, img: "https://via.placeholder.com/300x200.png?text=Yupqa" },
+      "🍗 Tabaka": { price: 15, img: "https://via.placeholder.com/300x200.png?text=Tabaka" },
+      "🍜 Kuksi": { price: 15, img: "https://via.placeholder.com/300x200.png?text=Kuksi" },
     };
 
     const order = {};
@@ -184,7 +179,7 @@
         const itemDiv = document.createElement("div");
         itemDiv.className = "item";
         itemDiv.innerHTML = `
-          <img src="${img}" alt="${item}" onerror="this.onerror=null;this.src='fallback-image.jpg';">
+          <img src="${img}" alt="${item}">
           <div class="item-name">${item}</div>
           <div class="item-price">$${price}</div>
           <div class="quantity-control">
@@ -263,24 +258,18 @@
       btn.disabled = true;
       btn.innerText = "⏳ Yuborilmoqda...";
 
-      try {
-        await Promise.all([
-          fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chat_id: adminId, text: message })
-          }),
-          fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chat_id: "@chorsuorder", text: message })
-          })
-        ]);
-      } catch (error) {
-        console.error("Error sending order: ", error);
-        alert("❌ Buyurtma yuborishda xatolik yuz berdi. Iltimos, qayta urinib ko'ring.");
-        return;
-      }
+      await Promise.all([
+        fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ chat_id: adminId, text: message })
+        }),
+        fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ chat_id: "@chorsuorder", text: message })
+        })
+      ]);
 
       alert(`✅ Buyurtmangiz yuborildi!\n\n📋 Buyurtma:\n${orderText}\n💰 $${total}\n📞 Tel: ${phone}\n⏰ ${deliveryTime}\n📅 ${deliveryDate}\n📝 ${specialNote}`);
 
