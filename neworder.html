@@ -15,53 +15,50 @@
       text-align: center;
     }
 
-    .menu-grid {
+    #menu {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 15px;
     }
 
     .item {
-      background-color: white;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
       display: flex;
       flex-direction: column;
       align-items: center;
+      text-align: center;
+      background-color: white;
       padding: 10px;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
 
     .item img {
       width: 100%;
-      height: 120px;
+      height: 100px;
       object-fit: cover;
       border-radius: 8px;
     }
 
     .item-name {
+      margin-top: 10px;
       font-weight: bold;
-      margin: 10px 0 5px;
-      text-align: center;
     }
 
     .item-price {
-      color: #666;
-      margin-bottom: 10px;
+      margin: 5px 0;
+      color: #555;
     }
 
     .quantity-control {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
-      margin-top: auto;
+      margin-top: 5px;
     }
 
     .quantity-control button {
-      padding: 5px 10px;
+      padding: 4px 10px;
       font-size: 16px;
-      cursor: pointer;
     }
 
     .total {
@@ -113,7 +110,7 @@
 </head>
 <body>
   <h2>🍽 Taomni tanlang:</h2>
-  <div id="menu" class="menu-grid"></div>
+  <div id="menu"></div>
 
   <div class="input-group">
     <label for="phone">📞 Telefon raqamingiz:</label>
@@ -140,14 +137,38 @@
 
   <script>
     const menu = {
-      "🥩 Norin-pound": { price: 22, image: "https://i.imgur.com/Q2dP3Tb.jpg" },
-      "🌭 Xasip-pound": { price: 14, image: "https://i.imgur.com/Xl6xFdI.jpg" },
-      "🥟 Gumma": { price: 3, image: "https://i.imgur.com/IVq5HRW.jpg" },
-      "🍲 Bozor Xonim": { price: 3, image: "https://i.imgur.com/aeYfszg.jpg" },
-      "🥩 Non Kabob": { price: 15, image: "https://i.imgur.com/0kM61Yj.jpg" },
-      "🥟 Yupqa": { price: 4, image: "https://i.imgur.com/2qekvvi.jpg" },
-      "🍗 Tabaka": { price: 15, image: "https://i.imgur.com/Hd6OfVj.jpg" },
-      "🍜 Kuksi": { price: 15, image: "https://i.imgur.com/VEDVuQW.jpg" }
+      "🥩 Norin-pound": {
+        price: 22,
+        image: "https://upload.wikimedia.org/wikipedia/commons/8/83/Norin.jpg"
+      },
+      "🌭 Xasip-pound": {
+        price: 14,
+        image: "https://upload.wikimedia.org/wikipedia/commons/9/94/Kazakh_kazy.jpg"
+      },
+      "🥟 Gumma": {
+        price: 3,
+        image: "https://upload.wikimedia.org/wikipedia/commons/e/e4/Steamed_dumplings.jpg"
+      },
+      "🍲 Bozor Xonim": {
+        price: 3,
+        image: "https://upload.wikimedia.org/wikipedia/commons/1/1e/Khanum.jpg"
+      },
+      "🥩 Non Kabob": {
+        price: 15,
+        image: "https://upload.wikimedia.org/wikipedia/commons/f/fb/Shashlik_meat.jpg"
+      },
+      "🥟 Yupqa": {
+        price: 4,
+        image: "https://upload.wikimedia.org/wikipedia/commons/8/8e/Yupka.jpg"
+      },
+      "🍗 Tabaka": {
+        price: 15,
+        image: "https://upload.wikimedia.org/wikipedia/commons/f/f7/Tobacco_chicken.jpg"
+      },
+      "🍜 Kuksi": {
+        price: 15,
+        image: "https://upload.wikimedia.org/wikipedia/commons/0/07/Kuksu.jpg"
+      }
     };
 
     const order = {};
@@ -187,7 +208,7 @@
           <div class="item-price">$${price}</div>
           <div class="quantity-control">
             <button onclick="changeQty('${item}', -1)">➖</button>
-            <span>${quantity}</span>
+            <span style="margin: 0 10px;">${quantity}</span>
             <button onclick="changeQty('${item}', 1)">➕</button>
           </div>
         `;
@@ -203,7 +224,45 @@
       renderMenu();
     }
 
-    // --- rest of your submitOrder logic remains unchanged ---
+    function isValidPhone(phone) {
+      return /^\+?\d{10,15}$/.test(phone);
+    }
+
+    function submitOrder() {
+      const phone = document.getElementById("phone").value.trim();
+      const date = document.getElementById("delivery-date").value;
+      const time = document.getElementById("delivery-time").value;
+      const note = document.getElementById("special-note").value.trim();
+
+      const selected = Object.entries(order).filter(([_, qty]) => qty > 0);
+      if (!isValidPhone(phone)) return alert("📵 Telefon raqam noto‘g‘ri.");
+      if (!date) return alert("📅 Yetkazib berish sanasini tanlang.");
+      if (!time) return alert("⏰ Yetkazib berish vaqtini kiriting.");
+      if (selected.length === 0) return alert("❗ Hech qanday taom tanlanmadi.");
+
+      const orderText = selected.map(([item, qty]) =>
+        `${item} x${qty} - $${menu[item].price * qty}`).join("\n");
+      const total = selected.reduce((sum, [item, qty]) =>
+        sum + menu[item].price * qty, 0);
+
+      alert(`✅ Buyurtmangiz yuborildi!\n\n📋 Buyurtma:\n${orderText}\n💰 $${total}\n📞 Tel: ${phone}\n⏰ ${time}\n📅 ${date}\n📝 ${note}`);
+
+      for (let item in order) order[item] = 0;
+      localStorage.removeItem('order');
+
+      document.getElementById("phone").value = "";
+      document.getElementById("delivery-date").value = "";
+      document.getElementById("delivery-time").value = "";
+      document.getElementById("special-note").value = "";
+      renderMenu();
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const today = new Date().toISOString().split("T")[0];
+      document.getElementById("delivery-date").setAttribute("min", today);
+      loadOrderFromStorage();
+      renderMenu();
+    });
   </script>
 </body>
 </html>
