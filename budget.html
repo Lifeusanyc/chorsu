@@ -5,40 +5,113 @@
   <title>Oila Byudjeti</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background-color: #f9f9f9;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f7f9;
+      margin: 0;
+      padding: 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      height: 100vh;
     }
+
     h1 {
       color: #333;
     }
-    .budget {
+
+    .budget-box {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      width: 400px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .budget-amount {
       font-size: 2rem;
-      margin-top: 20px;
-      color: green;
+      color: #2e8b57;
+    }
+
+    .log-box {
+      width: 400px;
+      max-height: 300px;
+      overflow-y: auto;
+      background: #fff;
+      padding: 15px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    }
+
+    .log-item {
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    .expense {
+      color: #d9534f;
+    }
+
+    .income {
+      color: #5cb85c;
     }
   </style>
 </head>
 <body>
+
   <h1>Oila Byudjeti</h1>
-  <div class="budget" id="budget">$1000</div>
+
+  <div class="budget-box">
+    <div>Hozirgi balans:</div>
+    <div class="budget-amount" id="budget">$1000</div>
+  </div>
+
+  <div class="log-box" id="logBox">
+    <!-- Kirim va harajatlar shu yerda ko'rsatiladi -->
+  </div>
 
   <script>
     let budget = 1000;
-    const expense = 100;
-    const interval = 2000; // 2 soniya
-
     const budgetDisplay = document.getElementById('budget');
+    const logBox = document.getElementById('logBox');
 
-    setInterval(() => {
-      budget -= expense;
-      if (budget < 0) budget = 0;
+    const expenses = [
+      "Ovqat", "Kommunal to‘lovlar", "Transport", "O‘yinchoqlar", "Kiyim-kechak", "Internet"
+    ];
+    const incomes = [
+      "Maosh", "Qo‘shimcha ish", "Yordam"
+    ];
+
+    function updateBudgetDisplay() {
       budgetDisplay.textContent = `$${budget}`;
-    }, interval);
+    }
+
+    function addLogItem(type, name, amount) {
+      const div = document.createElement('div');
+      div.className = `log-item ${type}`;
+      const sign = type === 'income' ? '+' : '-';
+      div.textContent = `${new Date().toLocaleTimeString()} | ${name}: ${sign}$${amount}`;
+      logBox.prepend(div);
+    }
+
+    // Har 1 sekundda harajat
+    setInterval(() => {
+      const expenseName = expenses[Math.floor(Math.random() * expenses.length)];
+      budget -= 120;
+      if (budget < 0) budget = 0;
+      updateBudgetDisplay();
+      addLogItem('expense', expenseName, 120);
+    }, 1000);
+
+    // Har 7 sekundda kirim
+    setInterval(() => {
+      const incomeName = incomes[Math.floor(Math.random() * incomes.length)];
+      budget += 1200;
+      updateBudgetDisplay();
+      addLogItem('income', incomeName, 1200);
+    }, 7000);
+
+    updateBudgetDisplay();
   </script>
 </body>
 </html>
