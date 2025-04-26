@@ -1,198 +1,173 @@
 <!DOCTYPE html>
-<html lang="uz">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Oila Byudjeti - 751 kunlik monitoring</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #f8f9fa;
-      margin: 0;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budget Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    h1 {
-      margin-bottom: 10px;
-      text-align: center;
-      color: #343a40;
-    }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
 
-    .summary {
-      width: 90%;
-      max-width: 900px;
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      margin-bottom: 20px;
-      text-align: center;
-    }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
 
-    .summary p {
-      margin: 10px 0;
-      font-size: 1.2rem;
-      color: #495057;
-    }
+        h1 {
+            text-align: center;
+        }
 
-    .list-container {
-      width: 90%;
-      max-width: 900px;
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      margin-bottom: 20px;
-    }
+        .stats {
+            text-align: center;
+            margin-bottom: 20px;
+        }
 
-    .list-container ul {
-      list-style-type: none;
-      padding: 0;
-      margin: 0;
-    }
+        .data {
+            margin-bottom: 20px;
+        }
 
-    .list-container li {
-      display: flex;
-      justify-content: space-between;
-      padding: 10px 0;
-      border-bottom: 1px solid #e9ecef;
-    }
+        ul {
+            list-style-type: none;
+        }
 
-    .chart-box {
-      width: 90%;
-      max-width: 900px;
-      margin-bottom: 40px;
-    }
+        ul li {
+            margin: 5px 0;
+        }
 
-    input[type="range"] {
-      width: 100%;
-    }
-    
-    .slider-container {
-      width: 90%;
-      max-width: 900px;
-      margin-bottom: 20px;
-    }
-    
-    label {
-      font-size: 1rem;
-      display: block;
-      margin-bottom: 10px;
-      color: #495057;
-    }
-  </style>
+        .controls {
+            text-align: center;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            margin: 10px 0;
+        }
+    </style>
 </head>
 <body>
+    <div class="container">
+        <h1>Budget Tracker</h1>
+        
+        <div class="stats">
+            <p>Starting Balance: $<span id="startingBalance">15000</span></p>
+            <p>Current Balance: $<span id="currentBalance">15000</span></p>
+            <p>Date: <span id="currentDate"></span></p>
+        </div>
 
-  <h1>Oila Byudjeti - 751 kunlik monitoring</h1>
+        <div class="data">
+            <h2>Income</h2>
+            <ul id="incomeList">
+                <li>Salary: $67,748</li>
+                <li>Cashback: $749</li>
+                <li>Bonus: $4,960</li>
+                <li>Instacart: $292</li>
+                <li>Jurny: $40,438</li>
+                <li>Uber: $1,553</li>
+                <li>Curb: $831</li>
+                <li>Abix: $3,412</li>
+            </ul>
 
-  <div class="slider-container">
-    <label for="daySlider">📅 Kun tanlang: <span id="dayLabel">1</span> / 751</label>
-    <input type="range" id="daySlider" min="1" max="751" value="1" style="width:100%;">
-  </div>
+            <h2>Expenses</h2>
+            <ul id="expenseList">
+                <li>Rent: $56,686</li>
+                <li>Uber: $142</li>
+                <li>Food: $23,639</li>
+                <li>Home: $6,809</li>
+                <li>Private: $13,097</li>
+                <li>Doc: $10,445</li>
+                <li>Tel: $1,950</li>
+                <li>Car: $30,262</li>
+                <li>Metro: $376</li>
+            </ul>
+        </div>
 
-  <div class="summary">
-    <p><strong>Sana:</strong> <span id="currentDate">2023-04-04</span></p>
-    <p><strong>Kirim:</strong> $<span id="income">0</span></p>
-    <p><strong>Chiqim:</strong> $<span id="expense">0</span></p>
-    <p><strong>Balans:</strong> $<span id="balance">15000</span></p>
-  </div>
+        <div class="controls">
+            <input type="range" id="dateSlider" min="0" max="751" value="0">
+            <p>Change Date: <span id="sliderValue">0</span> days</p>
+        </div>
+    </div>
 
-  <div class="chart-box">
-    <canvas id="balanceChart"></canvas>
-  </div>
+    <script>
+        // Initial values
+        const startingBalance = 15000;
+        let currentBalance = startingBalance;
 
-  <div class="list-container">
-    <ul id="dataList"></ul>
-  </div>
+        // Income and Expenses Data
+        const incomeData = {
+            salary: 67748,
+            cashback: 749,
+            bonus: 4960,
+            instacart: 292,
+            jurny: 40438,
+            uber: 1553,
+            curb: 831,
+            abix: 3412
+        };
 
-  <script>
-    const startDate = new Date("2023-04-04");
-    const days = 751;
-    const initialBalance = 15000;
-    const totalIncome = 139983;
-    const totalExpense = 147366;
+        const expenseData = {
+            rent: 56686,
+            uber: 142,
+            food: 23639,
+            home: 6809,
+            private: 13097,
+            doc: 10445,
+            tel: 1950,
+            car: 30262,
+            metro: 376
+        };
 
-    const dailyIncome = totalIncome / days;
-    const dailyExpense = totalExpense / days;
+        // Set initial values
+        document.getElementById('startingBalance').textContent = startingBalance;
+        document.getElementById('currentBalance').textContent = currentBalance;
 
-    const data = [];
-    let balance = initialBalance;
+        // Update Date
+        const currentDateElement = document.getElementById('currentDate');
+        const dateSlider = document.getElementById('dateSlider');
+        const sliderValueElement = document.getElementById('sliderValue');
+        const incomeList = document.getElementById('incomeList');
+        const expenseList = document.getElementById('expenseList');
 
-    for (let i = 0; i < days; i++) {
-      const date = new Date(startDate);
-      date.setDate(startDate.getDate() + i);
-      const income = dailyIncome;
-      const expense = dailyExpense;
-      balance += income - expense;
-      data.push({
-        day: i + 1,
-        date: date.toISOString().split('T')[0],
-        income: income.toFixed(2),
-        expense: expense.toFixed(2),
-        balance: balance.toFixed(2)
-      });
-    }
+        // Date and Time Update
+        let currentDate = new Date(2023, 3, 4); // April 4, 2023
+        currentDateElement.textContent = currentDate.toDateString();
 
-    const daySlider = document.getElementById("daySlider");
-    const dayLabel = document.getElementById("dayLabel");
-    const currentDate = document.getElementById("currentDate");
-    const incomeEl = document.getElementById("income");
-    const expenseEl = document.getElementById("expense");
-    const balanceEl = document.getElementById("balance");
-    const dataList = document.getElementById("dataList");
+        // Handle slider change
+        dateSlider.addEventListener('input', (event) => {
+            const days = event.target.value;
+            sliderValueElement.textContent = days;
 
-    daySlider.addEventListener("input", () => {
-      updateDay(parseInt(daySlider.value));
-    });
+            // Update the date
+            currentDate.setDate(currentDate.getDate() + parseInt(days));
+            currentDateElement.textContent = currentDate.toDateString();
 
-    function updateDay(day) {
-      const d = data[day - 1];
-      dayLabel.textContent = day;
-      currentDate.textContent = d.date;
-      incomeEl.textContent = d.income;
-      expenseEl.textContent = d.expense;
-      balanceEl.textContent = d.balance;
+            // Simulate real-time update of balance
+            updateBalance(days);
+        });
 
-      // Update the list
-      dataList.innerHTML = `
-        <li><strong>Kirim:</strong> $${d.income}</li>
-        <li><strong>Chiqim:</strong> $${d.expense}</li>
-        <li><strong>Balans:</strong> $${d.balance}</li>
-      `;
-    }
+        // Update balance based on the slider position
+        function updateBalance(days) {
+            // Inflows: Assume some data is being added each day
+            const inflows = incomeData.salary + incomeData.cashback + incomeData.bonus + incomeData.instacart + incomeData.jurny + incomeData.uber + incomeData.curb + incomeData.abix;
+            // Outflows: Assume some data is being deducted each day
+            const outflows = expenseData.rent + expenseData.uber + expenseData.food + expenseData.home + expenseData.private + expenseData.doc + expenseData.tel + expenseData.car + expenseData.metro;
 
-    // Init
-    updateDay(1);
-
-    // Chart.js
-    const ctx = document.getElementById('balanceChart').getContext('2d');
-    new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: data.map(d => d.date),
-        datasets: [{
-          label: 'Balans',
-          data: data.map(d => d.balance),
-          borderColor: '#28a745',
-          backgroundColor: 'rgba(40, 167, 69, 0.1)',
-          tension: 0.2,
-          fill: true
-        }]
-      },
-      options: {
-        responsive: true,
-        scales: {
-          x: { display: false },
-          y: { beginAtZero: false }
+            // Calculate current balance (simplified model for simulation)
+            currentBalance = startingBalance + (inflows - outflows) * (days / 30);
+            document.getElementById('currentBalance').textContent = Math.round(currentBalance);
         }
-      }
-    });
-  </script>
-
+    </script>
 </body>
 </html>
-
