@@ -2,11 +2,11 @@
 <html lang="uz">
 <head>
   <meta charset="UTF-8">
-  <title>Oila Byudjeti - Real Vaqtda!</title>
+  <title>Oila Byudjeti - 571 soniya</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: #eef1f4;
+      background: #f0f2f5;
       padding: 20px;
       display: flex;
       flex-direction: column;
@@ -14,18 +14,18 @@
     }
 
     h1 {
-      color: #333;
       margin-bottom: 10px;
+      color: #333;
     }
 
     .budget-box {
-      background: white;
-      border-radius: 12px;
+      background: #fff;
       padding: 20px;
-      width: 420px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      text-align: center;
+      width: 500px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
       margin-bottom: 20px;
+      text-align: center;
     }
 
     .budget-amount {
@@ -33,47 +33,57 @@
       color: #2e8b57;
     }
 
-    .log-box {
-      width: 420px;
-      max-height: 300px;
-      overflow-y: auto;
+    .section {
+      width: 500px;
       background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
       padding: 15px;
-      border-radius: 12px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+      margin-bottom: 20px;
     }
 
-    .log-item {
+    .section h2 {
       margin-bottom: 10px;
+      font-size: 18px;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 5px;
+    }
+
+    .item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
       font-size: 14px;
     }
 
-    .expense {
-      color: #d9534f;
-    }
-
-    .income {
-      color: #5cb85c;
-    }
+    .expense { color: #d9534f; }
+    .income { color: #5cb85c; }
   </style>
 </head>
 <body>
 
-  <h1>Oila Byudjeti</h1>
+  <h1>Oila Byudjeti (571 soniya)</h1>
 
   <div class="budget-box">
-    <div>Hozirgi balans:</div>
-    <div class="budget-amount" id="budget">$15000</div>
+    <div>Balans:</div>
+    <div class="budget-amount" id="budget">$15000.00</div>
   </div>
 
-  <div class="log-box" id="logBox"></div>
+  <div class="section">
+    <h2>💸 Harajatlar</h2>
+    <div id="expenses"></div>
+  </div>
+
+  <div class="section">
+    <h2>💰 Kirimlar</h2>
+    <div id="incomes"></div>
+  </div>
 
   <script>
+    const totalSeconds = 571;
     let budget = 15000;
-    const budgetDisplay = document.getElementById('budget');
-    const logBox = document.getElementById('logBox');
 
-    const expenses = {
+    const expenseData = {
       "Rent": 56686,
       "Uber": 142,
       "Food": 23639,
@@ -85,7 +95,7 @@
       "Metro": 376
     };
 
-    const incomes = {
+    const incomeData = {
       "SALARY": 67748,
       "CASHBACK": 749,
       "BONUS": 4960,
@@ -97,46 +107,54 @@
       "ABIX": 3412
     };
 
-    const totalExpense = Object.values(expenses).reduce((a, b) => a + b, 0);
-    const totalIncome = Object.values(incomes).reduce((a, b) => a + b, 0);
+    // Initialize all values to 0 and compute per-second values
+    const expenseState = {};
+    const incomeState = {};
 
-    const seconds = 751;
-    const expensePerSecond = totalExpense / seconds;
-    const incomePerSecond = totalIncome / seconds;
+    for (let key in expenseData) {
+      expenseState[key] = { total: expenseData[key], current: 0, perSecond: expenseData[key] / totalSeconds };
+    }
 
-    function updateBudgetDisplay() {
+    for (let key in incomeData) {
+      incomeState[key] = { total: incomeData[key], current: 0, perSecond: incomeData[key] / totalSeconds };
+    }
+
+    const budgetDisplay = document.getElementById("budget");
+    const expenseContainer = document.getElementById("expenses");
+    const incomeContainer = document.getElementById("incomes");
+
+    function render() {
+      expenseContainer.innerHTML = '';
+      incomeContainer.innerHTML = '';
+
+      let totalExpense = 0;
+      let totalIncome = 0;
+
+      for (let key in expenseState) {
+        const val = expenseState[key];
+        val.current = Math.min(val.current + val.perSecond, val.total);
+        totalExpense += val.current;
+        expenseContainer.innerHTML += `<div class="item expense"><span>${key}</span><span>-$${val.current.toFixed(2)}</span></div>`;
+      }
+
+      for (let key in incomeState) {
+        const val = incomeState[key];
+        val.current = Math.min(val.current + val.perSecond, val.total);
+        totalIncome += val.current;
+        incomeContainer.innerHTML += `<div class="item income"><span>${key}</span><span>+$${val.current.toFixed(2)}</span></div>`;
+      }
+
+      budget = 15000 + totalIncome - totalExpense;
       budgetDisplay.textContent = `$${budget.toFixed(2)}`;
     }
 
-    function addLogItem(type, name, amount) {
-      const div = document.createElement('div');
-      div.className = `log-item ${type}`;
-      const sign = type === 'income' ? '+' : '-';
-      div.textContent = `${new Date().toLocaleTimeString()} | ${name}: ${sign}$${amount.toFixed(2)}`;
-      logBox.prepend(div);
-    }
+    render(); // Initial render
+    const interval = setInterval(() => {
+      render();
+    }, 1000);
 
-    function getRandomKey(obj) {
-      const keys = Object.keys(obj);
-      return keys[Math.floor(Math.random() * keys.length)];
-    }
-
-    setInterval(() => {
-      // Harajat
-      const expenseName = getRandomKey(expenses);
-      budget -= expensePerSecond;
-      if (budget < 0) budget = 0;
-      updateBudgetDisplay();
-      addLogItem('expense', expenseName, expensePerSecond);
-
-      // Kirim
-      const incomeName = getRandomKey(incomes);
-      budget += incomePerSecond;
-      updateBudgetDisplay();
-      addLogItem('income', incomeName, incomePerSecond);
-    }, 1000); // Har soniyada yangilanish
-
-    updateBudgetDisplay();
+    // Stop interval after 571 seconds
+    setTimeout(() => clearInterval(interval), totalSeconds * 1000);
   </script>
 </body>
 </html>
