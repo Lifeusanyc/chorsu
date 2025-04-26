@@ -1,160 +1,147 @@
 <!DOCTYPE html>
-<html lang="uz">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Oila Byudjeti - 571 soniya</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #f0f2f5;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    h1 {
-      margin-bottom: 10px;
-      color: #333;
-    }
-
-    .budget-box {
-      background: #fff;
-      padding: 20px;
-      width: 500px;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      margin-bottom: 20px;
-      text-align: center;
-    }
-
-    .budget-amount {
-      font-size: 2.2rem;
-      color: #2e8b57;
-    }
-
-    .section {
-      width: 500px;
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-      padding: 15px;
-      margin-bottom: 20px;
-    }
-
-    .section h2 {
-      margin-bottom: 10px;
-      font-size: 18px;
-      border-bottom: 1px solid #ddd;
-      padding-bottom: 5px;
-    }
-
-    .item {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 6px;
-      font-size: 14px;
-    }
-
-    .expense { color: #d9534f; }
-    .income { color: #5cb85c; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 90%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            padding: 20px;
+            background-color: #333;
+            color: #fff;
+        }
+        .summary {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .summary div {
+            width: 30%;
+            text-align: center;
+        }
+        canvas {
+            max-width: 100%;
+            height: 400px;
+        }
+    </style>
 </head>
 <body>
 
-  <h1>Oila Byudjeti (571 soniya)</h1>
+<div class="header">
+    <h1>Financial Dashboard</h1>
+    <h3>Real-time financial data and analytics</h3>
+</div>
 
-  <div class="budget-box">
-    <div>Balans:</div>
-    <div class="budget-amount" id="budget">$15000.00</div>
-  </div>
+<div class="container">
+    <div class="summary">
+        <div>
+            <h3>Current Balance</h3>
+            <p id="balance">$0</p>
+        </div>
+        <div>
+            <h3>Total Income</h3>
+            <p id="total-income">$0</p>
+        </div>
+        <div>
+            <h3>Total Expenses</h3>
+            <p id="total-expenses">$0</p>
+        </div>
+    </div>
 
-  <div class="section">
-    <h2>💸 Harajatlar</h2>
-    <div id="expenses"></div>
-  </div>
+    <h2>Financial Overview</h2>
+    <canvas id="financialChart"></canvas>
+</div>
 
-  <div class="section">
-    <h2>💰 Kirimlar</h2>
-    <div id="incomes"></div>
-  </div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    let financialData = []; // This will store the data
 
-  <script>
-    const totalSeconds = 571;
-    let budget = 15000;
+    // Dummy data - replace this with your API fetching logic
+    function fetchFinancialData() {
+        // Simulating real-time data update
+        const currentDate = new Date().toLocaleTimeString();
+        financialData.push({
+            month: currentDate,
+            income: Math.random() * 10000, // Simulated income
+            expenses: Math.random() * 5000  // Simulated expenses
+        });
 
-    const expenseData = {
-      "Rent": 56686,
-      "Uber": 142,
-      "Food": 23639,
-      "Home": 6809,
-      "Private": 13097,
-      "Doc": 10445,
-      "Tel": 1950,
-      "Car": 30262,
-      "Metro": 376
-    };
+        // Update balance
+        const totalIncome = financialData.reduce((acc, curr) => acc + curr.income, 0);
+        const totalExpenses = financialData.reduce((acc, curr) => acc + curr.expenses, 0);
+        const balance = totalIncome - totalExpenses;
 
-    const incomeData = {
-      "SALARY": 67748,
-      "CASHBACK": 749,
-      "BONUS": 4960,
-      "INSTACART": 292,
-      "JURNY": 40438,
-      "LYFT": 0,
-      "UBER": 1553,
-      "CURB": 831,
-      "ABIX": 3412
-    };
+        document.getElementById('balance').textContent = `$${balance.toFixed(2)}`;
+        document.getElementById('total-income').textContent = `$${totalIncome.toFixed(2)}`;
+        document.getElementById('total-expenses').textContent = `$${totalExpenses.toFixed(2)}`;
 
-    // Initialize all values to 0 and compute per-second values
-    const expenseState = {};
-    const incomeState = {};
-
-    for (let key in expenseData) {
-      expenseState[key] = { total: expenseData[key], current: 0, perSecond: expenseData[key] / totalSeconds };
+        updateChart();
     }
 
-    for (let key in incomeData) {
-      incomeState[key] = { total: incomeData[key], current: 0, perSecond: incomeData[key] / totalSeconds };
+    // Update chart with new data
+    function updateChart() {
+        const months = financialData.map(item => item.month);
+        const incomeData = financialData.map(item => item.income);
+        const expenseData = financialData.map(item => item.expenses);
+
+        const ctx = document.getElementById('financialChart').getContext('2d');
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: months,
+                datasets: [
+                    {
+                        label: 'Income',
+                        data: incomeData,
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        fill: false,
+                    },
+                    {
+                        label: 'Expenses',
+                        data: expenseData,
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        fill: false,
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Time'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Amount ($)'
+                        }
+                    }
+                }
+            }
+        });
     }
 
-    const budgetDisplay = document.getElementById("budget");
-    const expenseContainer = document.getElementById("expenses");
-    const incomeContainer = document.getElementById("incomes");
+    // Simulate real-time data every second
+    setInterval(fetchFinancialData, 1000);
+</script>
 
-    function render() {
-      expenseContainer.innerHTML = '';
-      incomeContainer.innerHTML = '';
-
-      let totalExpense = 0;
-      let totalIncome = 0;
-
-      for (let key in expenseState) {
-        const val = expenseState[key];
-        val.current = Math.min(val.current + val.perSecond, val.total);
-        totalExpense += val.current;
-        expenseContainer.innerHTML += `<div class="item expense"><span>${key}</span><span>-$${val.current.toFixed(2)}</span></div>`;
-      }
-
-      for (let key in incomeState) {
-        const val = incomeState[key];
-        val.current = Math.min(val.current + val.perSecond, val.total);
-        totalIncome += val.current;
-        incomeContainer.innerHTML += `<div class="item income"><span>${key}</span><span>+$${val.current.toFixed(2)}</span></div>`;
-      }
-
-      budget = 15000 + totalIncome - totalExpense;
-      budgetDisplay.textContent = `$${budget.toFixed(2)}`;
-    }
-
-    render(); // Initial render
-    const interval = setInterval(() => {
-      render();
-    }, 1000);
-
-    // Stop interval after 571 seconds
-    setTimeout(() => clearInterval(interval), totalSeconds * 1000);
-  </script>
 </body>
 </html>
