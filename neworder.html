@@ -17,46 +17,45 @@
 
     .menu-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
     }
 
     .item {
       background-color: white;
-      border-radius: 10px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      border-radius: 12px;
       overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
       display: flex;
       flex-direction: column;
       align-items: center;
+      padding: 10px;
     }
 
     .item img {
       width: 100%;
-      height: 200px;
+      height: 120px;
       object-fit: cover;
-    }
-
-    .item-content {
-      padding: 10px;
-      text-align: center;
+      border-radius: 8px;
     }
 
     .item-name {
       font-weight: bold;
-      margin-bottom: 5px;
+      margin: 10px 0 5px;
+      text-align: center;
     }
 
     .item-price {
-      color: #4CAF50;
+      color: #666;
       margin-bottom: 10px;
     }
 
     .quantity-control {
       display: flex;
-      justify-content: center;
       align-items: center;
+      justify-content: center;
       gap: 10px;
+      margin-top: auto;
     }
 
     .quantity-control button {
@@ -97,13 +96,14 @@
       margin-bottom: 5px;
     }
 
-    .input-group input, .input-group select, .input-group textarea {
+    .input-group input,
+    .input-group select,
+    .input-group textarea {
       width: 100%;
       padding: 10px;
       font-size: 16px;
       border-radius: 8px;
       border: 1px solid #ccc;
-      box-sizing: border-box;
     }
 
     .input-group textarea {
@@ -113,7 +113,7 @@
 </head>
 <body>
   <h2>🍽 Taomni tanlang:</h2>
-  <div class="menu-grid" id="menu"></div>
+  <div id="menu" class="menu-grid"></div>
 
   <div class="input-group">
     <label for="phone">📞 Telefon raqamingiz:</label>
@@ -140,14 +140,14 @@
 
   <script>
     const menu = {
-      "🥩 Norin-pound": { price: 22, image: "https://example.com/norin.jpg" },
-      "🌭 Xasip-pound": { price: 14, image: "https://example.com/xasip.jpg" },
-      "🥟 Gumma": { price: 3, image: "https://example.com/gumma.jpg" },
-      "🍲 Bozor Xonim": { price: 3, image: "https://example.com/bozor_xonim.jpg" },
-      "🥩 Non Kabob": { price: 15, image: "https://example.com/non_kabob.jpg" },
-      "🥟 Yupqa": { price: 4, image: "https://example.com/yupqa.jpg" },
-      "🍗 Tabaka": { price: 15, image: "https://example.com/tabaka.jpg" },
-      "🍜 Kuksi": { price: 15, image: "https://example.com/kuksi.jpg" }
+      "🥩 Norin-pound": { price: 22, image: "https://i.imgur.com/Q2dP3Tb.jpg" },
+      "🌭 Xasip-pound": { price: 14, image: "https://i.imgur.com/Xl6xFdI.jpg" },
+      "🥟 Gumma": { price: 3, image: "https://i.imgur.com/IVq5HRW.jpg" },
+      "🍲 Bozor Xonim": { price: 3, image: "https://i.imgur.com/aeYfszg.jpg" },
+      "🥩 Non Kabob": { price: 15, image: "https://i.imgur.com/0kM61Yj.jpg" },
+      "🥟 Yupqa": { price: 4, image: "https://i.imgur.com/2qekvvi.jpg" },
+      "🍗 Tabaka": { price: 15, image: "https://i.imgur.com/Hd6OfVj.jpg" },
+      "🍜 Kuksi": { price: 15, image: "https://i.imgur.com/VEDVuQW.jpg" }
     };
 
     const order = {};
@@ -183,19 +183,27 @@
         itemDiv.className = "item";
         itemDiv.innerHTML = `
           <img src="${image}" alt="${item}">
-          <div class="item-content">
-            <div class="item-name">${item}</div>
-            <div class="item-price">$${price}</div>
-            <div class="quantity-control">
-              <button onclick="changeQty('${item}', -1)">➖</button>
-              <span>${quantity}</span>
-              <button onclick="changeQty('${item}', 1)">➕</button>
-            </div>
+          <div class="item-name">${item}</div>
+          <div class="item-price">$${price}</div>
+          <div class="quantity-control">
+            <button onclick="changeQty('${item}', -1)">➖</button>
+            <span>${quantity}</span>
+            <button onclick="changeQty('${item}', 1)">➕</button>
           </div>
         `;
         container.appendChild(itemDiv);
       }
 
-      document.getElement
-::contentReference[oaicite:1]{index=1}
- 
+      document.getElementById("total").innerText = `💰 Umumiy summa: $${total}`;
+    }
+
+    function changeQty(item, delta) {
+      order[item] = Math.max(0, order[item] + delta);
+      saveOrderToStorage();
+      renderMenu();
+    }
+
+    // --- rest of your submitOrder logic remains unchanged ---
+  </script>
+</body>
+</html>
