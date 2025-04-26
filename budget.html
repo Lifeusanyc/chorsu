@@ -3,67 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Budjet -Hisoblash</title>
+    <title>Moliyaviy Dastur</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            margin: 0;
         }
-        h1 {
-            text-align: center;
-        }
-        .income-display {
-            margin: 20px 0;
-            font-size: 20px;
-        }
-        .container {
-            text-align: center;
+        #balance, #time {
+            font-size: 2em;
+            margin: 10px 0;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Real Vaqt Budjet Hisoblash</h1>
+    <div id="balance">Hozirgi balans: $0.00</div>
+    <div id="time">Vaqt: 00:00:00</div>
 
-        <div class="income-display">
-            <p id="incomePerSecond">Sekundiga: $0.00</p>
-            <p id="incomePerMinute">Minutiga: $0.00</p>
-            <p id="incomePerHour">Soatiga: $0.00</p>
-            <p id="incomePerWeek">Haftasiga: $0.00</p>
-            <p id="incomePerMonth">Oylik: $0.00</p>
-            <p id="incomePerYear">Yiliga: $0.00</p>
-        </div>
-    </div>
-
-    <script>
-        // Boshlang'ich balans va daromadni o'rnating
-        let initialBalance = 15000;
-        let totalIncome = 120000;  // Misol uchun umumiy daromad (751 kun davomida)
-
-        // Kunlik daromadni hisoblash
-        let dailyIncome = totalIncome / 751;
-
-        // Sekund, minut, soat, hafta, oy, yil uchun hisoblash
-        let incomePerSecond = dailyIncome / (24 * 60 * 60);
-        let incomePerMinute = dailyIncome / (24 * 60);
-        let incomePerHour = dailyIncome / 24;
-        let incomePerWeek = dailyIncome * 7 / 365;
-        let incomePerMonth = dailyIncome * 30 / 365;
-        let incomePerYear = dailyIncome * 365;
-
-        // Sekundiga, minutiga, soatiga va boshqa vaqt o'lchovlarida yangilashni amalga oshirish
-        setInterval(() => {
-            // Sekundda qo'shilgan pulni hisoblash
-            let updatedBalance = initialBalance + incomePerSecond * Math.floor(Date.now() / 1000);
-
-            // HTML elementlariga qiymatlarni chiqarish
-            document.getElementById('incomePerSecond').textContent = `Sekundiga: $${(incomePerSecond * Math.floor(Date.now() / 1000)).toFixed(2)}`;
-            document.getElementById('incomePerMinute').textContent = `Minutiga: $${(incomePerMinute * Math.floor(Date.now() / (1000 * 60))).toFixed(2)}`;
-            document.getElementById('incomePerHour').textContent = `Soatiga: $${(incomePerHour * Math.floor(Date.now() / (1000 * 60 * 60))).toFixed(2)}`;
-            document.getElementById('incomePerWeek').textContent = `Haftasiga: $${(incomePerWeek * Math.floor(Date.now() / (1000 * 60 * 60 * 24 * 7))).toFixed(2)}`;
-            document.getElementById('incomePerMonth').textContent = `Oylik: $${(incomePerMonth * Math.floor(Date.now() / (1000 * 60 * 60 * 24 * 30))).toFixed(2)}`;
-            document.getElementById('incomePerYear').textContent = `Yiliga: $${(incomePerYear * Math.floor(Date.now() / (1000 * 60 * 60 * 24 * 365))).toFixed(2)}`;
-        }, 1000);  // Har 1 sekundda yangilanish
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
