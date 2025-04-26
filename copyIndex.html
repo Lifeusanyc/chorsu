@@ -125,16 +125,18 @@
   <button class="submit-btn" onclick="submitOrder()">📥 Buyurtmani yuborish</button>
 
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="config.js"></script> <!-- Include the config file here -->
+
   <script>
     const menu = {
-      "🥩 Norin": 25,
-      "🌭 Khasip": 35,
-      "🥟 Gumma": 4,
-      "🍲 Bozor Khanim": 10,
-      "🥩 Non Kabob": 10,
-      "🥟 Yupka": 2,
-      "🍗 Tabaka": 10,
-      "🍜 Kuksi": 17,
+      "🥩 Norin-pound": 22,
+      "🌭 Xasip-pound": 14,
+      "🥟 Gumma": 3,
+      "🍲 Bozor Xonim": 3,
+      "🥩 Non Kabob": 15,
+      "🥟 Yupqa": 4,
+      "🍗 Tabaka": 15,
+      "🍜 Kuksi": 15,
     };
 
     const order = {};
@@ -240,8 +242,8 @@
         message += `\n📝 Maxsus izoh: ${specialNote}`;
       }
 
-      const botToken = "7840378650:AAHCgR8CxegoUnTKGzJZCB4RorIJuKXbhaQ";
-      const adminId = "5161274048";
+      const botToken = config.botToken;  // Use botToken from config
+      const adminId = config.adminId;    // Use adminId from config
 
       const btn = document.querySelector(".submit-btn");
       btn.disabled = true;
