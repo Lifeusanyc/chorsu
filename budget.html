@@ -2,7 +2,7 @@
 <html lang="uz">
 <head>
   <meta charset="UTF-8" />
-  <title>Oila Byudjeti - 751 kun</title>
+  <title>Oila Byudjeti - 751 kunlik monitoring</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body {
@@ -14,33 +14,79 @@
       flex-direction: column;
       align-items: center;
     }
-    h1 { margin-bottom: 10px; }
-    .slider-container, .summary, .table-container {
+
+    h1 {
+      margin-bottom: 10px;
+      text-align: center;
+      color: #343a40;
+    }
+
+    .summary {
       width: 90%;
       max-width: 900px;
-      margin-bottom: 30px;
       background: white;
       padding: 20px;
       border-radius: 10px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    th, td {
-      border: 1px solid #dee2e6;
-      padding: 8px;
+      margin-bottom: 20px;
       text-align: center;
     }
-    th { background-color: #f1f1f1; }
+
+    .summary p {
+      margin: 10px 0;
+      font-size: 1.2rem;
+      color: #495057;
+    }
+
+    .list-container {
+      width: 90%;
+      max-width: 900px;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+
+    .list-container ul {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .list-container li {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #e9ecef;
+    }
+
     .chart-box {
       width: 90%;
       max-width: 900px;
+      margin-bottom: 40px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+    }
+    
+    .slider-container {
+      width: 90%;
+      max-width: 900px;
+      margin-bottom: 20px;
+    }
+    
+    label {
+      font-size: 1rem;
+      display: block;
+      margin-bottom: 10px;
+      color: #495057;
     }
   </style>
 </head>
 <body>
+
   <h1>Oila Byudjeti - 751 kunlik monitoring</h1>
 
   <div class="slider-container">
@@ -59,19 +105,8 @@
     <canvas id="balanceChart"></canvas>
   </div>
 
-  <div class="table-container">
-    <table>
-      <thead>
-        <tr>
-          <th>Kun</th>
-          <th>Sana</th>
-          <th>Kirim</th>
-          <th>Chiqim</th>
-          <th>Balans</th>
-        </tr>
-      </thead>
-      <tbody id="dataTable"></tbody>
-    </table>
+  <div class="list-container">
+    <ul id="dataList"></ul>
   </div>
 
   <script>
@@ -108,7 +143,7 @@
     const incomeEl = document.getElementById("income");
     const expenseEl = document.getElementById("expense");
     const balanceEl = document.getElementById("balance");
-    const dataTable = document.getElementById("dataTable");
+    const dataList = document.getElementById("dataList");
 
     daySlider.addEventListener("input", () => {
       updateDay(parseInt(daySlider.value));
@@ -121,21 +156,17 @@
       incomeEl.textContent = d.income;
       expenseEl.textContent = d.expense;
       balanceEl.textContent = d.balance;
+
+      // Update the list
+      dataList.innerHTML = `
+        <li><strong>Kirim:</strong> $${d.income}</li>
+        <li><strong>Chiqim:</strong> $${d.expense}</li>
+        <li><strong>Balans:</strong> $${d.balance}</li>
+      `;
     }
 
     // Init
     updateDay(1);
-
-    // Populate table
-    dataTable.innerHTML = data.map(d => `
-      <tr>
-        <td>${d.day}</td>
-        <td>${d.date}</td>
-        <td>$${d.income}</td>
-        <td>$${d.expense}</td>
-        <td>$${d.balance}</td>
-      </tr>
-    `).join("");
 
     // Chart.js
     const ctx = document.getElementById('balanceChart').getContext('2d');
@@ -161,5 +192,6 @@
       }
     });
   </script>
+
 </body>
 </html>
