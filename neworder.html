@@ -17,48 +17,50 @@
 
     #menu {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       gap: 15px;
+      margin-top: 20px;
     }
 
     .item {
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      padding: 10px;
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
-      background-color: white;
-      padding: 10px;
-      border-radius: 10px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
 
     .item img {
       width: 100%;
-      height: 100px;
+      height: 120px;
       object-fit: cover;
-      border-radius: 8px;
+      border-radius: 10px;
+      margin-bottom: 8px;
     }
 
     .item-name {
-      margin-top: 10px;
       font-weight: bold;
+      margin: 5px 0;
     }
 
     .item-price {
-      margin: 5px 0;
-      color: #555;
+      color: #4CAF50;
+      margin-bottom: 10px;
     }
 
     .quantity-control {
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-top: 5px;
     }
 
     .quantity-control button {
       padding: 4px 10px;
       font-size: 16px;
+      margin: 0 6px;
     }
 
     .total {
@@ -93,17 +95,12 @@
       margin-bottom: 5px;
     }
 
-    .input-group input,
-    .input-group select,
-    .input-group textarea {
+    .input-group input, .input-group select, .input-group textarea {
       width: 100%;
       padding: 10px;
       font-size: 16px;
       border-radius: 8px;
       border: 1px solid #ccc;
-    }
-
-    .input-group textarea {
       resize: vertical;
     }
   </style>
@@ -135,40 +132,19 @@
   <div class="total" id="total">💰 Umumiy summa: $0</div>
   <button class="submit-btn" onclick="submitOrder()">📥 Buyurtmani yuborish</button>
 
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="config.js"></script>
+
   <script>
     const menu = {
-      "🥩 Norin-pound": {
-        price: 22,
-        image: "https://upload.wikimedia.org/wikipedia/commons/8/83/Norin.jpg"
-      },
-      "🌭 Xasip-pound": {
-        price: 14,
-        image: "https://upload.wikimedia.org/wikipedia/commons/9/94/Kazakh_kazy.jpg"
-      },
-      "🥟 Gumma": {
-        price: 3,
-        image: "https://upload.wikimedia.org/wikipedia/commons/e/e4/Steamed_dumplings.jpg"
-      },
-      "🍲 Bozor Xonim": {
-        price: 3,
-        image: "https://upload.wikimedia.org/wikipedia/commons/1/1e/Khanum.jpg"
-      },
-      "🥩 Non Kabob": {
-        price: 15,
-        image: "https://upload.wikimedia.org/wikipedia/commons/f/fb/Shashlik_meat.jpg"
-      },
-      "🥟 Yupqa": {
-        price: 4,
-        image: "https://upload.wikimedia.org/wikipedia/commons/8/8e/Yupka.jpg"
-      },
-      "🍗 Tabaka": {
-        price: 15,
-        image: "https://upload.wikimedia.org/wikipedia/commons/f/f7/Tobacco_chicken.jpg"
-      },
-      "🍜 Kuksi": {
-        price: 15,
-        image: "https://upload.wikimedia.org/wikipedia/commons/0/07/Kuksu.jpg"
-      }
+      "🥩 Norin-pound": { price: 22, img: "https://i.imgur.com/WbKxhcd.jpg" },
+      "🌭 Xasip-pound": { price: 14, img: "https://i.imgur.com/7ZlFZ9K.jpg" },
+      "🥟 Gumma": { price: 3, img: "https://i.imgur.com/hBrCgNb.jpg" },
+      "🍲 Bozor Xonim": { price: 3, img: "https://i.imgur.com/AL1S8ya.jpg" },
+      "🥩 Non Kabob": { price: 15, img: "https://i.imgur.com/wPcrL9A.jpg" },
+      "🥟 Yupqa": { price: 4, img: "https://i.imgur.com/sFltpXn.jpg" },
+      "🍗 Tabaka": { price: 15, img: "https://i.imgur.com/fIFRSlt.jpg" },
+      "🍜 Kuksi": { price: 15, img: "https://i.imgur.com/AnY4nBF.jpg" },
     };
 
     const order = {};
@@ -196,19 +172,19 @@
 
       for (let item in menu) {
         if (!(item in order)) order[item] = 0;
-        const { price, image } = menu[item];
+        const { price, img } = menu[item];
         const quantity = order[item];
         total += price * quantity;
 
         const itemDiv = document.createElement("div");
         itemDiv.className = "item";
         itemDiv.innerHTML = `
-          <img src="${image}" alt="${item}">
+          <img src="${img}" alt="${item}">
           <div class="item-name">${item}</div>
           <div class="item-price">$${price}</div>
           <div class="quantity-control">
             <button onclick="changeQty('${item}', -1)">➖</button>
-            <span style="margin: 0 10px;">${quantity}</span>
+            <span>${quantity}</span>
             <button onclick="changeQty('${item}', 1)">➕</button>
           </div>
         `;
@@ -224,43 +200,105 @@
       renderMenu();
     }
 
+    function formatPhone(phone) {
+      phone = phone.replace(/[^\d]/g, '');
+      if (phone.startsWith("998")) {
+        return "+" + phone;
+      }
+      if (!phone.startsWith("+")) {
+        return "+" + phone;
+      }
+      return phone;
+    }
+
     function isValidPhone(phone) {
       return /^\+?\d{10,15}$/.test(phone);
     }
 
-    function submitOrder() {
-      const phone = document.getElementById("phone").value.trim();
-      const date = document.getElementById("delivery-date").value;
-      const time = document.getElementById("delivery-time").value;
-      const note = document.getElementById("special-note").value.trim();
-
+    async function submitOrder() {
+      const rawPhone = document.getElementById("phone").value.trim();
+      const phone = formatPhone(rawPhone);
+      const deliveryDate = document.getElementById("delivery-date").value;
+      const deliveryTime = document.getElementById("delivery-time").value;
+      const specialNote = document.getElementById("special-note").value.trim();
       const selected = Object.entries(order).filter(([_, qty]) => qty > 0);
-      if (!isValidPhone(phone)) return alert("📵 Telefon raqam noto‘g‘ri.");
-      if (!date) return alert("📅 Yetkazib berish sanasini tanlang.");
-      if (!time) return alert("⏰ Yetkazib berish vaqtini kiriting.");
-      if (selected.length === 0) return alert("❗ Hech qanday taom tanlanmadi.");
 
-      const orderText = selected.map(([item, qty]) =>
-        `${item} x${qty} - $${menu[item].price * qty}`).join("\n");
-      const total = selected.reduce((sum, [item, qty]) =>
-        sum + menu[item].price * qty, 0);
+      if (!isValidPhone(phone)) {
+        alert("📵 Iltimos, to'g'ri telefon raqamini kiriting.");
+        return;
+      }
 
-      alert(`✅ Buyurtmangiz yuborildi!\n\n📋 Buyurtma:\n${orderText}\n💰 $${total}\n📞 Tel: ${phone}\n⏰ ${time}\n📅 ${date}\n📝 ${note}`);
+      if (!deliveryDate) {
+        alert("📅 Iltimos, yetkazib berish kunini tanlang.");
+        return;
+      }
 
-      for (let item in order) order[item] = 0;
+      if (!deliveryTime) {
+        alert("⏰ Iltimos, yetkazib berish vaqtini tanlang.");
+        return;
+      }
+
+      if (selected.length === 0) {
+        alert("❗ Hech qanday taom tanlamadingiz.");
+        return;
+      }
+
+      const orderText = selected.map(([item, qty]) => `${item} x${qty} - $${menu[item].price * qty}`).join("\n");
+      const total = selected.reduce((sum, [item, qty]) => sum + menu[item].price * qty, 0);
+
+      let message = `📥 Yangi buyurtma:\n${orderText}\n💰 Umumiy summa: $${total}\n📞 Tel: ${phone}\n⏰ Vaqt: ${deliveryTime}\n📅 Kun: ${deliveryDate}`;
+      if (specialNote) {
+        message += `\n📝 Maxsus izoh: ${specialNote}`;
+      }
+
+      const botToken = config.botToken;
+      const adminId = config.adminId;
+
+      const btn = document.querySelector(".submit-btn");
+      btn.disabled = true;
+      btn.innerText = "⏳ Yuborilmoqda...";
+
+      await Promise.all([
+        fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ chat_id: adminId, text: message })
+        }),
+        fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ chat_id: "@chorsuorder", text: message })
+        })
+      ]);
+
+      alert(`✅ Buyurtmangiz yuborildi!\n\n📋 Buyurtma:\n${orderText}\n💰 $${total}\n📞 Tel: ${phone}\n⏰ ${deliveryTime}\n📅 ${deliveryDate}\n📝 ${specialNote}`);
+
+      for (let item in order) {
+        order[item] = 0;
+      }
       localStorage.removeItem('order');
-
       document.getElementById("phone").value = "";
-      document.getElementById("delivery-date").value = "";
       document.getElementById("delivery-time").value = "";
+      document.getElementById("delivery-date").value = "";
       document.getElementById("special-note").value = "";
       renderMenu();
+
+      btn.disabled = false;
+      btn.innerText = "📥 Buyurtmani yuborish";
+
+      Telegram.WebApp.close();
     }
 
-    document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("DOMContentLoaded", function () {
       const today = new Date().toISOString().split("T")[0];
       document.getElementById("delivery-date").setAttribute("min", today);
+
       loadOrderFromStorage();
+
+      if (window.Telegram && Telegram.WebApp) {
+        Telegram.WebApp.ready();
+      }
+
       renderMenu();
     });
   </script>
