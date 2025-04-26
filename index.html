@@ -244,35 +244,54 @@
 
       const botToken = config.botToken;  // Use botToken from config
       const adminId = config.adminId;    // Use adminId from config
+      const channelUrl = 'https://t.me/+9bVsqFLR7Po4NzJk'; // Channel URL
 
       const btn = document.querySelector(".submit-btn");
       btn.disabled = true;
       btn.innerText = "⏳ Yuborilmoqda...";
 
-      await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          chat_id: adminId,
-          text: message
-        })
-      });
+      try {
+        // Sending message to admin
+        await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            chat_id: adminId,
+            text: message
+          })
+        });
 
-      alert(`✅ Buyurtmangiz yuborildi!\n\n📋 Buyurtma:\n${orderText}\n💰 $${total}\n📞 Tel: ${phone}\n⏰ ${deliveryTime}\n📅 ${deliveryDate}\n📝 ${specialNote}`);
+        // Sending message to channel
+        await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            chat_id: channelUrl,
+            text: message
+          })
+        });
 
-      // Tozalash
-      for (let item in order) {
-        order[item] = 0;
+        alert(`✅ Buyurtmangiz yuborildi!\n\n📋 Buyurtma:\n${orderText}\n💰 $${total}\n📞 Tel: ${phone}\n⏰ ${deliveryTime}\n📅 ${deliveryDate}\n📝 ${specialNote}`);
+
+        // Tozalash
+        for (let item in order) {
+          order[item] = 0;
+        }
+        localStorage.removeItem('order');
+
+        document.getElementById("phone").value = "";
+        document.getElementById("delivery-time").value = "";
+        document.getElementById("delivery-date").value = "";
+        document.getElementById("special-note").value = "";
+        renderMenu();
+
+      } catch (error) {
+        alert("❌ Xatolik yuz berdi. Buyurtma yuborilmadi.");
       }
-      localStorage.removeItem('order');
-
-      document.getElementById("phone").value = "";
-      document.getElementById("delivery-time").value = "";
-      document.getElementById("delivery-date").value = "";
-      document.getElementById("special-note").value = "";
-      renderMenu();
 
       btn.disabled = false;
       btn.innerText = "📥 Buyurtmani yuborish";
