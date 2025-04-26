@@ -1,29 +1,69 @@
-import time
-from datetime import datetime, timedelta
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budjet Hisoblash</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        .income-display {
+            margin: 20px 0;
+            font-size: 20px;
+        }
+        .container {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Real Vaqt Budjet Hisoblash</h1>
 
-# Boshlang'ich parametrlar
-starting_balance = 15000  # Boshlang'ich balans
-start_date = datetime(2023, 4, 4)  # Boshlang'ich sana
-total_days = 751  # Jami kunlar
-total_income = 120000  # Jami daromad
-weekly_income = 1200  # Haftalik daromad
+        <div class="income-display">
+            <p id="incomePerSecond">Sekundiga: $0.00</p>
+            <p id="incomePerMinute">Minutiga: $0.00</p>
+            <p id="incomePerHour">Soatiga: $0.00</p>
+            <p id="incomePerWeek">Haftasiga: $0.00</p>
+            <p id="incomePerMonth">Oylik: $0.00</p>
+            <p id="incomePerYear">Yiliga: $0.00</p>
+        </div>
+    </div>
 
-# Jami kunlarning o'rtacha kunlik daromadi
-daily_income = total_income / total_days  # Kunlik daromad
+    <script>
+        // Boshlang'ich balans va daromadni o'rnating
+        let initialBalance = 15000;
+        let totalIncome = 120000;  // Misol uchun umumiy daromad (751 kun davomida)
 
-# Hozirgi sana va vaqt
-current_time = datetime.now()
-elapsed_time = current_time - start_date  # Boshlang'ich sanadan hozirgi kungacha o'tgan vaqt
-elapsed_seconds = elapsed_time.total_seconds()
+        // Kunlik daromadni hisoblash
+        let dailyIncome = totalIncome / 751;
 
-# Boshlang'ich balansga har bir sekundda o'sayotgan daromadni qo'shamiz
-income_from_elapsed_time = daily_income * (elapsed_seconds / (60 * 60 * 24))  # Sekundga asoslangan daromad
+        // Sekund, minut, soat, hafta, oy, yil uchun hisoblash
+        let incomePerSecond = dailyIncome / (24 * 60 * 60);
+        let incomePerMinute = dailyIncome / (24 * 60);
+        let incomePerHour = dailyIncome / 24;
+        let incomePerWeek = dailyIncome * 7 / 365;
+        let incomePerMonth = dailyIncome * 30 / 365;
+        let incomePerYear = dailyIncome * 365;
 
-# Jami daromad
-current_balance = starting_balance + income_from_elapsed_time
+        // Sekundiga, minutiga, soatiga va boshqa vaqt o'lchovlarida yangilashni amalga oshirish
+        setInterval(() => {
+            // Sekundda qo'shilgan pulni hisoblash
+            let updatedBalance = initialBalance + incomePerSecond * Math.floor(Date.now() / 1000);
 
-# Natijani ko'rsatish
-print(f"Boshlang'ich sana: {start_date.strftime('%Y-%m-%d')}")
-print(f"Hozirgi sana: {current_time.strftime('%Y-%m-%d %H:%M:%S')}")
-print(f"Jami o'tgan vaqt: {elapsed_time.days} kun, {elapsed_time.seconds // 3600} soat, {(elapsed_time.seconds // 60) % 60} minut")
-print(f"Jami daromad: ${current_balance:.2f}")
+            // HTML elementlariga qiymatlarni chiqarish
+            document.getElementById('incomePerSecond').textContent = `Sekundiga: $${(incomePerSecond * Math.floor(Date.now() / 1000)).toFixed(2)}`;
+            document.getElementById('incomePerMinute').textContent = `Minutiga: $${(incomePerMinute * Math.floor(Date.now() / (1000 * 60))).toFixed(2)}`;
+            document.getElementById('incomePerHour').textContent = `Soatiga: $${(incomePerHour * Math.floor(Date.now() / (1000 * 60 * 60))).toFixed(2)}`;
+            document.getElementById('incomePerWeek').textContent = `Haftasiga: $${(incomePerWeek * Math.floor(Date.now() / (1000 * 60 * 60 * 24 * 7))).toFixed(2)}`;
+            document.getElementById('incomePerMonth').textContent = `Oylik: $${(incomePerMonth * Math.floor(Date.now() / (1000 * 60 * 60 * 24 * 30))).toFixed(2)}`;
+            document.getElementById('incomePerYear').textContent = `Yiliga: $${(incomePerYear * Math.floor(Date.now() / (1000 * 60 * 60 * 24 * 365))).toFixed(2)}`;
+        }, 1000);  // Har 1 sekundda yangilanish
+    </script>
+</body>
+</html>
