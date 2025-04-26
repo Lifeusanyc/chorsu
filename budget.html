@@ -3,28 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Moliyaviy Dastur</title>
+    <title>Pul Hisoblash Dasturi</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            background-color: #f0f0f0;
-            margin: 0;
+            text-align: center;
+            padding: 50px;
         }
-        #balance, #time {
-            font-size: 2em;
-            margin: 10px 0;
+        #balance {
+            font-size: 30px;
+            margin: 20px;
         }
     </style>
 </head>
 <body>
-    <div id="balance">Hozirgi balans: $0.00</div>
-    <div id="time">Vaqt: 00:00:00</div>
 
-    <script src="script.js"></script>
+<h1>Real Vaqt Pul Hisoblash</h1>
+<div id="balance"></div>
+<div id="time"></div>
+
+<script>
+    // Boshlang'ich qiymatlar
+    const initialBalance = 15000; // Boshlang'ich pul
+    const totalEarned = 120000; // Umumiy topilgan pul
+    const totalDays = 751; // Umumiy kunlar
+    const startDate = new Date('2023-04-04'); // Boshlang'ich sana
+
+    // Pulni har bir sekundda hisoblash
+    const dailyEarned = totalEarned / totalDays; // Har kunlik topilgan pul
+    const secondEarned = dailyEarned / (24 * 60 * 60); // Har sekundda topilgan pul
+
+    // Boshlang'ich vaqt
+    const startTime = new Date(startDate);
+
+    function updateBalance() {
+        const currentTime = new Date();
+        const elapsedTime = (currentTime - startTime) / 1000; // Vaqtni sekundda hisoblash
+        const elapsedBalance = initialBalance + secondEarned * elapsedTime; // Yig'ilgan pul
+
+        // Vaqt va balansni yangilash
+        document.getElementById('balance').textContent = 'Joriy balans: $' + elapsedBalance.toFixed(2);
+        document.getElementById('time').textContent = 'O\'tgan vaqt: ' + formatTime(elapsedTime);
+    }
+
+    // Vaqtni soat, minut, sekundda formatlash
+    function formatTime(seconds) {
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const secs = Math.floor(seconds % 60);
+        return `${hours} soat ${minutes} minut ${secs} sekund`;
+    }
+
+    // Har bir sekundda balansni yangilash
+    setInterval(updateBalance, 1000);
+</script>
+
 </body>
 </html>
