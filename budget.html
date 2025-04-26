@@ -1,1 +1,198 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <title>Oila Byudjeti - 751 kunlik monitoring</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f8f9fa;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+      text-align: center;
+      color: #343a40;
+    }
+
+    .summary {
+      width: 90%;
+      max-width: 900px;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .summary p {
+      margin: 10px 0;
+      font-size: 1.2rem;
+      color: #495057;
+    }
+
+    .list-container {
+      width: 90%;
+      max-width: 900px;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+
+    .list-container ul {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .list-container li {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #e9ecef;
+    }
+
+    .chart-box {
+      width: 90%;
+      max-width: 900px;
+      margin-bottom: 40px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+    }
+    
+    .slider-container {
+      width: 90%;
+      max-width: 900px;
+      margin-bottom: 20px;
+    }
+    
+    label {
+      font-size: 1rem;
+      display: block;
+      margin-bottom: 10px;
+      color: #495057;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Oila Byudjeti - 751 kunlik monitoring</h1>
+
+  <div class="slider-container">
+    <label for="daySlider">📅 Kun tanlang: <span id="dayLabel">1</span> / 751</label>
+    <input type="range" id="daySlider" min="1" max="751" value="1" style="width:100%;">
+  </div>
+
+  <div class="summary">
+    <p><strong>Sana:</strong> <span id="currentDate">2023-04-04</span></p>
+    <p><strong>Kirim:</strong> $<span id="income">0</span></p>
+    <p><strong>Chiqim:</strong> $<span id="expense">0</span></p>
+    <p><strong>Balans:</strong> $<span id="balance">15000</span></p>
+  </div>
+
+  <div class="chart-box">
+    <canvas id="balanceChart"></canvas>
+  </div>
+
+  <div class="list-container">
+    <ul id="dataList"></ul>
+  </div>
+
+  <script>
+    const startDate = new Date("2023-04-04");
+    const days = 751;
+    const initialBalance = 15000;
+    const totalIncome = 139983;
+    const totalExpense = 147366;
+
+    const dailyIncome = totalIncome / days;
+    const dailyExpense = totalExpense / days;
+
+    const data = [];
+    let balance = initialBalance;
+
+    for (let i = 0; i < days; i++) {
+      const date = new Date(startDate);
+      date.setDate(startDate.getDate() + i);
+      const income = dailyIncome;
+      const expense = dailyExpense;
+      balance += income - expense;
+      data.push({
+        day: i + 1,
+        date: date.toISOString().split('T')[0],
+        income: income.toFixed(2),
+        expense: expense.toFixed(2),
+        balance: balance.toFixed(2)
+      });
+    }
+
+    const daySlider = document.getElementById("daySlider");
+    const dayLabel = document.getElementById("dayLabel");
+    const currentDate = document.getElementById("currentDate");
+    const incomeEl = document.getElementById("income");
+    const expenseEl = document.getElementById("expense");
+    const balanceEl = document.getElementById("balance");
+    const dataList = document.getElementById("dataList");
+
+    daySlider.addEventListener("input", () => {
+      updateDay(parseInt(daySlider.value));
+    });
+
+    function updateDay(day) {
+      const d = data[day - 1];
+      dayLabel.textContent = day;
+      currentDate.textContent = d.date;
+      incomeEl.textContent = d.income;
+      expenseEl.textContent = d.expense;
+      balanceEl.textContent = d.balance;
+
+      // Update the list
+      dataList.innerHTML = `
+        <li><strong>Kirim:</strong> $${d.income}</li>
+        <li><strong>Chiqim:</strong> $${d.expense}</li>
+        <li><strong>Balans:</strong> $${d.balance}</li>
+      `;
+    }
+
+    // Init
+    updateDay(1);
+
+    // Chart.js
+    const ctx = document.getElementById('balanceChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: data.map(d => d.date),
+        datasets: [{
+          label: 'Balans',
+          data: data.map(d => d.balance),
+          borderColor: '#28a745',
+          backgroundColor: 'rgba(40, 167, 69, 0.1)',
+          tension: 0.2,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          x: { display: false },
+          y: { beginAtZero: false }
+        }
+      }
+    });
+  </script>
+
+</body>
+</html>
 
