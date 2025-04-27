@@ -16,8 +16,8 @@
     }
 
     #menu {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      display: flex;
+      flex-wrap: wrap;
       gap: 15px;
       margin-top: 20px;
     }
@@ -307,7 +307,7 @@
       confirmationDiv.classList.add('confirmation-message');
       confirmationDiv.innerHTML = message;
       document.body.appendChild(confirmationDiv);
-      setTimeout(() => confirmationDiv.remove(), 3000); // Xabarni 3 sekunddan keyin o'chirish
+      setTimeout(() => confirmationDiv.remove(), 4000); // Xabarni 4 sekunddan keyin o'chirish
     }
 
     document.addEventListener("DOMContentLoaded", function () {
