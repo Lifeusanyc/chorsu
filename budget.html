@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daromad va Harajatlar</title>
+    <title>Daromad va Harajatlar (Scroll)</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -27,7 +27,7 @@
             font-size: 3em;
             color: #28a745;
         }
-        .income-info {
+        .income-info, .expense-info {
             font-size: 1.2em;
             color: #555;
             margin: 10px 0;
@@ -36,10 +36,20 @@
             font-size: 1.5em;
             color: #555;
         }
-        .expense-info {
-            font-size: 1.2em;
-            color: #dc3545;
-            margin: 10px 0;
+        #scrollBar {
+            margin-top: 20px;
+            width: 100%;
+            height: 30px;
+            background-color: #ddd;
+            border-radius: 5px;
+            position: relative;
+            cursor: pointer;
+        }
+        #scrollBarInner {
+            width: 50%;
+            height: 100%;
+            background-color: #28a745;
+            border-radius: 5px;
         }
     </style>
 </head>
@@ -64,14 +74,19 @@
         <div class="expense-info" id="expensePerWeek">Haftasiga Harajat: $0.00</div>
         <div class="expense-info" id="expensePerMonth">Oyiga Harajat: $0.00</div>
         <div class="expense-info" id="expensePerYear">Yiliga Harajat: $0.00</div>
+
+        <!-- Scroll Bar for adjusting weekly income and expenses -->
+        <div id="scrollBar">
+            <div id="scrollBarInner"></div>
+        </div>
     </div>
 
     <script>
         let startDate = new Date('2023-04-05'); // Daromad va harajat 5-aprel 2023 yilidan boshlanadi
         let currentDate = new Date(); // Hozirgi sana
         let balance = 0; // Boshlang'ich balans 0$
-        let weeklyIncome = 1200; // Haftalik daromad
-        let weeklyExpense = 1200; // Haftalik harajat
+        let weeklyIncome = 1200; // Haftalik daromad boshlang'ich qiymat
+        let weeklyExpense = 1200; // Haftalik harajat boshlang'ich qiymat
         let secondsInWeek = 7 * 24 * 60 * 60; // 1 hafta = 604800 sekund
         let incomePerSecond = weeklyIncome / secondsInWeek; // Har soniyada qo'shiladigan daromad
         let expensePerSecond = weeklyExpense / secondsInWeek; // Har soniyada qo'shiladigan harajat
@@ -118,6 +133,15 @@
             document.getElementById('expensePerMonth').textContent = `Oyiga Harajat: $${expensePerMonth.toFixed(2)}`;
             document.getElementById('expensePerYear').textContent = `Yiliga Harajat: $${expensePerYear.toFixed(2)}`;
         }
+
+        // Scroll bar bilan kirim va harajatlarni sozlash
+        document.getElementById('scrollBar').addEventListener('input', (event) => {
+            let scrollPercentage = event.target.scrollLeft / event.target.scrollWidth;
+            weeklyIncome = 1200 + (scrollPercentage * 2400); // Daromadni sozlash (1200$ - 3600$ oralig'ida)
+            weeklyExpense = 1200 + (scrollPercentage * 2400); // Harajatni sozlash (1200$ - 3600$ oralig'ida)
+            incomePerSecond = weeklyIncome / secondsInWeek;
+            expensePerSecond = weeklyExpense / secondsInWeek;
+        });
 
         setInterval(updateDashboard, 1000); // Har 1 soniyada yangilash
     </script>
