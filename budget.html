@@ -20,10 +20,17 @@
             border-radius: 10px;
             padding: 20px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 600px;
         }
         #balance {
             font-size: 3em;
             color: #28a745;
+        }
+        .income-info {
+            font-size: 1.2em;
+            color: #555;
+            margin: 10px 0;
         }
         #time {
             font-size: 1.5em;
@@ -36,6 +43,14 @@
         <h1>Daromadingiz</h1>
         <div id="balance">$15,000.00</div>
         <div id="time">Vaqt: 00:00:00</div>
+
+        <div class="income-info" id="incomePerSecond">Soniyasiga: $0.00</div>
+        <div class="income-info" id="incomePerMinute">Minutiga: $0.00</div>
+        <div class="income-info" id="incomePerHour">Soatiga: $0.00</div>
+        <div class="income-info" id="incomePerDay">Kuniga: $0.00</div>
+        <div class="income-info" id="incomePerWeek">Haftasiga: $0.00</div>
+        <div class="income-info" id="incomePerMonth">Oyiga: $0.00</div>
+        <div class="income-info" id="incomePerYear">Yiliga: $0.00</div>
     </div>
 
     <script>
@@ -52,10 +67,25 @@
             
             // Daromadni haftasiga 1200$ oshadigan tarzda hisoblash
             balance = 15000 + (elapsedTime * incomePerSecond);
-            
+
+            // Kirim miqdorlarini hisoblash
+            let incomePerMinute = incomePerSecond * 60;
+            let incomePerHour = incomePerMinute * 60;
+            let incomePerDay = incomePerHour * 24;
+            let incomePerWeek = incomePerDay * 7;
+            let incomePerMonth = incomePerDay * 30; // O'rtacha oylik (30 kun deb hisoblaymiz)
+            let incomePerYear = incomePerDay * 365; // Yillik kirim
+
             // Dashboardni yangilash
             document.getElementById('balance').textContent = `$${balance.toFixed(2)}`;
             document.getElementById('time').textContent = `Vaqt: ${formattedTime}`;
+            document.getElementById('incomePerSecond').textContent = `Soniyasiga: $${incomePerSecond.toFixed(4)}`;
+            document.getElementById('incomePerMinute').textContent = `Minutiga: $${incomePerMinute.toFixed(2)}`;
+            document.getElementById('incomePerHour').textContent = `Soatiga: $${incomePerHour.toFixed(2)}`;
+            document.getElementById('incomePerDay').textContent = `Kuniga: $${incomePerDay.toFixed(2)}`;
+            document.getElementById('incomePerWeek').textContent = `Haftasiga: $${incomePerWeek.toFixed(2)}`;
+            document.getElementById('incomePerMonth').textContent = `Oyiga: $${incomePerMonth.toFixed(2)}`;
+            document.getElementById('incomePerYear').textContent = `Yiliga: $${incomePerYear.toFixed(2)}`;
         }
 
         setInterval(updateDashboard, 1000); // Har 1 soniyada yangilash
