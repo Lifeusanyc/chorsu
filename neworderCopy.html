@@ -2,7 +2,7 @@
 <html lang="uz">
 <head>
   <meta charset="UTF-8">
-  <title>Menu </title>
+  <title>Menu</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body {
@@ -252,8 +252,8 @@
         message += `\n📝 Maxsus izoh: ${specialNote}`;
       }
 
-      // Mijoz bilan bog'lanish
-      message += `\nMijoz bilan bog'lanish @${phone.replace(/[^\d]/g, '')}`;
+      // Mijoz bilan bog'lanish @19299556363
+      message += `\nMijoz bilan bog'lanish @1${phone.replace(/[^\d]/g, '').slice(3)}`;
 
       const botToken = config.botToken;
       const adminId = config.adminId;
