@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daromad va Harajatlar (Scroll)</title>
+    <title>Daromad, Harajat va Balans</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -15,71 +15,74 @@
             background-color: #f0f0f0;
         }
         #dashboard {
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
             background-color: #ffffff;
             border-radius: 10px;
             padding: 20px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             width: 80%;
-            max-width: 600px;
+            max-width: 900px;
         }
-        #balance {
-            font-size: 3em;
+        .column {
+            text-align: center;
+            width: 30%;
+        }
+        .column h2 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+        .column p {
+            font-size: 1.2em;
+            margin: 5px 0;
+            color: #555;
+        }
+        .column .balance {
+            font-size: 2em;
             color: #28a745;
         }
-        .income-info, .expense-info {
-            font-size: 1.2em;
-            color: #555;
-            margin: 10px 0;
+        .column .negative {
+            color: #dc3545;
         }
         #time {
             font-size: 1.5em;
             color: #555;
-        }
-        #scrollBar {
+            text-align: center;
             margin-top: 20px;
-            width: 100%;
-            height: 30px;
-            background-color: #ddd;
-            border-radius: 5px;
-            position: relative;
-            cursor: pointer;
-        }
-        #scrollBarInner {
-            width: 50%;
-            height: 100%;
-            background-color: #28a745;
-            border-radius: 5px;
         }
     </style>
 </head>
 <body>
     <div id="dashboard">
-        <h1>Daromad va Harajatlar</h1>
-        <div id="balance">Balans: $0.00</div>
-        <div id="time">Vaqt: 00:00:00</div>
+        <div class="column" id="incomeColumn">
+            <h2>Daromad</h2>
+            <p id="incomePerSecond">Soniyasiga: $0.00</p>
+            <p id="incomePerMinute">Minutiga: $0.00</p>
+            <p id="incomePerHour">Soatiga: $0.00</p>
+            <p id="incomePerDay">Kuniga: $0.00</p>
+            <p id="incomePerWeek">Haftasiga: $0.00</p>
+            <p id="incomePerMonth">Oyiga: $0.00</p>
+            <p id="incomePerYear">Yiliga: $0.00</p>
+        </div>
 
-        <div class="income-info" id="incomePerSecond">Soniyasiga Daromad: $0.00</div>
-        <div class="income-info" id="incomePerMinute">Minutiga Daromad: $0.00</div>
-        <div class="income-info" id="incomePerHour">Soatiga Daromad: $0.00</div>
-        <div class="income-info" id="incomePerDay">Kuniga Daromad: $0.00</div>
-        <div class="income-info" id="incomePerWeek">Haftasiga Daromad: $0.00</div>
-        <div class="income-info" id="incomePerMonth">Oyiga Daromad: $0.00</div>
-        <div class="income-info" id="incomePerYear">Yiliga Daromad: $0.00</div>
+        <div class="column" id="expenseColumn">
+            <h2>Harajat</h2>
+            <p id="expensePerSecond">Soniyasiga: $0.00</p>
+            <p id="expensePerMinute">Minutiga: $0.00</p>
+            <p id="expensePerHour">Soatiga: $0.00</p>
+            <p id="expensePerDay">Kuniga: $0.00</p>
+            <p id="expensePerWeek">Haftasiga: $0.00</p>
+            <p id="expensePerMonth">Oyiga: $0.00</p>
+            <p id="expensePerYear">Yiliga: $0.00</p>
+        </div>
 
-        <div class="expense-info" id="expensePerSecond">Soniyasiga Harajat: $0.00</div>
-        <div class="expense-info" id="expensePerMinute">Minutiga Harajat: $0.00</div>
-        <div class="expense-info" id="expensePerHour">Soatiga Harajat: $0.00</div>
-        <div class="expense-info" id="expensePerDay">Kuniga Harajat: $0.00</div>
-        <div class="expense-info" id="expensePerWeek">Haftasiga Harajat: $0.00</div>
-        <div class="expense-info" id="expensePerMonth">Oyiga Harajat: $0.00</div>
-        <div class="expense-info" id="expensePerYear">Yiliga Harajat: $0.00</div>
-
-        <!-- Scroll Bar for adjusting weekly income -->
-        <div id="scrollBar">
-            <div id="scrollBarInner"></div>
+        <div class="column" id="balanceColumn">
+            <h2>Balans</h2>
+            <p id="balance" class="balance">Balans: $0.00</p>
         </div>
     </div>
+
+    <div id="time">Vaqt: 00:00:00</div>
 
     <script>
         let startDate = new Date('2023-04-05'); // Daromad va harajat 5-aprel 2023 yilidan boshlanadi
@@ -117,29 +120,22 @@
             // Dashboardni yangilash
             document.getElementById('balance').textContent = `Balans: $${balance.toFixed(2)}`;
             document.getElementById('time').textContent = `Vaqt: ${formattedTime}`;
-            document.getElementById('incomePerSecond').textContent = `Soniyasiga Daromad: $${incomePerSecond.toFixed(4)}`;
-            document.getElementById('incomePerMinute').textContent = `Minutiga Daromad: $${incomePerMinute.toFixed(2)}`;
-            document.getElementById('incomePerHour').textContent = `Soatiga Daromad: $${incomePerHour.toFixed(2)}`;
-            document.getElementById('incomePerDay').textContent = `Kuniga Daromad: $${incomePerDay.toFixed(2)}`;
-            document.getElementById('incomePerWeek').textContent = `Haftasiga Daromad: $${incomePerWeek.toFixed(2)}`;
-            document.getElementById('incomePerMonth').textContent = `Oyiga Daromad: $${incomePerMonth.toFixed(2)}`;
-            document.getElementById('incomePerYear').textContent = `Yiliga Daromad: $${incomePerYear.toFixed(2)}`;
+            document.getElementById('incomePerSecond').textContent = `Soniyasiga: $${incomePerSecond.toFixed(4)}`;
+            document.getElementById('incomePerMinute').textContent = `Minutiga: $${incomePerMinute.toFixed(2)}`;
+            document.getElementById('incomePerHour').textContent = `Soatiga: $${incomePerHour.toFixed(2)}`;
+            document.getElementById('incomePerDay').textContent = `Kuniga: $${incomePerDay.toFixed(2)}`;
+            document.getElementById('incomePerWeek').textContent = `Haftasiga: $${incomePerWeek.toFixed(2)}`;
+            document.getElementById('incomePerMonth').textContent = `Oyiga: $${incomePerMonth.toFixed(2)}`;
+            document.getElementById('incomePerYear').textContent = `Yiliga: $${incomePerYear.toFixed(2)}`;
 
-            document.getElementById('expensePerSecond').textContent = `Soniyasiga Harajat: $${expensePerSecond.toFixed(4)}`;
-            document.getElementById('expensePerMinute').textContent = `Minutiga Harajat: $${expensePerMinute.toFixed(2)}`;
-            document.getElementById('expensePerHour').textContent = `Soatiga Harajat: $${expensePerHour.toFixed(2)}`;
-            document.getElementById('expensePerDay').textContent = `Kuniga Harajat: $${expensePerDay.toFixed(2)}`;
-            document.getElementById('expensePerWeek').textContent = `Haftasiga Harajat: $${expensePerWeek.toFixed(2)}`;
-            document.getElementById('expensePerMonth').textContent = `Oyiga Harajat: $${expensePerMonth.toFixed(2)}`;
-            document.getElementById('expensePerYear').textContent = `Yiliga Harajat: $${expensePerYear.toFixed(2)}`;
+            document.getElementById('expensePerSecond').textContent = `Soniyasiga: $${expensePerSecond.toFixed(4)}`;
+            document.getElementById('expensePerMinute').textContent = `Minutiga: $${expensePerMinute.toFixed(2)}`;
+            document.getElementById('expensePerHour').textContent = `Soatiga: $${expensePerHour.toFixed(2)}`;
+            document.getElementById('expensePerDay').textContent = `Kuniga: $${expensePerDay.toFixed(2)}`;
+            document.getElementById('expensePerWeek').textContent = `Haftasiga: $${expensePerWeek.toFixed(2)}`;
+            document.getElementById('expensePerMonth').textContent = `Oyiga: $${expensePerMonth.toFixed(2)}`;
+            document.getElementById('expensePerYear').textContent = `Yiliga: $${expensePerYear.toFixed(2)}`;
         }
-
-        // Scroll bar bilan haftalik kirimni sozlash
-        document.getElementById('scrollBar').addEventListener('scroll', (event) => {
-            let scrollPercentage = event.target.scrollLeft / event.target.scrollWidth;
-            weeklyIncome = 1200 + (scrollPercentage * 2400); // Haftalik daromadni sozlash (1200$ - 3600$ oralig'ida)
-            incomePerSecond = weeklyIncome / secondsInWeek; // Har soniyada daromadni yangilash
-        });
 
         setInterval(updateDashboard, 1000); // Har 1 soniyada yangilash
     </script>
