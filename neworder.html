@@ -203,7 +203,7 @@
     function formatPhone(phone) {
       phone = phone.replace(/[^\d]/g, '');
       if (phone.startsWith("998")) {
-        return "+" + phone;
+        return `@${phone}`;
       }
       if (!phone.startsWith("+")) {
         return "+" + phone;
