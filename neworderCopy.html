@@ -2,7 +2,7 @@
 <html lang="uz">
 <head>
   <meta charset="UTF-8">
-  <title>Menu</title>
+  <title>Menu </title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body {
@@ -137,15 +137,15 @@
 
   <script>
     const menu = {
-      "Norin-pound": { price: 23, img: "img/norin.jpg" },
-      "Xasip-pound": { price: 14, img: "img/xasip.jpg" },
-      "Gumma": { price: 3, img: "img/gumma.jpg" },
-      "Bozor Xonim": { price: 3, img: "img/xonim.jpg" },
-      "Non Kabob": { price: 15, img: "img/non_kabob.jpg" },
-      "Yupqa": { price: 4, img: "img/yupqa.jpg" },
-      "Tabaka": { price: 15, img: "img/tabaka.jpg" },
-      "Kuksi": { price: 15, img: "img/kuksi.jpg" },
-    };
+  "Norin-pound": { price: 23, img: "img/norin.jpg" },
+  "Xasip-pound": { price: 14, img: "img/xasip.jpg" },
+  "Gumma": { price: 3, img: "img/gumma.jpg" },
+  "Bozor Xonim": { price: 3, img: "img/xonim.jpg" },
+  "Non Kabob": { price: 15, img: "img/non_kabob.jpg" },
+  "Yupqa": { price: 4, img: "img/yupqa.jpg" },
+  "Tabaka": { price: 15, img: "img/tabaka.jpg" },
+  "Kuksi": { price: 15, img: "img/kuksi.jpg" },
+};
 
     const order = {};
 
@@ -178,7 +178,7 @@
 
         const itemDiv = document.createElement("div");
         itemDiv.className = "item";
-        itemDiv.innerHTML = 
+        itemDiv.innerHTML = `
           <img src="${img}" alt="${item}">
           <div class="item-name">${item}</div>
           <div class="item-price">$${price}</div>
@@ -187,11 +187,11 @@
             <span>${quantity}</span>
             <button onclick="changeQty('${item}', 1)">➕</button>
           </div>
-        ;
+        `;
         container.appendChild(itemDiv);
       }
 
-      document.getElementById("total").innerText = 💰 Umumiy summa: $${total};
+      document.getElementById("total").innerText = `💰 Umumiy summa: $${total}`;
     }
 
     function changeQty(item, delta) {
@@ -201,20 +201,14 @@
     }
 
     function formatPhone(phone) {
-      // Remove all non-numeric characters except for the "+" sign
-      phone = phone.replace(/[^\d+]/g, '');
-
-      // Check if the phone number starts with "1" (assuming US phone numbers)
-      if (!phone.startsWith("+1") && !phone.startsWith("1")) {
-        return "+1" + phone; // Add "+1" if not present
+      phone = phone.replace(/[^\d]/g, '');
+      if (phone.startsWith("998")) {
+        return `@${phone}`;
       }
-
-      // If phone already starts with "+1" or "1", keep it as is
-      if (phone.startsWith("1")) {
+      if (!phone.startsWith("+")) {
         return "+" + phone;
       }
-
-      return phone; // Return as is if it already starts with '+'
+      return phone;
     }
 
     function isValidPhone(phone) {
@@ -249,12 +243,12 @@
         return;
       }
 
-      const orderText = selected.map(([item, qty]) => ${item} x${qty} - $${menu[item].price * qty}).join("\n");
+      const orderText = selected.map(([item, qty]) => `${item} x${qty} - $${menu[item].price * qty}`).join("\n");
       const total = selected.reduce((sum, [item, qty]) => sum + menu[item].price * qty, 0);
 
-      let message = 📥 Yangi buyurtma:\n${orderText}\n💰 Umumiy summa: $${total}\n📞 Tel: ${phone}\n⏰ Vaqt: ${deliveryTime}\n📅 Kun: ${deliveryDate};
+      let message = `📥 Yangi buyurtma:\n${orderText}\n💰 Umumiy summa: $${total}\n📞 Tel: ${phone}\n⏰ Vaqt: ${deliveryTime}\n📅 Kun: ${deliveryDate}`;
       if (specialNote) {
-        message += \n📝 Maxsus izoh: ${specialNote};
+        message += `\n📝 Maxsus izoh: ${specialNote}`;
       }
 
       const botToken = config.botToken;
@@ -265,19 +259,19 @@
       btn.innerText = "⏳ Yuborilmoqda...";
 
       await Promise.all([
-        fetch(https://api.telegram.org/bot${botToken}/sendMessage, {
+        fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ chat_id: adminId, text: message })
         }),
-        fetch(https://api.telegram.org/bot${botToken}/sendMessage, {
+        fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ chat_id: "@chorsuorder", text: message })
         })
       ]);
 
-      alert(✅ Buyurtmangiz yuborildi!\n\n📋 Buyurtma:\n${orderText}\n💰 $${total}\n📞 Tel: ${phone}\n⏰ ${deliveryTime}\n📅 ${deliveryDate}\n📝 ${specialNote});
+      alert(`✅ Buyurtmangiz yuborildi!\n\n📋 Buyurtma:\n${orderText}\n💰 $${total}\n📞 Tel: ${phone}\n⏰ ${deliveryTime}\n📅 ${deliveryDate}\n📝 ${specialNote}`);
 
       for (let item in order) {
         order[item] = 0;
