@@ -63,7 +63,7 @@
             <p id="incomePerWeek">Haftasiga: $1200.00</p>
             <p id="incomePerMonth">Oyiga: $0.00</p>
             <p id="incomePerYear">Yiliga: $0.00</p>
-            <p id="totalIncome">Umumiy Daromad: $0.00</p>
+            <p id="totalIncome">Umumiy Daromad: $120000.00</p>
         </div>
 
         <div class="column" id="expenseColumn">
@@ -75,7 +75,7 @@
             <p id="expensePerWeek">Haftasiga: $1100.00</p>
             <p id="expensePerMonth">Oyiga: $0.00</p>
             <p id="expensePerYear">Yiliga: $0.00</p>
-            <p id="totalExpense">Umumiy Harajat: $0.00</p>
+            <p id="totalExpense">Umumiy Harajat: $143000.00</p>
         </div>
 
         <div class="column" id="balanceColumn">
@@ -88,10 +88,11 @@
 
     <script>
         let startDate = new Date('2023-04-05'); // Daromad va harajat 5-aprel 2023 yilidan boshlanadi
+        let targetDate = new Date('2025-04-27T00:26:00'); // 27-aprel 2025 yil, soat 00:26 holati
         let currentDate = new Date(); // Hozirgi sana
         let balance = 0; // Boshlang'ich balans 0$
-        let totalIncome = 0; // Umumiy daromad
-        let totalExpense = 0; // Umumiy harajat
+        let totalIncome = 120000; // 27-aprel 2025 yil holatiga ko'ra umumiy daromad
+        let totalExpense = 143000; // 27-aprel 2025 yil holatiga ko'ra umumiy harajat
         let weeklyIncome = 1200; // Haftalik daromad 1200$
         let weeklyExpense = 1100; // Haftalik harajat 1100$
         let secondsInWeek = 7 * 24 * 60 * 60; // 1 hafta = 604800 sekund
@@ -101,14 +102,12 @@
         // Funksiya har soniyada daromad va harajatlarni oshirib boradi
         function updateDashboard() {
             let elapsedTime = (currentDate - startDate) / 1000; // O'tgan vaqtni sekundda hisoblash
+            let targetTime = (targetDate - startDate) / 1000; // Maqsadga yetgan vaqtga qadar o'tgan vaqtni hisoblash
             let formattedTime = new Date().toLocaleTimeString(); // Hozirgi real vaqtni olish
 
             // Daromad va harajatlarni hisoblash
-            let income = elapsedTime * incomePerSecond;
-            let expense = elapsedTime * expensePerSecond;
-
-            totalIncome = income; // Umumiy daromad
-            totalExpense = expense; // Umumiy harajat
+            let income = totalIncome + (elapsedTime * incomePerSecond);
+            let expense = totalExpense + (elapsedTime * expensePerSecond);
 
             balance = income - expense; // Balansni hisoblash
 
@@ -147,11 +146,8 @@
             document.getElementById('expensePerYear').textContent = `Yiliga: $${expensePerYear.toFixed(2)}`;
 
             // Umumiy daromad va harajatni yangilash
-            document.getElementById('totalIncome').textContent = `Umumiy Daromad: $${totalIncome.toFixed(2)}`;
-            document.getElementById('totalExpense').textContent = `Umumiy Harajat: $${totalExpense.toFixed(2)}`;
+            document.getElementById('totalIncome').textContent = `Umumiy Daromad: $${income.toFixed(2)}`;
+            document.getElementById('totalExpense').textContent = `Umumiy Harajat: $${expense.toFixed(2)}`;
         }
 
-        setInterval(updateDashboard, 1000); // Har 1 soniyada yangilash
-    </script>
-</body>
-</html>
+        setInterval(updateDashboard, 1000); // Har 
