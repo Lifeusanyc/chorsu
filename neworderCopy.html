@@ -201,14 +201,11 @@
     }
 
     function formatPhone(phone) {
-      phone = phone.replace(/[^\d]/g, '');
-      if (phone.startsWith("998")) {
-        return `@${phone}`;
+      phone = phone.replace(/[^\d]/g, '');  // Remove non-digit characters
+      if (!phone.startsWith("1")) {
+        phone = "1" + phone;  // Add +1 if it doesn't start with 1
       }
-      if (!phone.startsWith("+")) {
-        return "+" + phone;
-      }
-      return phone;
+      return `+${phone}`;
     }
 
     function isValidPhone(phone) {
