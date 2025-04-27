@@ -2,26 +2,22 @@
 <html lang="uz">
 <head>
   <meta charset="UTF-8">
-  <title>Menu </title>
+  <title>Menu</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
+    /* siz bergan style o'zgartirilmagan */
     body {
       font-family: Arial, sans-serif;
       padding: 20px;
       background: #f1f1f1;
     }
-
-    h2 {
-      text-align: center;
-    }
-
+    h2 { text-align: center; }
     #menu {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 15px;
       margin-top: 20px;
     }
-
     .item {
       background-color: white;
       border-radius: 12px;
@@ -32,7 +28,6 @@
       align-items: center;
       text-align: center;
     }
-
     .item img {
       width: 100%;
       height: 120px;
@@ -40,35 +35,29 @@
       border-radius: 10px;
       margin-bottom: 8px;
     }
-
     .item-name {
       font-weight: bold;
       margin: 5px 0;
     }
-
     .item-price {
       color: #4CAF50;
       margin-bottom: 10px;
     }
-
     .quantity-control {
       display: flex;
       align-items: center;
       justify-content: center;
     }
-
     .quantity-control button {
       padding: 4px 10px;
       font-size: 16px;
       margin: 0 6px;
     }
-
     .total {
       font-size: 18px;
       text-align: center;
       margin-top: 20px;
     }
-
     .submit-btn {
       display: block;
       width: 100%;
@@ -81,20 +70,14 @@
       border-radius: 10px;
       cursor: pointer;
     }
-
-    .submit-btn:hover {
-      background-color: #45a049;
-    }
-
+    .submit-btn:hover { background-color: #45a049; }
     .input-group {
       margin-top: 20px;
     }
-
     .input-group label {
       display: block;
       margin-bottom: 5px;
     }
-
     .input-group input, .input-group select, .input-group textarea {
       width: 100%;
       padding: 10px;
@@ -137,15 +120,15 @@
 
   <script>
     const menu = {
-  "Norin-pound": { price: 23, img: "img/norin.jpg" },
-  "Xasip-pound": { price: 14, img: "img/xasip.jpg" },
-  "Gumma": { price: 3, img: "img/gumma.jpg" },
-  "Bozor Xonim": { price: 3, img: "img/xonim.jpg" },
-  "Non Kabob": { price: 15, img: "img/non_kabob.jpg" },
-  "Yupqa": { price: 4, img: "img/yupqa.jpg" },
-  "Tabaka": { price: 15, img: "img/tabaka.jpg" },
-  "Kuksi": { price: 15, img: "img/kuksi.jpg" },
-};
+      "Norin-pound": { price: 23, img: "img/norin.jpg" },
+      "Xasip-pound": { price: 14, img: "img/xasip.jpg" },
+      "Gumma": { price: 3, img: "img/gumma.jpg" },
+      "Bozor Xonim": { price: 3, img: "img/xonim.jpg" },
+      "Non Kabob": { price: 15, img: "img/non_kabob.jpg" },
+      "Yupqa": { price: 4, img: "img/yupqa.jpg" },
+      "Tabaka": { price: 15, img: "img/tabaka.jpg" },
+      "Kuksi": { price: 15, img: "img/kuksi.jpg" },
+    };
 
     const order = {};
 
@@ -211,6 +194,14 @@
       return phone;
     }
 
+    function formatPhoneForMessage(phone) {
+      phone = phone.replace(/[^\d]/g, '');
+      if (phone.startsWith("998")) {
+        phone = phone.slice(3);
+      }
+      return `@${phone}`;
+    }
+
     function isValidPhone(phone) {
       return /^\+?\d{10,15}$/.test(phone);
     }
@@ -218,6 +209,7 @@
     async function submitOrder() {
       const rawPhone = document.getElementById("phone").value.trim();
       const phone = formatPhone(rawPhone);
+      const phoneForMessage = formatPhoneForMessage(phone);
       const deliveryDate = document.getElementById("delivery-date").value;
       const deliveryTime = document.getElementById("delivery-time").value;
       const specialNote = document.getElementById("special-note").value.trim();
@@ -227,17 +219,14 @@
         alert("📵 Iltimos, to'g'ri telefon raqamini kiriting.");
         return;
       }
-
       if (!deliveryDate) {
         alert("📅 Iltimos, yetkazib berish kunini tanlang.");
         return;
       }
-
       if (!deliveryTime) {
         alert("⏰ Iltimos, yetkazib berish vaqtini tanlang.");
         return;
       }
-
       if (selected.length === 0) {
         alert("❗ Hech qanday taom tanlamadingiz.");
         return;
@@ -246,7 +235,7 @@
       const orderText = selected.map(([item, qty]) => `${item} x${qty} - $${menu[item].price * qty}`).join("\n");
       const total = selected.reduce((sum, [item, qty]) => sum + menu[item].price * qty, 0);
 
-      let message = `📥 Yangi buyurtma:\n${orderText}\n💰 Umumiy summa: $${total}\n📞 Tel: ${phone}\n⏰ Vaqt: ${deliveryTime}\n📅 Kun: ${deliveryDate}`;
+      let message = `📥 Yangi buyurtma:\n${orderText}\n💰 Umumiy summa: $${total}\n📞 Tel: ${phoneForMessage}\n⏰ Vaqt: ${deliveryTime}\n📅 Kun: ${deliveryDate}`;
       if (specialNote) {
         message += `\n📝 Maxsus izoh: ${specialNote}`;
       }
@@ -271,7 +260,7 @@
         })
       ]);
 
-      alert(`✅ Buyurtmangiz yuborildi!\n\n📋 Buyurtma:\n${orderText}\n💰 $${total}\n📞 Tel: ${phone}\n⏰ ${deliveryTime}\n📅 ${deliveryDate}\n📝 ${specialNote}`);
+      alert(`✅ Buyurtmangiz yuborildi!\n\n📋 Buyurtma:\n${orderText}\n💰 $${total}\n📞 Tel: ${phoneForMessage}\n⏰ ${deliveryTime}\n📅 ${deliveryDate}\n📝 ${specialNote}`);
 
       for (let item in order) {
         order[item] = 0;
