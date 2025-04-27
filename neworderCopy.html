@@ -2,7 +2,7 @@
 <html lang="uz">
 <head>
   <meta charset="UTF-8">
-  <title>Menu </title>
+  <title>Menu</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body {
@@ -103,6 +103,65 @@
       border: 1px solid #ccc;
       resize: vertical;
     }
+
+    #order-summary {
+      background-color: #fff;
+      padding: 15px;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      margin-top: 20px;
+      display: none;
+    }
+
+    #order-summary h3 {
+      margin-bottom: 10px;
+    }
+
+    #order-summary ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    #order-summary ul li {
+      padding: 5px 0;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background-color: white;
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      width: 80%;
+      max-width: 500px;
+    }
+
+    .modal button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 20px;
+      font-size: 18px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .modal button:hover {
+      background-color: #45a049;
+    }
   </style>
 </head>
 <body>
@@ -132,20 +191,37 @@
   <div class="total" id="total">💰 Umumiy summa: $0</div>
   <button class="submit-btn" onclick="submitOrder()">📥 Buyurtmani yuborish</button>
 
+  <button class="submit-btn" onclick="toggleSummary()">📝 Buyurtma Xulosasini Ko'rsatish</button>
+
+  <div id="order-summary">
+    <h3>Buyurtma Xulosasi:</h3>
+    <ul id="summary-list"></ul>
+    <p><strong>💰 Umumiy summa: </strong><span id="summary-total">$0</span></p>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal" id="confirmation-modal">
+    <div class="modal-content">
+      <h3>✅ Buyurtma Tasdiqlandi!</h3>
+      <p>Sizning buyurtmangiz muvaffaqiyatli yuborildi.</p>
+      <button onclick="closeModal()">Yopish</button>
+    </div>
+  </div>
+
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="config.js"></script>
 
   <script>
     const menu = {
-  "Norin-pound": { price: 23, img: "img/norin.jpg" },
-  "Xasip-pound": { price: 14, img: "img/xasip.jpg" },
-  "Gumma": { price: 3, img: "img/gumma.jpg" },
-  "Bozor Xonim": { price: 3, img: "img/xonim.jpg" },
-  "Non Kabob": { price: 15, img: "img/non_kabob.jpg" },
-  "Yupqa": { price: 4, img: "img/yupqa.jpg" },
-  "Tabaka": { price: 15, img: "img/tabaka.jpg" },
-  "Kuksi": { price: 15, img: "img/kuksi.jpg" },
-};
+      "Norin-pound": { price: 23, img: "img/norin.jpg" },
+      "Xasip-pound": { price: 14, img: "img/xasip.jpg" },
+      "Gumma": { price: 3, img: "img/gumma.jpg" },
+      "Bozor Xonim": { price: 3, img: "img/xonim.jpg" },
+      "Non Kabob": { price: 15, img: "img/non_kabob.jpg" },
+      "Yupqa": { price: 4, img: "img/yupqa.jpg" },
+      "Tabaka": { price: 15, img: "img/tabaka.jpg" },
+      "Kuksi": { price: 15, img: "img/kuksi.jpg" },
+    };
 
     const order = {};
 
@@ -200,16 +276,30 @@
       renderMenu();
     }
 
-    function formatPhone(phone) {
-      phone = phone.replace(/[^\d]/g, '');  // Remove non-digit characters
-      if (!phone.startsWith("1")) {
-        phone = "1" + phone;  // Add +1 if it doesn't start with 1
-      }
-      return `+${phone}`;
+    function toggleSummary() {
+      const summary = document.getElementById("order-summary");
+      summary.style.display = (summary.style.display === "none") ? "block" : "none";
+      updateSummary();
     }
 
-    function isValidPhone(phone) {
-      return /^\+?\d{10,15}$/.test(phone);
+    function updateSummary() {
+      const summaryList = document.getElementById("summary-list");
+      const totalElement = document.getElementById("summary-total");
+      summaryList.innerHTML = "";
+      let total = 0;
+
+      for (let item in order) {
+        if (order[item] > 0) {
+          const { price } = menu[item];
+          const quantity = order[item];
+          const listItem = document.createElement("li");
+          listItem.innerText = `${item} x${quantity} - $${price * quantity}`;
+          summaryList.appendChild(listItem);
+          total += price * quantity;
+        }
+      }
+
+      totalElement.innerText = `$${total}`;
     }
 
     async function submitOrder() {
@@ -268,7 +358,7 @@
         })
       ]);
 
-      alert(`✅ Buyurtmangiz yuborildi!\n\n📋 Buyurtma:\n${orderText}\n💰 $${total}\n📞 Tel: ${phone}\n⏰ ${deliveryTime}\n📅 ${deliveryDate}\n📝 ${specialNote}`);
+      showConfirmationModal();
 
       for (let item in order) {
         order[item] = 0;
@@ -284,6 +374,16 @@
       btn.innerText = "📥 Buyurtmani yuborish";
 
       Telegram.WebApp.close();
+    }
+
+    function showConfirmationModal() {
+      const modal = document.getElementById("confirmation-modal");
+      modal.style.display = "flex";
+    }
+
+    function closeModal() {
+      const modal = document.getElementById("confirmation-modal");
+      modal.style.display = "none";
     }
 
     document.addEventListener("DOMContentLoaded", function () {
