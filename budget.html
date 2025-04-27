@@ -75,7 +75,7 @@
         <div class="expense-info" id="expensePerMonth">Oyiga Harajat: $0.00</div>
         <div class="expense-info" id="expensePerYear">Yiliga Harajat: $0.00</div>
 
-        <!-- Scroll Bar for adjusting weekly income and expenses -->
+        <!-- Scroll Bar for adjusting weekly income -->
         <div id="scrollBar">
             <div id="scrollBarInner"></div>
         </div>
@@ -134,13 +134,11 @@
             document.getElementById('expensePerYear').textContent = `Yiliga Harajat: $${expensePerYear.toFixed(2)}`;
         }
 
-        // Scroll bar bilan kirim va harajatlarni sozlash
-        document.getElementById('scrollBar').addEventListener('input', (event) => {
+        // Scroll bar bilan haftalik kirimni sozlash
+        document.getElementById('scrollBar').addEventListener('scroll', (event) => {
             let scrollPercentage = event.target.scrollLeft / event.target.scrollWidth;
-            weeklyIncome = 1200 + (scrollPercentage * 2400); // Daromadni sozlash (1200$ - 3600$ oralig'ida)
-            weeklyExpense = 1200 + (scrollPercentage * 2400); // Harajatni sozlash (1200$ - 3600$ oralig'ida)
-            incomePerSecond = weeklyIncome / secondsInWeek;
-            expensePerSecond = weeklyExpense / secondsInWeek;
+            weeklyIncome = 1200 + (scrollPercentage * 2400); // Haftalik daromadni sozlash (1200$ - 3600$ oralig'ida)
+            incomePerSecond = weeklyIncome / secondsInWeek; // Har soniyada daromadni yangilash
         });
 
         setInterval(updateDashboard, 1000); // Har 1 soniyada yangilash
