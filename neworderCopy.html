@@ -178,7 +178,7 @@
 
         const itemDiv = document.createElement("div");
         itemDiv.className = "item";
-        itemDiv.innerHTML = `
+        itemDiv.innerHTML = 
           <img src="${img}" alt="${item}">
           <div class="item-name">${item}</div>
           <div class="item-price">$${price}</div>
@@ -187,11 +187,11 @@
             <span>${quantity}</span>
             <button onclick="changeQty('${item}', 1)">➕</button>
           </div>
-        `;
+        ;
         container.appendChild(itemDiv);
       }
 
-      document.getElementById("total").innerText = `💰 Umumiy summa: $${total}`;
+      document.getElementById("total").innerText = 💰 Umumiy summa: $${total};
     }
 
     function changeQty(item, delta) {
@@ -200,35 +200,30 @@
       renderMenu();
     }
 
-    function formatPhoneWithCountryCode(phone) {
-      const phoneCleaned = phone.replace(/[^\d+]/g, ''); // Faqat raqam va '+' ni saqlash
+    function formatPhone(phone) {
+      // Remove all non-numeric characters except for the "+" sign
+      phone = phone.replace(/[^\d+]/g, '');
 
-      // Agar telefon raqami + belgisi bilan boshlasa, uni qo'shgan holda qabul qilamiz
-      if (phoneCleaned.startsWith("+")) {
-        return phoneCleaned;
+      // Check if the phone number starts with "1" (assuming US phone numbers)
+      if (!phone.startsWith("+1") && !phone.startsWith("1")) {
+        return "+1" + phone; // Add "+1" if not present
       }
 
-      // Telefon raqamini davlat kodiga mos formatlash
-      if (phoneCleaned.startsWith("92")) {
-        return `+92${phoneCleaned.slice(2)}`;  // Pokiston uchun +92 kodini qo'shish
-      }
-      if (phoneCleaned.startsWith("1")) {
-        return `+1${phoneCleaned.slice(1)}`;  // AQSh uchun +1 kodini qo'shish
+      // If phone already starts with "+1" or "1", keep it as is
+      if (phone.startsWith("1")) {
+        return "+" + phone;
       }
 
-      // Boshqa kodlar qo'shish mumkin (masalan, +44 uchun Buyuk Britaniya va h.k.)
-      
-      return `+${phoneCleaned}`;  // Telefon raqami boshlanishi bo'yicha aniqlash
+      return phone; // Return as is if it already starts with '+'
     }
 
     function isValidPhone(phone) {
-      // Telefon raqami formatini tekshirish
       return /^\+?\d{10,15}$/.test(phone);
     }
 
     async function submitOrder() {
       const rawPhone = document.getElementById("phone").value.trim();
-      const phone = formatPhoneWithCountryCode(rawPhone); // Telefonni formatlash
+      const phone = formatPhone(rawPhone);
       const deliveryDate = document.getElementById("delivery-date").value;
       const deliveryTime = document.getElementById("delivery-time").value;
       const specialNote = document.getElementById("special-note").value.trim();
@@ -254,12 +249,12 @@
         return;
       }
 
-      const orderText = selected.map(([item, qty]) => `${item} x${qty} - $${menu[item].price * qty}`).join("\n");
+      const orderText = selected.map(([item, qty]) => ${item} x${qty} - $${menu[item].price * qty}).join("\n");
       const total = selected.reduce((sum, [item, qty]) => sum + menu[item].price * qty, 0);
 
-      let message = `📥 Yangi buyurtma:\n${orderText}\n💰 Umumiy summa: $${total}\n📞 Tel: ${phone}\n⏰ Vaqt: ${deliveryTime}\n📅 Kun: ${deliveryDate}`;
+      let message = 📥 Yangi buyurtma:\n${orderText}\n💰 Umumiy summa: $${total}\n📞 Tel: ${phone}\n⏰ Vaqt: ${deliveryTime}\n📅 Kun: ${deliveryDate};
       if (specialNote) {
-        message += `\n📝 Maxsus izoh: ${specialNote}`;
+        message += \n📝 Maxsus izoh: ${specialNote};
       }
 
       const botToken = config.botToken;
@@ -270,19 +265,19 @@
       btn.innerText = "⏳ Yuborilmoqda...";
 
       await Promise.all([
-        fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+        fetch(https://api.telegram.org/bot${botToken}/sendMessage, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ chat_id: adminId, text: message })
         }),
-        fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+        fetch(https://api.telegram.org/bot${botToken}/sendMessage, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ chat_id: "@chorsuorder", text: message })
         })
       ]);
 
-      alert(`✅ Buyurtmangiz yuborildi!\n\n📋 Buyurtma:\n${orderText}\n💰 $${total}\n📞 Tel: ${phone}\n⏰ ${deliveryTime}\n📅 ${deliveryDate}\n📝 ${specialNote}`);
+      alert(✅ Buyurtmangiz yuborildi!\n\n📋 Buyurtma:\n${orderText}\n💰 $${total}\n📞 Tel: ${phone}\n⏰ ${deliveryTime}\n📅 ${deliveryDate}\n📝 ${specialNote});
 
       for (let item in order) {
         order[item] = 0;
