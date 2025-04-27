@@ -200,23 +200,20 @@
       renderMenu();
     }
 
-    function formatPhone(rawPhone) {
-  // Faoliyatni faqat raqamlar bilan olib, + va boshqa belgilarni olib tashlaymiz
-  let phone = rawPhone.replace(/[^\d]/g, '');
+    function formatPhone(phone) {
+      phone = phone.replace(/[^\d]/g, '');
+      if (phone.startsWith("998")) {
+        return `@${phone}`;
+      }
+      if (!phone.startsWith("+")) {
+        return "+" + phone;
+      }
+      return phone;
+    }
 
-  // Agar telefon raqami +1 bilan boshlasa
-  if (phone.startsWith("1") && rawPhone.startsWith("+")) {
-    // +1 bilan boshlasa, faqat @ ni qo'shamiz va + ni olib tashlaymiz
-    return `@${phone.substring(1)}`;
-  } else {
-    // Agar telefon + bilan boshlamasa, oldiga @1 qo'shamiz
-    return `@1${phone}`;
-  }
-}
-
- //   function isValidPhone(phone) {
- //     return /^\+?\d{10,15}$/.test(phone);
- //   }
+    function isValidPhone(phone) {
+      return /^\+?\d{10,15}$/.test(phone);
+    }
 
     async function submitOrder() {
       const rawPhone = document.getElementById("phone").value.trim();
