@@ -41,14 +41,17 @@
     <script>
         let balance = 15000; // Boshlang'ich balansi
         let startTime = Date.now(); // Dastur ishga tushgan vaqti
+        let weeklyIncome = 1200; // Haftalik kirim
+        let secondsInWeek = 7 * 24 * 60 * 60; // 1 hafta = 604800 sekund
+        let incomePerSecond = weeklyIncome / secondsInWeek; // Har soniyada qo'shiladigan miqdor
 
         // Funksiya har soniyada daromadni oshirib boradi
         function updateDashboard() {
             let elapsedTime = (Date.now() - startTime) / 1000; // O'tgan vaqtni sekundda hisoblash
             let formattedTime = new Date(elapsedTime * 1000).toISOString().substr(11, 8); // Vaqtni formatlash
             
-            // Daromadni soniyasiga 100$ qo'shish
-            balance = 15000 + (elapsedTime * 100);
+            // Daromadni haftasiga 1200$ oshadigan tarzda hisoblash
+            balance = 15000 + (elapsedTime * incomePerSecond);
             
             // Dashboardni yangilash
             document.getElementById('balance').textContent = `$${balance.toFixed(2)}`;
