@@ -2,7 +2,7 @@
 <html lang="uz">
 <head>
   <meta charset="UTF-8">
-  <title>Menu</title>
+  <title>Menu </title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body {
@@ -201,14 +201,17 @@
     }
 
     function formatPhone(phone) {
-      phone = phone.replace(/[^\d]/g, '');
+      phone = phone.replace(/[^\d]/g, ''); // Remove any non-numeric characters
       if (phone.startsWith("998")) {
-        return `@${phone}`;
+        return `@${phone}`; // For Uzbekistan, keep the phone number as it is with @
+      }
+      if (phone.startsWith("1")) {
+        return `@${phone}`; // For numbers starting with 1 (USA/Canada), also add @
       }
       if (!phone.startsWith("+")) {
-        return "+" + phone;
+        return `@${phone}`; // If phone doesn't start with +, add @
       }
-      return phone;
+      return phone; // Return the phone number as is if it starts with "+"
     }
 
     function isValidPhone(phone) {
@@ -247,13 +250,9 @@
       const total = selected.reduce((sum, [item, qty]) => sum + menu[item].price * qty, 0);
 
       let message = `📥 Yangi buyurtma:\n${orderText}\n💰 Umumiy summa: $${total}\n📞 Tel: ${phone}\n⏰ Vaqt: ${deliveryTime}\n📅 Kun: ${deliveryDate}`;
-
       if (specialNote) {
         message += `\n📝 Maxsus izoh: ${specialNote}`;
       }
-
-      // Mijoz bilan bog'lanish @19299556363
-      message += `\nMijoz bilan bog'lanish @1${phone.replace(/[^\d]/g, '').slice(3)}`;
 
       const botToken = config.botToken;
       const adminId = config.adminId;
@@ -262,7 +261,7 @@
       btn.disabled = true;
       btn.innerText = "⏳ Yuborilmoqda...";
 
-      await Promise.all([
+      await Promise.all([ 
         fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
