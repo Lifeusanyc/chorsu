@@ -87,30 +87,26 @@
     <div id="time">Vaqt: 00:00:00</div>
 
     <script>
-        let startDate = new Date('2023-04-05'); // Daromad va harajat 5-aprel 2023 yilidan boshlanadi
-        let targetDate = new Date('2025-04-27T00:26:00'); // 27-aprel 2025 yil, soat 00:26 holati
+        let startDate = new Date('2023-04-05T15:00:00'); // 5-aprel 2023, 15:00 boshlanishi
+        let targetDate = new Date('2025-04-27T00:32:00'); // 27-aprel 2025, soat 00:32 holati
         let currentDate = new Date(); // Hozirgi sana
         let totalIncome = 120000; // 27-aprel 2025 yil holatiga ko'ra umumiy daromad
         let totalExpense = 143000; // 27-aprel 2025 yil holatiga ko'ra umumiy harajat
-        let weeklyIncome = 1200; // Haftalik daromad 1200$
-        let weeklyExpense = 1100; // Haftalik harajat 1100$
-        let secondsInWeek = 7 * 24 * 60 * 60; // 1 hafta = 604800 sekund
-        let incomePerSecond = weeklyIncome / secondsInWeek; // Har soniyada qo'shiladigan daromad
-        let expensePerSecond = weeklyExpense / secondsInWeek; // Har soniyada qo'shiladigan harajat
+        let totalTime = (targetDate - startDate) / 1000; // Boshlanishdan tugashgacha bo'lgan vaqt (sekundlarda)
 
         // Funksiya har soniyada daromad va harajatlarni oshirib boradi
         function updateDashboard() {
             let elapsedTime = (currentDate - startDate) / 1000; // O'tgan vaqtni sekundda hisoblash
-            let targetTime = (targetDate - startDate) / 1000; // Maqsadga yetgan vaqtga qadar o'tgan vaqtni hisoblash
             let formattedTime = new Date().toLocaleTimeString(); // Hozirgi real vaqtni olish
 
-            // Daromad va harajatlarni hisoblash
-            let income = totalIncome + (elapsedTime * incomePerSecond);
-            let expense = totalExpense + (elapsedTime * expensePerSecond);
+            // Daromad va harajatlar o'sishini hisoblash
+            let income = totalIncome * (elapsedTime / totalTime);
+            let expense = totalExpense * (elapsedTime / totalTime);
 
             let balance = income - expense; // Balansni hisoblash
 
             // Kirim va harajat miqdorlarini hisoblash
+            let incomePerSecond = income / elapsedTime;
             let incomePerMinute = incomePerSecond * 60;
             let incomePerHour = incomePerMinute * 60;
             let incomePerDay = incomePerHour * 24;
@@ -118,6 +114,7 @@
             let incomePerMonth = incomePerDay * 30; // O'rtacha oylik (30 kun deb hisoblaymiz)
             let incomePerYear = incomePerDay * 365; // Yillik kirim
 
+            let expensePerSecond = expense / elapsedTime;
             let expensePerMinute = expensePerSecond * 60;
             let expensePerHour = expensePerMinute * 60;
             let expensePerDay = expensePerHour * 24;
