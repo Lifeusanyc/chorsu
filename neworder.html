@@ -201,15 +201,9 @@
     }
 
     function formatPhone(phone) {
-      phone = phone.replace(/[^\d]/g, '');
-      if (phone.startsWith("998")) {
-        return "+" + phone;
-      }
-      if (!phone.startsWith("+")) {
-        return "+" + phone;
-      }
-      return phone;
-    }
+  phone = phone.replace(/[^\d]/g, ''); // faqat raqamlar qoldiramiz
+  return `@${phone}`; // boshiga @ qo‘shib qaytaramiz
+}
 
     function isValidPhone(phone) {
       return /^\+?\d{10,15}$/.test(phone);
