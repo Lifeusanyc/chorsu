@@ -201,11 +201,14 @@
     }
 
     function formatPhone(phone) {
-      phone = phone.replace(/[^\d]/g, ''); // Faqat raqamlarni qoldiramiz
-  if (!phone.startsWith("+1")) {
-    phone = "+1" + phone;
-  }
-  return "@" + phone;
+      phone = phone.replace(/[^\d]/g, '');
+      if (phone.startsWith("998")) {
+        return `@${phone}`;
+      }
+      if (!phone.startsWith("+")) {
+        return "+" + phone;
+      }
+      return phone;
     }
 
     function isValidPhone(phone) {
