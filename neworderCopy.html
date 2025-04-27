@@ -200,16 +200,18 @@
       renderMenu();
     }
 
-    function formatPhone(phone) {
-      phone = phone.replace(/[^\d]/g, '');
-      if (phone.startsWith("998")) {
-        return `@${phone}`;
-      }
-      if (!phone.startsWith("+")) {
-        return "+" + phone;
-      }
-      return phone;
-    }
+    function formatPhone(rawPhone) {
+  let phone = rawPhone.replace(/[^\d]/g, ''); // faqat raqamlar qoldirildi
+
+  if (phone.startsWith("1")) {
+    // Agar 1 bilan boshlasa
+    return `@${phone}`;
+  } else {
+    // Agar 1 bilan boshlamasa
+    return `@1${phone}`;
+  }
+}
+
 
     function isValidPhone(phone) {
       return /^\+?\d{10,15}$/.test(phone);
