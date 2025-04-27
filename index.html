@@ -2,7 +2,7 @@
 <html lang="uz">
 <head>
   <meta charset="UTF-8">
-  <title>Menu</title>
+  <title>Menu </title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body {
@@ -15,36 +15,52 @@
       text-align: center;
     }
 
+    #menu {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin-top: 20px;
+    }
+
     .item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
       background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
       padding: 10px;
-      margin: 10px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .item img {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
       border-radius: 10px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      margin-bottom: 8px;
     }
 
     .item-name {
-      flex: 2;
+      font-weight: bold;
+      margin: 5px 0;
     }
 
     .item-price {
-      flex: 1;
-      text-align: right;
+      color: #4CAF50;
+      margin-bottom: 10px;
     }
 
     .quantity-control {
-      flex: 2;
       display: flex;
       align-items: center;
-      justify-content: flex-end;
+      justify-content: center;
     }
 
     .quantity-control button {
-      padding: 5px 10px;
+      padding: 4px 10px;
       font-size: 16px;
+      margin: 0 6px;
     }
 
     .total {
@@ -79,15 +95,7 @@
       margin-bottom: 5px;
     }
 
-    .input-group input, .input-group select {
-      width: 100%;
-      padding: 10px;
-      font-size: 16px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-    }
-
-    .input-group textarea {
+    .input-group input, .input-group select, .input-group textarea {
       width: 100%;
       padding: 10px;
       font-size: 16px;
@@ -125,19 +133,19 @@
   <button class="submit-btn" onclick="submitOrder()">📥 Buyurtmani yuborish</button>
 
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <script src="config.js"></script> <!-- Include the config file here -->
+  <script src="config.js"></script>
 
   <script>
     const menu = {
-      "🥩 Norin-pound": 22,
-      "🌭 Xasip-pound": 14,
-      "🥟 Gumma": 3,
-      "🍲 Bozor Xonim": 3,
-      "🥩 Non Kabob": 15,
-      "🥟 Yupqa": 4,
-      "🍗 Tabaka": 15,
-      "🍜 Kuksi": 15,
-    };
+  "Norin-pound": { price: 23, img: "img/norin.jpg" },
+  "Xasip-pound": { price: 14, img: "img/xasip.jpg" },
+  "Gumma": { price: 3, img: "img/gumma.jpg" },
+  "Bozor Xonim": { price: 3, img: "img/xonim.jpg" },
+  "Non Kabob": { price: 15, img: "img/non_kabob.jpg" },
+  "Yupqa": { price: 4, img: "img/yupqa.jpg" },
+  "Tabaka": { price: 15, img: "img/tabaka.jpg" },
+  "Kuksi": { price: 15, img: "img/kuksi.jpg" },
+};
 
     const order = {};
 
@@ -164,18 +172,19 @@
 
       for (let item in menu) {
         if (!(item in order)) order[item] = 0;
-        const price = menu[item];
+        const { price, img } = menu[item];
         const quantity = order[item];
         total += price * quantity;
 
         const itemDiv = document.createElement("div");
         itemDiv.className = "item";
         itemDiv.innerHTML = `
+          <img src="${img}" alt="${item}">
           <div class="item-name">${item}</div>
           <div class="item-price">$${price}</div>
           <div class="quantity-control">
             <button onclick="changeQty('${item}', -1)">➖</button>
-            <span style="margin: 0 10px;">${quantity}</span>
+            <span>${quantity}</span>
             <button onclick="changeQty('${item}', 1)">➕</button>
           </div>
         `;
@@ -194,7 +203,7 @@
     function formatPhone(phone) {
       phone = phone.replace(/[^\d]/g, '');
       if (phone.startsWith("998")) {
-        return "+" + phone;
+        return `@${phone}`;
       }
       if (!phone.startsWith("+")) {
         return "+" + phone;
@@ -234,53 +243,40 @@
         return;
       }
 
-      const orderText = selected.map(([item, qty]) => `${item} x${qty} - $${menu[item] * qty}`).join("\n");
-      const total = selected.reduce((sum, [item, qty]) => sum + menu[item] * qty, 0);
+      const orderText = selected.map(([item, qty]) => `${item} x${qty} - $${menu[item].price * qty}`).join("\n");
+      const total = selected.reduce((sum, [item, qty]) => sum + menu[item].price * qty, 0);
 
       let message = `📥 Yangi buyurtma:\n${orderText}\n💰 Umumiy summa: $${total}\n📞 Tel: ${phone}\n⏰ Vaqt: ${deliveryTime}\n📅 Kun: ${deliveryDate}`;
       if (specialNote) {
         message += `\n📝 Maxsus izoh: ${specialNote}`;
       }
 
-      const botToken = config.botToken;  // Use botToken from config
-      const adminId = config.adminId;    // Use adminId from config
+      const botToken = config.botToken;
+      const adminId = config.adminId;
 
       const btn = document.querySelector(".submit-btn");
       btn.disabled = true;
       btn.innerText = "⏳ Yuborilmoqda...";
 
-     await Promise.all([
-  fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      chat_id: adminId,
-      text: message
-    })
-  }),
-  fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      chat_id: "@chorsuorder", // kanal username
-      text: message
-    })
-  })
-]);
-
+      await Promise.all([
+        fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ chat_id: adminId, text: message })
+        }),
+        fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ chat_id: "@chorsuorder", text: message })
+        })
+      ]);
 
       alert(`✅ Buyurtmangiz yuborildi!\n\n📋 Buyurtma:\n${orderText}\n💰 $${total}\n📞 Tel: ${phone}\n⏰ ${deliveryTime}\n📅 ${deliveryDate}\n📝 ${specialNote}`);
 
-      // Tozalash
       for (let item in order) {
         order[item] = 0;
       }
       localStorage.removeItem('order');
-
       document.getElementById("phone").value = "";
       document.getElementById("delivery-time").value = "";
       document.getElementById("delivery-date").value = "";
