@@ -1,14 +1,151 @@
-<script>
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <title>Menu </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f1f1f1;
+    }
+
+    h2 {
+      text-align: center;
+    }
+
+    #menu {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .item {
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .item img {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-bottom: 8px;
+    }
+
+    .item-name {
+      font-weight: bold;
+      margin: 5px 0;
+    }
+
+    .item-price {
+      color: #4CAF50;
+      margin-bottom: 10px;
+    }
+
+    .quantity-control {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .quantity-control button {
+      padding: 4px 10px;
+      font-size: 16px;
+      margin: 0 6px;
+    }
+
+    .total {
+      font-size: 18px;
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .submit-btn {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      font-size: 18px;
+      margin-top: 10px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .submit-btn:hover {
+      background-color: #45a049;
+    }
+
+    .input-group {
+      margin-top: 20px;
+    }
+
+    .input-group label {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .input-group input, .input-group select, .input-group textarea {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      resize: vertical;
+    }
+  </style>
+</head>
+<body>
+  <h2>🍽 Taomni tanlang:</h2>
+  <div id="menu"></div>
+
+  <div class="input-group">
+    <label for="phone">📞 Telefon raqamingiz:</label>
+    <input type="tel" id="phone" placeholder="+1234567890">
+  </div>
+
+  <div class="input-group">
+    <label for="delivery-date">📅 Yetkazib berish kuni:</label>
+    <input type="date" id="delivery-date">
+  </div>
+
+  <div class="input-group">
+    <label for="delivery-time">⏰ Yetkazib berish vaqti:</label>
+    <input type="time" id="delivery-time">
+  </div>
+
+  <div class="input-group">
+    <label for="special-note">📝 Maxsus izoh:</label>
+    <textarea id="special-note" rows="4" placeholder="Buyurtmangizga maxsus izohlar yoki talablar kiritish..."></textarea>
+  </div>
+
+  <div class="total" id="total">💰 Umumiy summa: $0</div>
+  <button class="submit-btn" onclick="submitOrder()">📥 Buyurtmani yuborish</button>
+
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="config.js"></script>
+
+  <script>
     const menu = {
-      "Norin-pound": { price: 23, img: "img/norin.jpg" },
-      "Xasip-pound": { price: 14, img: "img/xasip.jpg" },
-      "Gumma": { price: 3, img: "img/gumma.jpg" },
-      "Bozor Xonim": { price: 3, img: "img/xonim.jpg" },
-      "Non Kabob": { price: 15, img: "img/non_kabob.jpg" },
-      "Yupqa": { price: 4, img: "img/yupqa.jpg" },
-      "Tabaka": { price: 15, img: "img/tabaka.jpg" },
-      "Kuksi": { price: 15, img: "img/kuksi.jpg" },
-    };
+  "Norin-pound": { price: 23, img: "img/norin.jpg" },
+  "Xasip-pound": { price: 14, img: "img/xasip.jpg" },
+  "Gumma": { price: 3, img: "img/gumma.jpg" },
+  "Bozor Xonim": { price: 3, img: "img/xonim.jpg" },
+  "Non Kabob": { price: 15, img: "img/non_kabob.jpg" },
+  "Yupqa": { price: 4, img: "img/yupqa.jpg" },
+  "Tabaka": { price: 15, img: "img/tabaka.jpg" },
+  "Kuksi": { price: 15, img: "img/kuksi.jpg" },
+};
 
     const order = {};
 
@@ -64,24 +201,29 @@
     }
 
     function formatPhone(phone) {
-      phone = phone.replace(/[^\d]/g, ''); // faqat raqamlar qoldiramiz
-      return `@${phone}`; // boshiga @ belgisini qo‘shamiz
+      phone = phone.replace(/[^\d]/g, '');
+      if (phone.startsWith("998")) {
+        return "+" + phone;
+      }
+      if (!phone.startsWith("+")) {
+        return "+" + phone;
+      }
+      return phone;
     }
 
     function isValidPhone(phone) {
-      phone = phone.replace(/[^\d]/g, ''); // faqat raqamlar
-      return phone.length >= 8 && phone.length <= 15; // uzunligi 8-15 orasida bo‘lsa yaxshi
+      return /^\+?\d{10,15}$/.test(phone);
     }
 
     async function submitOrder() {
       const rawPhone = document.getElementById("phone").value.trim();
-      const phoneFormatted = formatPhone(rawPhone);
+      const phone = formatPhone(rawPhone);
       const deliveryDate = document.getElementById("delivery-date").value;
       const deliveryTime = document.getElementById("delivery-time").value;
       const specialNote = document.getElementById("special-note").value.trim();
       const selected = Object.entries(order).filter(([_, qty]) => qty > 0);
 
-      if (!isValidPhone(rawPhone)) {
+      if (!isValidPhone(phone)) {
         alert("📵 Iltimos, to'g'ri telefon raqamini kiriting.");
         return;
       }
@@ -104,7 +246,7 @@
       const orderText = selected.map(([item, qty]) => `${item} x${qty} - $${menu[item].price * qty}`).join("\n");
       const total = selected.reduce((sum, [item, qty]) => sum + menu[item].price * qty, 0);
 
-      let message = `📥 Yangi buyurtma:\n${orderText}\n💰 Umumiy summa: $${total}\n📞 Tel: ${phoneFormatted}\n⏰ Vaqt: ${deliveryTime}\n📅 Kun: ${deliveryDate}`;
+      let message = `📥 Yangi buyurtma:\n${orderText}\n💰 Umumiy summa: $${total}\n📞 Tel: ${phone}\n⏰ Vaqt: ${deliveryTime}\n📅 Kun: ${deliveryDate}`;
       if (specialNote) {
         message += `\n📝 Maxsus izoh: ${specialNote}`;
       }
@@ -129,7 +271,7 @@
         })
       ]);
 
-      alert(`✅ Buyurtmangiz yuborildi!\n\n📋 Buyurtma:\n${orderText}\n💰 $${total}\n📞 Tel: ${phoneFormatted}\n⏰ ${deliveryTime}\n📅 ${deliveryDate}\n📝 ${specialNote}`);
+      alert(`✅ Buyurtmangiz yuborildi!\n\n📋 Buyurtma:\n${orderText}\n💰 $${total}\n📞 Tel: ${phone}\n⏰ ${deliveryTime}\n📅 ${deliveryDate}\n📝 ${specialNote}`);
 
       for (let item in order) {
         order[item] = 0;
@@ -159,4 +301,6 @@
 
       renderMenu();
     });
-</script>
+  </script>
+</body>
+</html>
