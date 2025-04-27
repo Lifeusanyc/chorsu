@@ -3,60 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pul Hisoblash Dasturi</title>
+    <title>Daromadni Osib Borishi</title>
     <style>
         body {
             font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        #dashboard {
             text-align: center;
-            padding: 50px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
         #balance {
-            font-size: 30px;
-            margin: 20px;
+            font-size: 3em;
+            color: #28a745;
+        }
+        #time {
+            font-size: 1.5em;
+            color: #555;
         }
     </style>
 </head>
 <body>
+    <div id="dashboard">
+        <h1>Daromadingiz</h1>
+        <div id="balance">$15,000.00</div>
+        <div id="time">Vaqt: 00:00:00</div>
+    </div>
 
-<h1>Real Vaqt Pul Hisoblash</h1>
-<div id="balance"></div>
-<div id="time"></div>
+    <script>
+        let balance = 15000; // Boshlang'ich balansi
+        let startTime = Date.now(); // Dastur ishga tushgan vaqti
 
-<script>
-    // Boshlang'ich qiymatlar
-    const initialBalance = 15000; // Boshlang'ich pul
-    const totalEarned = 120000; // Umumiy topilgan pul
-    const totalDays = 751; // Umumiy kunlar
-    const startDate = new Date('2023-04-04'); // Boshlang'ich sana
+        // Funksiya har soniyada daromadni oshirib boradi
+        function updateDashboard() {
+            let elapsedTime = (Date.now() - startTime) / 1000; // O'tgan vaqtni sekundda hisoblash
+            let formattedTime = new Date(elapsedTime * 1000).toISOString().substr(11, 8); // Vaqtni formatlash
+            
+            // Daromadni soniyasiga 100$ qo'shish
+            balance = 15000 + (elapsedTime * 100);
+            
+            // Dashboardni yangilash
+            document.getElementById('balance').textContent = `$${balance.toFixed(2)}`;
+            document.getElementById('time').textContent = `Vaqt: ${formattedTime}`;
+        }
 
-    // Pulni har bir sekundda hisoblash
-    const dailyEarned = totalEarned / totalDays; // Har kunlik topilgan pul
-    const secondEarned = dailyEarned / (24 * 60 * 60); // Har sekundda topilgan pul
-
-    // Boshlang'ich vaqt
-    const startTime = new Date(startDate);
-
-    function updateBalance() {
-        const currentTime = new Date();
-        const elapsedTime = (currentTime - startTime) / 1000; // Vaqtni sekundda hisoblash
-        const elapsedBalance = initialBalance + secondEarned * elapsedTime; // Yig'ilgan pul
-
-        // Vaqt va balansni yangilash
-        document.getElementById('balance').textContent = 'Joriy balans: $' + elapsedBalance.toFixed(2);
-        document.getElementById('time').textContent = 'O\'tgan vaqt: ' + formatTime(elapsedTime);
-    }
-
-    // Vaqtni soat, minut, sekundda formatlash
-    function formatTime(seconds) {
-        const hours = Math.floor(seconds / 3600);
-        const minutes = Math.floor((seconds % 3600) / 60);
-        const secs = Math.floor(seconds % 60);
-        return `${hours} soat ${minutes} minut ${secs} sekund`;
-    }
-
-    // Har bir sekundda balansni yangilash
-    setInterval(updateBalance, 1000);
-</script>
-
+        setInterval(updateDashboard, 1000); // Har 1 soniyada yangilash
+    </script>
 </body>
 </html>
