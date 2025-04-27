@@ -63,7 +63,7 @@
         // Funksiya har soniyada daromadni oshirib boradi
         function updateDashboard() {
             let elapsedTime = (Date.now() - startTime) / 1000; // O'tgan vaqtni sekundda hisoblash
-            let formattedTime = new Date(elapsedTime * 1000).toISOString().substr(11, 8); // Vaqtni formatlash
+            let formattedTime = new Date().toLocaleTimeString(); // Hozirgi real vaqtni olish
             
             // Daromadni haftasiga 1200$ oshadigan tarzda hisoblash
             balance = 15000 + (elapsedTime * incomePerSecond);
