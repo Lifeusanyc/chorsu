@@ -200,30 +200,35 @@
       renderMenu();
     }
 
-    function formatPhone(phone) {
-      // Remove all non-numeric characters except for the "+" sign
-      phone = phone.replace(/[^\d+]/g, '');
+    function formatPhoneWithCountryCode(phone) {
+      const phoneCleaned = phone.replace(/[^\d+]/g, ''); // Faqat raqam va '+' ni saqlash
 
-      // Check if the phone number starts with "1" (assuming US phone numbers)
-      if (!phone.startsWith("+1") && !phone.startsWith("1")) {
-        return "+1" + phone; // Add "+1" if not present
+      // Agar telefon raqami + belgisi bilan boshlasa, uni qo'shgan holda qabul qilamiz
+      if (phoneCleaned.startsWith("+")) {
+        return phoneCleaned;
       }
 
-      // If phone already starts with "+1" or "1", keep it as is
-      if (phone.startsWith("1")) {
-        return "+" + phone;
+      // Telefon raqamini davlat kodiga mos formatlash
+      if (phoneCleaned.startsWith("92")) {
+        return `+92${phoneCleaned.slice(2)}`;  // Pokiston uchun +92 kodini qo'shish
+      }
+      if (phoneCleaned.startsWith("1")) {
+        return `+1${phoneCleaned.slice(1)}`;  // AQSh uchun +1 kodini qo'shish
       }
 
-      return phone; // Return as is if it already starts with '+'
+      // Boshqa kodlar qo'shish mumkin (masalan, +44 uchun Buyuk Britaniya va h.k.)
+      
+      return `+${phoneCleaned}`;  // Telefon raqami boshlanishi bo'yicha aniqlash
     }
 
     function isValidPhone(phone) {
+      // Telefon raqami formatini tekshirish
       return /^\+?\d{10,15}$/.test(phone);
     }
 
     async function submitOrder() {
       const rawPhone = document.getElementById("phone").value.trim();
-      const phone = formatPhone(rawPhone);
+      const phone = formatPhoneWithCountryCode(rawPhone); // Telefonni formatlash
       const deliveryDate = document.getElementById("delivery-date").value;
       const deliveryTime = document.getElementById("delivery-time").value;
       const specialNote = document.getElementById("special-note").value.trim();
