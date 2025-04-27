@@ -137,15 +137,15 @@
 
   <script>
     const menu = {
-      "Norin-pound": { price: 23, img: "img/norin.jpg" },
-      "Xasip-pound": { price: 14, img: "img/xasip.jpg" },
-      "Gumma": { price: 3, img: "img/gumma.jpg" },
-      "Bozor Xonim": { price: 3, img: "img/xonim.jpg" },
-      "Non Kabob": { price: 15, img: "img/non_kabob.jpg" },
-      "Yupqa": { price: 4, img: "img/yupqa.jpg" },
-      "Tabaka": { price: 15, img: "img/tabaka.jpg" },
-      "Kuksi": { price: 15, img: "img/kuksi.jpg" },
-    };
+  "Norin-pound": { price: 23, img: "img/norin.jpg" },
+  "Xasip-pound": { price: 14, img: "img/xasip.jpg" },
+  "Gumma": { price: 3, img: "img/gumma.jpg" },
+  "Bozor Xonim": { price: 3, img: "img/xonim.jpg" },
+  "Non Kabob": { price: 15, img: "img/non_kabob.jpg" },
+  "Yupqa": { price: 4, img: "img/yupqa.jpg" },
+  "Tabaka": { price: 15, img: "img/tabaka.jpg" },
+  "Kuksi": { price: 15, img: "img/kuksi.jpg" },
+};
 
     const order = {};
 
@@ -201,14 +201,14 @@
     }
 
     function formatPhone(phone) {
-      phone = phone.replace(/[^\d]/g, ''); // Remove non-numeric characters
-      if (phone.startsWith("998")) { // If phone starts with the Uzbek country code
-        return `@${phone}`; // Add @ symbol to the phone number
+      phone = phone.replace(/[^\d]/g, '');
+      if (phone.startsWith("998")) {
+        return `@${phone}`;
       }
-      if (!phone.startsWith("+")) { // If phone doesn't start with a plus sign
-        return `@${phone}`; // Add @ symbol in front of the number
+      if (!phone.startsWith("+")) {
+        return "+" + phone;
       }
-      return `@${phone.replace("+", "")}`; // Ensure that the plus sign is removed and @ is added
+      return phone;
     }
 
     function isValidPhone(phone) {
