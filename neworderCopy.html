@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="uz">
 <head>
@@ -138,15 +137,15 @@
 
   <script>
     const menu = {
-  "Norin-pound": { price: 23, img: "img/norin.jpg" },
-  "Xasip-pound": { price: 14, img: "img/xasip.jpg" },
-  "Gumma": { price: 3, img: "img/gumma.jpg" },
-  "Bozor Xonim": { price: 3, img: "img/xonim.jpg" },
-  "Non Kabob": { price: 15, img: "img/non_kabob.jpg" },
-  "Yupqa": { price: 4, img: "img/yupqa.jpg" },
-  "Tabaka": { price: 15, img: "img/tabaka.jpg" },
-  "Kuksi": { price: 15, img: "img/kuksi.jpg" },
-};
+      "Norin-pound": { price: 23, img: "img/norin.jpg" },
+      "Xasip-pound": { price: 14, img: "img/xasip.jpg" },
+      "Gumma": { price: 3, img: "img/gumma.jpg" },
+      "Bozor Xonim": { price: 3, img: "img/xonim.jpg" },
+      "Non Kabob": { price: 15, img: "img/non_kabob.jpg" },
+      "Yupqa": { price: 4, img: "img/yupqa.jpg" },
+      "Tabaka": { price: 15, img: "img/tabaka.jpg" },
+      "Kuksi": { price: 15, img: "img/kuksi.jpg" },
+    };
 
     const order = {};
 
@@ -204,10 +203,10 @@
     function formatPhone(phone) {
       phone = phone.replace(/[^\d]/g, '');
       if (phone.startsWith("998")) {
-        return `@${phone}`;
+        return `@1${phone}`;
       }
       if (!phone.startsWith("+")) {
-        return "+" + phone;
+        return "@1" + phone;
       }
       return phone;
     }
@@ -247,7 +246,8 @@
       const orderText = selected.map(([item, qty]) => `${item} x${qty} - $${menu[item].price * qty}`).join("\n");
       const total = selected.reduce((sum, [item, qty]) => sum + menu[item].price * qty, 0);
 
-      let message = `📥 Yangi buyurtma:\n${orderText}\n💰 Umumiy summa: $${total}\n📞 Tel: ${phone}\n⏰ Vaqt: ${deliveryTime}\n📅 Kun: ${deliveryDate}`;
+      // Add @1 to the phone number
+      let message = `📥 Yangi buyurtma:\n${orderText}\n💰 Umumiy summa: $${total}\n📞 Tel: @1${phone}\n⏰ Vaqt: ${deliveryTime}\n📅 Kun: ${deliveryDate}`;
       if (specialNote) {
         message += `\n📝 Maxsus izoh: ${specialNote}`;
       }
@@ -272,7 +272,7 @@
         })
       ]);
 
-      alert(`✅ Buyurtmangiz yuborildi!\n\n📋 Buyurtma:\n${orderText}\n💰 $${total}\n📞 Tel: ${phone}\n⏰ ${deliveryTime}\n📅 ${deliveryDate}\n📝 ${specialNote}`);
+      alert(`✅ Buyurtmangiz yuborildi!\n\n📋 Buyurtma:\n${orderText}\n💰 $${total}\n📞 Tel: @1${phone}\n⏰ ${deliveryTime}\n📅 ${deliveryDate}\n📝 ${specialNote}`);
 
       for (let item in order) {
         order[item] = 0;
