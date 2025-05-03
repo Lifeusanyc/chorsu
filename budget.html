@@ -18,10 +18,12 @@
     <div class="card">
       <div class="value" id="sales">0</div>
       <div class="label">Sales</div>
+      <div class="label text-xs text-green-500" id="salesTarget">Target Achievement</div>
     </div>
     <div class="card">
       <div class="value" id="grossProfit">0</div>
       <div class="label">Gross Profit</div>
+      <div class="label text-xs text-green-500" id="grossChange">Change Over Last Year</div>
     </div>
     <div class="card">
       <div class="value" id="operatingProfit">0</div>
@@ -40,7 +42,7 @@
       <div class="label">Receivables Outstanding</div>
     </div>
   </div>
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
     <div class="card">
       <canvas id="salesChart"></canvas>
     </div>
@@ -54,102 +56,104 @@
       <canvas id="employeeChart"></canvas>
     </div>
   </div>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="card">
+      <canvas id="incomeStatementChart"></canvas>
+    </div>
+    <div class="card">
+      <canvas id="inventoryTrendChart"></canvas>
+    </div>
+  </div>
 
   <script>
     const getRandom = (base, range) => base + Math.round(Math.random() * range - range / 2);
 
     function updateStats() {
-      document.getElementById("sales").innerText = getRandom(100000, 10000);
-      document.getElementById("grossProfit").innerText = getRandom(30000, 5000);
+      const sales = getRandom(100000, 10000);
+      const gross = getRandom(30000, 5000);
+      document.getElementById("sales").innerText = sales;
+      document.getElementById("grossProfit").innerText = gross;
       document.getElementById("operatingProfit").innerText = getRandom(17500, 3000);
       document.getElementById("netProfit").innerText = getRandom(14000, 2000);
       document.getElementById("headcount").innerText = getRandom(126, 10);
       document.getElementById("receivables").innerText = getRandom(93, 20);
+      document.getElementById("salesTarget").innerText = `Target Achievement ${Math.floor(sales / 1000)}%`;
+      document.getElementById("grossChange").innerText = `Change Over Last Year ${Math.floor(Math.random() * 15)}%`;
     }
 
-    const salesChartCtx = document.getElementById("salesChart").getContext("2d");
-    const salesChart = new Chart(salesChartCtx, {
+    const salesChart = new Chart(document.getElementById("salesChart").getContext("2d"), {
       type: "bar",
       data: {
         labels: ["Product 1", "Product 2", "Product 3", "Product 4", "Product 5"],
-        datasets: [{
-          label: "Sales by Product",
-          backgroundColor: "#3b82f6",
-          data: [12000, 15000, 17000, 9000, 11000],
-        }],
+        datasets: [{ label: "Sales by Product", backgroundColor: "#3b82f6", data: [] }],
       },
       options: { responsive: true, animation: false },
     });
 
-    const cashFlowChartCtx = document.getElementById("cashFlowChart").getContext("2d");
-    const cashFlowChart = new Chart(cashFlowChartCtx, {
+    const cashFlowChart = new Chart(document.getElementById("cashFlowChart").getContext("2d"), {
       type: "bar",
       data: {
         labels: ["JAN", "FEB", "MAR", "APR", "MAY", "JUN"],
-        datasets: [{
-          label: "Net Operating Cash Flow",
-          backgroundColor: "#10b981",
-          data: [236, 239, 259, 281, 279, 132],
-        }],
+        datasets: [{ label: "Net Operating Cash Flow", backgroundColor: "#10b981", data: [] }],
       },
       options: { responsive: true, animation: false },
     });
 
-    const monthlyGrowthCtx = document.getElementById("monthlyGrowthChart").getContext("2d");
-    const monthlyGrowthChart = new Chart(monthlyGrowthCtx, {
+    const monthlyGrowthChart = new Chart(document.getElementById("monthlyGrowthChart").getContext("2d"), {
       type: "bar",
       data: {
         labels: ["JUL", "AUG", "SEP", "OCT", "NOV", "DEC"],
-        datasets: [{
-          label: "Monthly Sales Growth %",
-          backgroundColor: "#f59e0b",
-          data: [-7.5, 9.6, -13, 10.3, -0.9, 2.3],
-        }],
+        datasets: [{ label: "Monthly Sales Growth %", backgroundColor: "#f59e0b", data: [] }],
       },
-      options: {
-        responsive: true,
-        indexAxis: 'y',
-        animation: false
-      },
+      options: { responsive: true, indexAxis: 'y', animation: false },
     });
 
-    const employeeChartCtx = document.getElementById("employeeChart").getContext("2d");
-    const employeeChart = new Chart(employeeChartCtx, {
+    const employeeChart = new Chart(document.getElementById("employeeChart").getContext("2d"), {
       type: "line",
       data: {
         labels: ["JUL", "AUG", "SEP", "OCT", "NOV", "DEC", "JAN", "FEB", "MAR", "APR", "MAY", "JUN"],
         datasets: [
-          {
-            label: "Sales",
-            borderColor: "#6366f1",
-            data: Array(12).fill().map(() => getRandom(8000, 3000)),
-            fill: false,
-          },
-          {
-            label: "Employee Cost",
-            borderColor: "#ef4444",
-            data: Array(12).fill().map(() => getRandom(4000, 1000)),
-            fill: false,
-          }
+          { label: "Sales", borderColor: "#6366f1", data: [], fill: false },
+          { label: "Employee Cost", borderColor: "#ef4444", data: [], fill: false },
         ]
       },
       options: { responsive: true, animation: false },
     });
 
+    const incomeStatementChart = new Chart(document.getElementById("incomeStatementChart").getContext("2d"), {
+      type: "bar",
+      data: {
+        labels: ["Revenue", "COGS", "OpEx", "Non-Op Income", "Finance Exp", "Profit"],
+        datasets: [{ label: "Income Statement", backgroundColor: "#8b5cf6", data: [] }],
+      },
+      options: { responsive: true, animation: false },
+    });
+
+    const inventoryTrendChart = new Chart(document.getElementById("inventoryTrendChart").getContext("2d"), {
+      type: "line",
+      data: {
+        labels: ["J", "A", "S", "O", "N", "D", "J", "F", "M", "A", "M", "J"],
+        datasets: [{ label: "Inventory Trend", borderColor: "#0ea5e9", data: [], fill: false }],
+      },
+      options: { responsive: true, animation: false },
+    });
+
     function updateCharts() {
-      salesChart.data.datasets[0].data = salesChart.data.datasets[0].data.map(() => getRandom(10000, 5000));
-      salesChart.update();
-
-      cashFlowChart.data.datasets[0].data = cashFlowChart.data.datasets[0].data.map(() => getRandom(250, 200));
-      cashFlowChart.update();
-
-      monthlyGrowthChart.data.datasets[0].data = monthlyGrowthChart.data.datasets[0].data.map(() => (Math.random() * 20 - 10).toFixed(1));
-      monthlyGrowthChart.update();
-
+      salesChart.data.datasets[0].data = Array(5).fill().map(() => getRandom(10000, 5000));
+      cashFlowChart.data.datasets[0].data = Array(6).fill().map(() => getRandom(250, 200));
+      monthlyGrowthChart.data.datasets[0].data = Array(6).fill().map(() => (Math.random() * 20 - 10).toFixed(1));
       employeeChart.data.datasets.forEach(ds => {
-        ds.data = ds.data.map(() => getRandom(8000, 4000));
+        ds.data = Array(12).fill().map(() => getRandom(8000, 4000));
       });
+      incomeStatementChart.data.datasets[0].data = [108000, 77300, 13500, 800, 4300, 14000].map(x => getRandom(x, x * 0.2));
+      inventoryTrendChart.data.datasets[0].data = Array(12).fill().map(() => getRandom(10000, 4000));
+
+      salesChart.update();
+      cashFlowChart.update();
+      monthlyGrowthChart.update();
       employeeChart.update();
+      incomeStatementChart.update();
+      inventoryTrendChart.update();
     }
 
     setInterval(() => {
