@@ -1,130 +1,192 @@
 <!DOCTYPE html>
-<html lang="uz">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Moliyaviy Dashboard</title>
+  <title>Financial Dashboard + 3D Earth</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.155.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.155.0/examples/js/controls/OrbitControls.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 min-h-screen flex flex-col items-center p-6">
-  <h1 class="text-3xl font-bold mb-6 text-center">📊 Moliyaviy Dashboard</h1>
-
-  <!-- Tugmalar Paneli -->
-  <div class="flex flex-wrap gap-4 mb-6">
-    <button onclick="toggleSection('incomeColumn')" class="btn">Daromadni Yop/Och</button>
-    <button onclick="toggleSection('expenseColumn')" class="btn">Harajatni Yop/Och</button>
-    <button onclick="toggleSection('balanceColumn')" class="btn">Balansni Yop/Och</button>
-    <button onclick="toggleTheme()" class="btn bg-indigo-500 text-white">Rejimni Almashtir</button>
-    <button onclick="resetDashboard()" class="btn bg-red-500 text-white">Qayta Boshlash</button>
-  </div>
-
-  <!-- Dashboard -->
-  <div id="dashboard" class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-6xl">
-    <!-- Daromad -->
-    <div id="incomeColumn" class="card">
-      <h2 class="title">💰 Daromad</h2>
-      <ul id="incomeStats" class="stats-list"></ul>
-    </div>
-
-    <!-- Harajat -->
-    <div id="expenseColumn" class="card">
-      <h2 class="title">💸 Harajat</h2>
-      <ul id="expenseStats" class="stats-list"></ul>
-    </div>
-
-    <!-- Balans -->
-    <div id="balanceColumn" class="card">
-      <h2 class="title">📈 Balans</h2>
-      <p id="balance" class="text-3xl font-bold text-green-600">Balans: $0.00</p>
-    </div>
-  </div>
-
-  <div id="time" class="mt-6 text-gray-700 text-lg font-mono">Vaqt: --:--:--</div>
-
-  <script>
-    let startDate = new Date("2023-04-05T15:00:00");
-    let totalIncome = 120000;
-    let totalExpense = 143000;
-    let targetDate = new Date("2025-04-27T00:32:00");
-    let totalTime = (targetDate - startDate) / 1000;
-
-    function updateDashboard() {
-      let currentDate = new Date();
-      let elapsed = (currentDate - startDate) / 1000;
-      if (elapsed <= 0) return;
-
-      let income = (totalIncome * elapsed) / totalTime;
-      let expense = (totalExpense * elapsed) / totalTime;
-      let balance = income - expense;
-
-      const incomeRates = getRates(income, elapsed);
-      const expenseRates = getRates(expense, elapsed);
-
-      updateStatsList("incomeStats", incomeRates);
-      updateStatsList("expenseStats", expenseRates);
-
-      document.getElementById("balance").textContent = `Balans: $${balance.toFixed(2)}`;
-      document.getElementById("balance").className =
-        "text-3xl font-bold " + (balance < 0 ? "text-red-600" : "text-green-600");
-      document.getElementById("time").textContent =
-        "Vaqt: " + currentDate.toLocaleTimeString();
-    }
-
-    function getRates(value, time) {
-      const perSecond = value / time;
-      return {
-        "Soniyasiga": perSecond,
-        "Minutiga": perSecond * 60,
-        "Soatiga": perSecond * 3600,
-        "Kuniga": perSecond * 86400,
-        "Haftasiga": perSecond * 86400 * 7,
-        "Oyiga": perSecond * 86400 * 30,
-        "Yiliga": perSecond * 86400 * 365,
-        "Umumiy": value,
-      };
-    }
-
-    function updateStatsList(elementId, rates) {
-      const ul = document.getElementById(elementId);
-      ul.innerHTML = "";
-      for (let key in rates) {
-        const li = document.createElement("li");
-        li.textContent = `${key}: $${rates[key].toFixed(2)}`;
-        li.className = "text-gray-700";
-        ul.appendChild(li);
-      }
-    }
-
-    function toggleSection(id) {
-      const el = document.getElementById(id);
-      el.classList.toggle("hidden");
-    }
-
-    function toggleTheme() {
-      document.body.classList.toggle("bg-gray-100");
-      document.body.classList.toggle("bg-white");
-    }
-
-    function resetDashboard() {
-      location.reload();
-    }
-
-    setInterval(updateDashboard, 1000);
-  </script>
-
   <style>
-    .btn {
-      @apply bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded shadow text-sm font-medium;
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: radial-gradient(circle at center, #111827, #000000);
+      overflow: hidden;
     }
-    .card {
-      @apply bg-white shadow-md rounded-xl p-6;
+
+    #earthCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 40vw;
+      height: 40vw;
+      z-index: 0;
     }
-    .title {
-      @apply text-xl font-semibold mb-4;
+
+    .glass {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
-    .stats-list {
-      @apply space-y-2 text-sm;
+
+    .glow-text {
+      text-shadow: 0 0 10px #00ffcc, 0 0 20px #00ffcc, 0 0 30px #00ffcc;
+    }
+
+    .button-active {
+      @apply bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg;
     }
   </style>
+</head>
+<body class="text-white relative overflow-hidden">
+
+<canvas id="earthCanvas"></canvas>
+
+<div class="absolute top-10 right-10 w-[50vw] glass p-6 rounded-xl shadow-2xl z-10">
+  <h1 class="text-3xl mb-4 glow-text">Moliyaviy Dashboard</h1>
+  
+  <div class="grid grid-cols-3 gap-4 mb-6">
+    <div>
+      <h2 class="text-xl font-bold">Daromad</h2>
+      <p id="income" class="text-green-400 text-2xl">$0.00</p>
+    </div>
+    <div>
+      <h2 class="text-xl font-bold">Harajat</h2>
+      <p id="expense" class="text-red-400 text-2xl">$0.00</p>
+    </div>
+    <div>
+      <h2 class="text-xl font-bold">Balans</h2>
+      <p id="balance" class="text-yellow-400 text-2xl">$0.00</p>
+    </div>
+  </div>
+
+  <canvas id="chart" height="100"></canvas>
+
+  <div class="mt-6 flex gap-4">
+    <button id="darkToggle" class="button-active">🌗 Dark Mode</button>
+    <button id="pauseBtn" class="button-active">⏸ Pause</button>
+    <button id="resumeBtn" class="button-active hidden">▶ Resume</button>
+  </div>
+</div>
+
+<script>
+  // Earth Rendering
+  const canvas = document.getElementById('earthCanvas');
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(50, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
+  renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+
+  const earthGeometry = new THREE.SphereGeometry(2, 64, 64);
+  const earthTexture = new THREE.TextureLoader().load('https://threejs.org/examples/textures/land_ocean_ice_cloud_2048.jpg');
+  const earthMaterial = new THREE.MeshPhongMaterial({ map: earthTexture });
+  const earth = new THREE.Mesh(earthGeometry, earthMaterial);
+  scene.add(earth);
+
+  const light = new THREE.DirectionalLight(0xffffff, 1);
+  light.position.set(5, 5, 5);
+  scene.add(light);
+
+  camera.position.z = 5;
+
+  function animateEarth() {
+    requestAnimationFrame(animateEarth);
+    earth.rotation.y += 0.0015;
+    renderer.render(scene, camera);
+  }
+
+  animateEarth();
+
+  // Financial Logic
+  let paused = false;
+  const start = new Date("2023-04-04T00:00:00");
+  const end = new Date("2025-05-02T00:00:00");
+  const totalIncome = 120000;
+  const totalExpense = 143000;
+  const totalTime = (end - start) / 1000;
+
+  const incomeEl = document.getElementById('income');
+  const expenseEl = document.getElementById('expense');
+  const balanceEl = document.getElementById('balance');
+
+  let chartCtx = document.getElementById('chart').getContext('2d');
+  let chart = new Chart(chartCtx, {
+    type: 'line',
+    data: {
+      labels: [],
+      datasets: [{
+        label: 'Balans',
+        data: [],
+        fill: true,
+        borderColor: '#00ffcc',
+        backgroundColor: 'rgba(0, 255, 204, 0.1)',
+        tension: 0.3
+      }]
+    },
+    options: {
+      responsive: true,
+      animation: false,
+      scales: {
+        y: {
+          ticks: { color: 'white' },
+          grid: { color: 'rgba(255,255,255,0.1)' }
+        },
+        x: {
+          ticks: { color: 'white' },
+          grid: { display: false }
+        }
+      },
+      plugins: {
+        legend: { labels: { color: 'white' } }
+      }
+    }
+  });
+
+  function updateFinance() {
+    if (paused) return;
+
+    const now = new Date();
+    const elapsed = (now - start) / 1000;
+    const income = totalIncome * (elapsed / totalTime);
+    const expense = totalExpense * (elapsed / totalTime);
+    const balance = income - expense;
+
+    incomeEl.textContent = `$${income.toFixed(2)}`;
+    expenseEl.textContent = `$${expense.toFixed(2)}`;
+    balanceEl.textContent = `$${balance.toFixed(2)}`;
+
+    if (chart.data.labels.length > 40) {
+      chart.data.labels.shift();
+      chart.data.datasets[0].data.shift();
+    }
+
+    chart.data.labels.push(now.toLocaleTimeString());
+    chart.data.datasets[0].data.push(balance.toFixed(2));
+    chart.update();
+  }
+
+  setInterval(updateFinance, 1000);
+
+  // Toggle Buttons
+  document.getElementById('pauseBtn').onclick = () => {
+    paused = true;
+    document.getElementById('pauseBtn').classList.add('hidden');
+    document.getElementById('resumeBtn').classList.remove('hidden');
+  };
+
+  document.getElementById('resumeBtn').onclick = () => {
+    paused = false;
+    document.getElementById('pauseBtn').classList.remove('hidden');
+    document.getElementById('resumeBtn').classList.add('hidden');
+  };
+
+  document.getElementById('darkToggle').onclick = () => {
+    document.body.classList.toggle('bg-black');
+    document.body.classList.toggle('bg-white');
+  };
+</script>
+
 </body>
 </html>
