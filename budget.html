@@ -1,151 +1,176 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daromad, Harajat va Balans</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f0f0f0;
-            flex-direction: column;
-        }
-        #dashboard {
-            display: flex;
-            justify-content: space-between;
-            background-color: #ffffff;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 80%;
-            max-width: 900px;
-        }
-        .column {
-            text-align: center;
-            width: 30%;
-        }
-        .column h2 {
-            font-size: 1.5em;
-            margin-bottom: 10px;
-        }
-        .column p {
-            font-size: 1.2em;
-            margin: 5px 0;
-            color: #555;
-        }
-        .column .balance {
-            font-size: 2em;
-            color: #28a745;
-        }
-        .column .balance.negative {
-            color: #dc3545;
-        }
-        #time {
-            font-size: 1.5em;
-            color: #555;
-            text-align: center;
-            margin-top: 20px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daromad, Harajat va Balans</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      background: linear-gradient(to right, #e0f7fa, #e1bee7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    #dashboard {
+      display: flex;
+      gap: 20px;
+      width: 90%;
+      max-width: 1000px;
+      justify-content: space-between;
+    }
+
+    .column {
+      background-color: #ffffffee;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      flex: 1;
+      transition: all 0.3s ease;
+    }
+
+    .column h2 {
+      font-size: 1.8em;
+      margin-bottom: 15px;
+      color: #333;
+    }
+
+    .column p {
+      font-size: 1.1em;
+      margin: 6px 0;
+      color: #555;
+    }
+
+    .balance {
+      font-size: 2em;
+      font-weight: bold;
+      color: #2e7d32;
+    }
+
+    .balance.negative {
+      color: #c62828;
+      background-color: #ffebee;
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    #time {
+      font-size: 1.4em;
+      color: #444;
+      margin-top: 25px;
+      background: #ffffffaa;
+      padding: 10px 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    @media (max-width: 768px) {
+      #dashboard {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div id="dashboard">
-        <div class="column" id="incomeColumn">
-            <h2>Daromad</h2>
-            <p id="incomePerSecond">Soniyasiga: $0.00</p>
-            <p id="incomePerMinute">Minutiga: $0.00</p>
-            <p id="incomePerHour">Soatiga: $0.00</p>
-            <p id="incomePerDay">Kuniga: $0.00</p>
-            <p id="incomePerWeek">Haftasiga: $0.00</p>
-            <p id="incomePerMonth">Oyiga: $0.00</p>
-            <p id="incomePerYear">Yiliga: $0.00</p>
-            <p id="totalIncome">Umumiy Daromad: $120000.00</p>
-        </div>
 
-        <div class="column" id="expenseColumn">
-            <h2>Harajat</h2>
-            <p id="expensePerSecond">Soniyasiga: $0.00</p>
-            <p id="expensePerMinute">Minutiga: $0.00</p>
-            <p id="expensePerHour">Soatiga: $0.00</p>
-            <p id="expensePerDay">Kuniga: $0.00</p>
-            <p id="expensePerWeek">Haftasiga: $0.00</p>
-            <p id="expensePerMonth">Oyiga: $0.00</p>
-            <p id="expensePerYear">Yiliga: $0.00</p>
-            <p id="totalExpense">Umumiy Harajat: $143000.00</p>
-        </div>
-
-        <div class="column" id="balanceColumn">
-            <h2>Balans</h2>
-            <p id="balance" class="balance">Balans: $0.00</p>
-        </div>
+  <div id="dashboard">
+    <div class="column" id="incomeColumn">
+      <h2>Daromad</h2>
+      <p id="incomePerSecond">Soniyasiga: $0.00</p>
+      <p id="incomePerMinute">Minutiga: $0.00</p>
+      <p id="incomePerHour">Soatiga: $0.00</p>
+      <p id="incomePerDay">Kuniga: $0.00</p>
+      <p id="incomePerWeek">Haftasiga: $0.00</p>
+      <p id="incomePerMonth">Oyiga: $0.00</p>
+      <p id="incomePerYear">Yiliga: $0.00</p>
+      <p id="totalIncome">Umumiy Daromad: $120000.00</p>
     </div>
 
-    <div id="time">Vaqt: 00:00:00</div>
+    <div class="column" id="expenseColumn">
+      <h2>Harajat</h2>
+      <p id="expensePerSecond">Soniyasiga: $0.00</p>
+      <p id="expensePerMinute">Minutiga: $0.00</p>
+      <p id="expensePerHour">Soatiga: $0.00</p>
+      <p id="expensePerDay">Kuniga: $0.00</p>
+      <p id="expensePerWeek">Haftasiga: $0.00</p>
+      <p id="expensePerMonth">Oyiga: $0.00</p>
+      <p id="expensePerYear">Yiliga: $0.00</p>
+      <p id="totalExpense">Umumiy Harajat: $143000.00</p>
+    </div>
 
-    <script>
-        let startDate = new Date('2023-04-05T15:00:00');
-        let targetDate = new Date('2025-04-27T00:32:00');
-        let totalIncome = 120000;
-        let totalExpense = 143000;
-        let totalTime = (targetDate - startDate) / 1000;
+    <div class="column" id="balanceColumn">
+      <h2>Balans</h2>
+      <p id="balance" class="balance">Balans: $0.00</p>
+    </div>
+  </div>
 
-        function updateDashboard() {
-            let currentDate = new Date(); // Har safar yangilanadi
-            let elapsedTime = (currentDate - startDate) / 1000;
-            let formattedTime = currentDate.toLocaleTimeString();
+  <div id="time">Vaqt: 00:00:00</div>
 
-            let income = totalIncome * (elapsedTime / totalTime);
-            let expense = totalExpense * (elapsedTime / totalTime);
-            let balance = income - expense;
+  <script>
+    let startDate = new Date('2023-04-05T15:00:00');
+    let targetDate = new Date('2025-04-27T00:32:00');
+    let totalIncome = 120000;
+    let totalExpense = 143000;
+    let totalTime = (targetDate - startDate) / 1000;
 
-            let incomePerSecond = income / elapsedTime;
-            let incomePerMinute = incomePerSecond * 60;
-            let incomePerHour = incomePerMinute * 60;
-            let incomePerDay = incomePerHour * 24;
-            let incomePerWeek = incomePerDay * 7;
-            let incomePerMonth = incomePerDay * 30;
-            let incomePerYear = incomePerDay * 365;
+    function updateDashboard() {
+      let currentDate = new Date();
+      let elapsedTime = (currentDate - startDate) / 1000;
+      let formattedTime = currentDate.toLocaleTimeString();
 
-            let expensePerSecond = expense / elapsedTime;
-            let expensePerMinute = expensePerSecond * 60;
-            let expensePerHour = expensePerMinute * 60;
-            let expensePerDay = expensePerHour * 24;
-            let expensePerWeek = expensePerDay * 7;
-            let expensePerMonth = expensePerDay * 30;
-            let expensePerYear = expensePerDay * 365;
+      let income = totalIncome * (elapsedTime / totalTime);
+      let expense = totalExpense * (elapsedTime / totalTime);
+      let balance = income - expense;
 
-            // Yangilash
-            let balanceElem = document.getElementById('balance');
-            balanceElem.textContent = `Balans: $${balance.toFixed(2)}`;
-            balanceElem.className = 'balance' + (balance < 0 ? ' negative' : '');
+      let incomePerSecond = income / elapsedTime;
+      let incomePerMinute = incomePerSecond * 60;
+      let incomePerHour = incomePerMinute * 60;
+      let incomePerDay = incomePerHour * 24;
+      let incomePerWeek = incomePerDay * 7;
+      let incomePerMonth = incomePerDay * 30;
+      let incomePerYear = incomePerDay * 365;
 
-            document.getElementById('time').textContent = `Vaqt: ${formattedTime}`;
-            document.getElementById('incomePerSecond').textContent = `Soniyasiga: $${incomePerSecond.toFixed(4)}`;
-            document.getElementById('incomePerMinute').textContent = `Minutiga: $${incomePerMinute.toFixed(2)}`;
-            document.getElementById('incomePerHour').textContent = `Soatiga: $${incomePerHour.toFixed(2)}`;
-            document.getElementById('incomePerDay').textContent = `Kuniga: $${incomePerDay.toFixed(2)}`;
-            document.getElementById('incomePerWeek').textContent = `Haftasiga: $${incomePerWeek.toFixed(2)}`;
-            document.getElementById('incomePerMonth').textContent = `Oyiga: $${incomePerMonth.toFixed(2)}`;
-            document.getElementById('incomePerYear').textContent = `Yiliga: $${incomePerYear.toFixed(2)}`;
+      let expensePerSecond = expense / elapsedTime;
+      let expensePerMinute = expensePerSecond * 60;
+      let expensePerHour = expensePerMinute * 60;
+      let expensePerDay = expensePerHour * 24;
+      let expensePerWeek = expensePerDay * 7;
+      let expensePerMonth = expensePerDay * 30;
+      let expensePerYear = expensePerDay * 365;
 
-            document.getElementById('expensePerSecond').textContent = `Soniyasiga: $${expensePerSecond.toFixed(4)}`;
-            document.getElementById('expensePerMinute').textContent = `Minutiga: $${expensePerMinute.toFixed(2)}`;
-            document.getElementById('expensePerHour').textContent = `Soatiga: $${expensePerHour.toFixed(2)}`;
-            document.getElementById('expensePerDay').textContent = `Kuniga: $${expensePerDay.toFixed(2)}`;
-            document.getElementById('expensePerWeek').textContent = `Haftasiga: $${expensePerWeek.toFixed(2)}`;
-            document.getElementById('expensePerMonth').textContent = `Oyiga: $${expensePerMonth.toFixed(2)}`;
-            document.getElementById('expensePerYear').textContent = `Yiliga: $${expensePerYear.toFixed(2)}`;
+      const balanceElem = document.getElementById('balance');
+      balanceElem.textContent = `Balans: $${balance.toFixed(2)}`;
+      balanceElem.className = 'balance' + (balance < 0 ? ' negative' : '');
 
-            document.getElementById('totalIncome').textContent = `Umumiy Daromad: $${income.toFixed(2)}`;
-            document.getElementById('totalExpense').textContent = `Umumiy Harajat: $${expense.toFixed(2)}`;
-        }
+      document.getElementById('time').textContent = `Vaqt: ${formattedTime}`;
+      document.getElementById('incomePerSecond').textContent = `Soniyasiga: $${incomePerSecond.toFixed(4)}`;
+      document.getElementById('incomePerMinute').textContent = `Minutiga: $${incomePerMinute.toFixed(2)}`;
+      document.getElementById('incomePerHour').textContent = `Soatiga: $${incomePerHour.toFixed(2)}`;
+      document.getElementById('incomePerDay').textContent = `Kuniga: $${incomePerDay.toFixed(2)}`;
+      document.getElementById('incomePerWeek').textContent = `Haftasiga: $${incomePerWeek.toFixed(2)}`;
+      document.getElementById('incomePerMonth').textContent = `Oyiga: $${incomePerMonth.toFixed(2)}`;
+      document.getElementById('incomePerYear').textContent = `Yiliga: $${incomePerYear.toFixed(2)}`;
 
-        setInterval(updateDashboard, 1000);
-    </script>
+      document.getElementById('expensePerSecond').textContent = `Soniyasiga: $${expensePerSecond.toFixed(4)}`;
+      document.getElementById('expensePerMinute').textContent = `Minutiga: $${expensePerMinute.toFixed(2)}`;
+      document.getElementById('expensePerHour').textContent = `Soatiga: $${expensePerHour.toFixed(2)}`;
+      document.getElementById('expensePerDay').textContent = `Kuniga: $${expensePerDay.toFixed(2)}`;
+      document.getElementById('expensePerWeek').textContent = `Haftasiga: $${expensePerWeek.toFixed(2)}`;
+      document.getElementById('expensePerMonth').textContent = `Oyiga: $${expensePerMonth.toFixed(2)}`;
+      document.getElementById('expensePerYear').textContent = `Yiliga: $${expensePerYear.toFixed(2)}`;
+
+      document.getElementById('totalIncome').textContent = `Umumiy Daromad: $${income.toFixed(2)}`;
+      document.getElementById('totalExpense').textContent = `Umumiy Harajat: $${expense.toFixed(2)}`;
+    }
+
+    setInterval(updateDashboard, 1000);
+  </script>
+
 </body>
 </html>
