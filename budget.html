@@ -2,191 +2,132 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Financial Dashboard + 3D Earth</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Real-Time Dashboard</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.155.0/build/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.155.0/examples/js/controls/OrbitControls.js"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: radial-gradient(circle at center, #111827, #000000);
-      overflow: hidden;
-    }
-
-    #earthCanvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 40vw;
-      height: 40vw;
-      z-index: 0;
-    }
-
-    .glass {
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .glow-text {
-      text-shadow: 0 0 10px #00ffcc, 0 0 20px #00ffcc, 0 0 30px #00ffcc;
-    }
-
-    .button-active {
-      @apply bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg;
-    }
-  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body class="text-white relative overflow-hidden">
-
-<canvas id="earthCanvas"></canvas>
-
-<div class="absolute top-10 right-10 w-[50vw] glass p-6 rounded-xl shadow-2xl z-10">
-  <h1 class="text-3xl mb-4 glow-text">Moliyaviy Dashboard</h1>
-  
-  <div class="grid grid-cols-3 gap-4 mb-6">
-    <div>
-      <h2 class="text-xl font-bold">Daromad</h2>
-      <p id="income" class="text-green-400 text-2xl">$0.00</p>
+<body class="bg-gray-100 text-gray-900">
+  <div class="p-6">
+    <h1 class="text-3xl font-bold mb-4">YTD Real-Time Dashboard</h1>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Sales Card -->
+      <div class="bg-white rounded-2xl shadow p-4">
+        <h2 class="text-xl font-semibold">Sales</h2>
+        <p class="text-3xl font-bold" id="salesAmount">0</p>
+        <p class="text-green-600">Target Achievement: <span id="salesTarget">0%</span></p>
+      </div>
+      <!-- Gross Profit Card -->
+      <div class="bg-white rounded-2xl shadow p-4">
+        <h2 class="text-xl font-semibold">Gross Profit</h2>
+        <p class="text-3xl font-bold" id="grossProfit">0</p>
+        <p class="text-green-600">Change YoY: <span id="grossYoY">0%</span></p>
+      </div>
+      <!-- Headcount Card -->
+      <div class="bg-white rounded-2xl shadow p-4">
+        <h2 class="text-xl font-semibold">Headcount</h2>
+        <p class="text-3xl font-bold" id="headcount">0</p>
+        <p class="text-blue-600">Change YoY: <span id="headcountChange">0</span></p>
+      </div>
     </div>
-    <div>
-      <h2 class="text-xl font-bold">Harajat</h2>
-      <p id="expense" class="text-red-400 text-2xl">$0.00</p>
-    </div>
-    <div>
-      <h2 class="text-xl font-bold">Balans</h2>
-      <p id="balance" class="text-yellow-400 text-2xl">$0.00</p>
+
+    <!-- Charts -->
+    <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="bg-white rounded-2xl shadow p-4">
+        <h3 class="text-lg font-semibold mb-2">Sales Over Time</h3>
+        <canvas id="salesChart"></canvas>
+      </div>
+      <div class="bg-white rounded-2xl shadow p-4">
+        <h3 class="text-lg font-semibold mb-2">Net Operating Cash Flow</h3>
+        <canvas id="cashFlowChart"></canvas>
+      </div>
     </div>
   </div>
 
-  <canvas id="chart" height="100"></canvas>
+  <script>
+    // Initial Values
+    let sales = 100000;
+    let gross = 30000;
+    let headcount = 120;
 
-  <div class="mt-6 flex gap-4">
-    <button id="darkToggle" class="button-active">🌗 Dark Mode</button>
-    <button id="pauseBtn" class="button-active">⏸ Pause</button>
-    <button id="resumeBtn" class="button-active hidden">▶ Resume</button>
-  </div>
-</div>
+    // DOM Elements
+    const salesEl = document.getElementById("salesAmount");
+    const targetEl = document.getElementById("salesTarget");
+    const grossEl = document.getElementById("grossProfit");
+    const grossYoYEl = document.getElementById("grossYoY");
+    const headEl = document.getElementById("headcount");
+    const headChangeEl = document.getElementById("headcountChange");
 
-<script>
-  // Earth Rendering
-  const canvas = document.getElementById('earthCanvas');
-  const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(50, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
-  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
-  renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+    // Generate Random Change
+    function getRandomDelta() {
+      return Math.floor(Math.random() * 100 - 50);
+    }
 
-  const earthGeometry = new THREE.SphereGeometry(2, 64, 64);
-  const earthTexture = new THREE.TextureLoader().load('https://threejs.org/examples/textures/land_ocean_ice_cloud_2048.jpg');
-  const earthMaterial = new THREE.MeshPhongMaterial({ map: earthTexture });
-  const earth = new THREE.Mesh(earthGeometry, earthMaterial);
-  scene.add(earth);
+    // Update Dashboard Stats
+    function updateStats() {
+      sales += getRandomDelta();
+      gross += getRandomDelta();
+      headcount += Math.round(Math.random() * 2 - 1);
 
-  const light = new THREE.DirectionalLight(0xffffff, 1);
-  light.position.set(5, 5, 5);
-  scene.add(light);
+      salesEl.textContent = sales.toLocaleString();
+      targetEl.textContent = (100 + Math.random() * 10).toFixed(1) + "%";
 
-  camera.position.z = 5;
+      grossEl.textContent = gross.toLocaleString();
+      grossYoYEl.textContent = (5 + Math.random() * 5).toFixed(1) + "%";
 
-  function animateEarth() {
-    requestAnimationFrame(animateEarth);
-    earth.rotation.y += 0.0015;
-    renderer.render(scene, camera);
-  }
+      headEl.textContent = headcount;
+      headChangeEl.textContent = Math.round(Math.random() * 10 - 5);
+    }
 
-  animateEarth();
+    // Create Charts
+    const salesChartCtx = document.getElementById("salesChart").getContext("2d");
+    const cashFlowChartCtx = document.getElementById("cashFlowChart").getContext("2d");
 
-  // Financial Logic
-  let paused = false;
-  const start = new Date("2023-04-04T00:00:00");
-  const end = new Date("2025-05-02T00:00:00");
-  const totalIncome = 120000;
-  const totalExpense = 143000;
-  const totalTime = (end - start) / 1000;
-
-  const incomeEl = document.getElementById('income');
-  const expenseEl = document.getElementById('expense');
-  const balanceEl = document.getElementById('balance');
-
-  let chartCtx = document.getElementById('chart').getContext('2d');
-  let chart = new Chart(chartCtx, {
-    type: 'line',
-    data: {
-      labels: [],
-      datasets: [{
-        label: 'Balans',
-        data: [],
-        fill: true,
-        borderColor: '#00ffcc',
-        backgroundColor: 'rgba(0, 255, 204, 0.1)',
-        tension: 0.3
-      }]
-    },
-    options: {
-      responsive: true,
-      animation: false,
-      scales: {
-        y: {
-          ticks: { color: 'white' },
-          grid: { color: 'rgba(255,255,255,0.1)' }
-        },
-        x: {
-          ticks: { color: 'white' },
-          grid: { display: false }
-        }
+    const salesChart = new Chart(salesChartCtx, {
+      type: 'line',
+      data: {
+        labels: [...Array(10)].map((_, i) => `T-${10 - i}s`),
+        datasets: [{
+          label: 'Sales',
+          borderColor: 'rgba(75, 192, 192, 1)',
+          data: Array(10).fill(sales),
+          fill: false,
+        }]
       },
-      plugins: {
-        legend: { labels: { color: 'white' } }
-      }
+      options: { responsive: true }
+    });
+
+    const cashFlowChart = new Chart(cashFlowChartCtx, {
+      type: 'bar',
+      data: {
+        labels: [...Array(6)].map((_, i) => `Month ${i + 1}`),
+        datasets: [{
+          label: 'Cash Flow',
+          backgroundColor: 'rgba(153, 102, 255, 0.6)',
+          data: Array(6).fill(0).map(() => Math.random() * 500 - 250)
+        }]
+      },
+      options: { responsive: true }
+    });
+
+    // Update Charts
+    function updateCharts() {
+      salesChart.data.datasets[0].data.push(sales);
+      salesChart.data.datasets[0].data.shift();
+      salesChart.update();
+
+      cashFlowChart.data.datasets[0].data = cashFlowChart.data.datasets[0].data.map(
+        () => Math.random() * 500 - 250
+      );
+      cashFlowChart.update();
     }
-  });
 
-  function updateFinance() {
-    if (paused) return;
-
-    const now = new Date();
-    const elapsed = (now - start) / 1000;
-    const income = totalIncome * (elapsed / totalTime);
-    const expense = totalExpense * (elapsed / totalTime);
-    const balance = income - expense;
-
-    incomeEl.textContent = `$${income.toFixed(2)}`;
-    expenseEl.textContent = `$${expense.toFixed(2)}`;
-    balanceEl.textContent = `$${balance.toFixed(2)}`;
-
-    if (chart.data.labels.length > 40) {
-      chart.data.labels.shift();
-      chart.data.datasets[0].data.shift();
-    }
-
-    chart.data.labels.push(now.toLocaleTimeString());
-    chart.data.datasets[0].data.push(balance.toFixed(2));
-    chart.update();
-  }
-
-  setInterval(updateFinance, 1000);
-
-  // Toggle Buttons
-  document.getElementById('pauseBtn').onclick = () => {
-    paused = true;
-    document.getElementById('pauseBtn').classList.add('hidden');
-    document.getElementById('resumeBtn').classList.remove('hidden');
-  };
-
-  document.getElementById('resumeBtn').onclick = () => {
-    paused = false;
-    document.getElementById('pauseBtn').classList.remove('hidden');
-    document.getElementById('resumeBtn').classList.add('hidden');
-  };
-
-  document.getElementById('darkToggle').onclick = () => {
-    document.body.classList.toggle('bg-black');
-    document.body.classList.toggle('bg-white');
-  };
-</script>
-
+    // Real-Time Loop
+    setInterval(() => {
+      updateStats();
+      updateCharts();
+    }, 1000);
+  </script>
 </body>
 </html>
