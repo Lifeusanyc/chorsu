@@ -1,176 +1,213 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Daromad, Harajat va Balans</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Moliyaviy Dashboard</title>
   <style>
+    :root {
+      --bg-color: #f4f4f4;
+      --card-bg: rgba(255, 255, 255, 0.15);
+      --text-color: #222;
+      --glass: blur(15px);
+      --transition: 0.3s ease;
+    }
+
+    body.dark {
+      --bg-color: #121212;
+      --card-bg: rgba(255, 255, 255, 0.05);
+      --text-color: #f0f0f0;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: 'Segoe UI', sans-serif;
       margin: 0;
       padding: 0;
-      height: 100vh;
-      background: linear-gradient(to right, #e0f7fa, #e1bee7);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg-color);
+      color: var(--text-color);
+      transition: background var(--transition), color var(--transition);
     }
 
-    #dashboard {
-      display: flex;
-      gap: 20px;
-      width: 90%;
-      max-width: 1000px;
-      justify-content: space-between;
-    }
-
-    .column {
-      background-color: #ffffffee;
-      border-radius: 16px;
+    header {
+      text-align: center;
       padding: 20px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-      flex: 1;
-      transition: all 0.3s ease;
     }
 
-    .column h2 {
-      font-size: 1.8em;
-      margin-bottom: 15px;
-      color: #333;
-    }
-
-    .column p {
-      font-size: 1.1em;
-      margin: 6px 0;
-      color: #555;
-    }
-
-    .balance {
-      font-size: 2em;
+    .theme-toggle {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 10px 20px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
       font-weight: bold;
-      color: #2e7d32;
+    }
+
+    .dashboard {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .card {
+      flex: 1 1 300px;
+      background: var(--card-bg);
+      backdrop-filter: var(--glass);
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      transition: transform var(--transition);
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    .card h2 {
+      margin-bottom: 10px;
+      font-size: 1.5em;
+    }
+
+    .value {
+      font-size: 1.3em;
+      margin: 8px 0;
+    }
+
+    .progress-bar {
+      height: 10px;
+      width: 100%;
+      background: #ddd;
+      border-radius: 5px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      transition: width 0.3s ease-in-out;
+    }
+
+    .balance.positive {
+      color: #28a745;
+    }
+
+    .balance.warning {
+      color: #ffc107;
     }
 
     .balance.negative {
-      color: #c62828;
-      background-color: #ffebee;
-      padding: 10px;
-      border-radius: 8px;
+      color: #dc3545;
     }
 
-    #time {
-      font-size: 1.4em;
-      color: #444;
-      margin-top: 25px;
-      background: #ffffffaa;
-      padding: 10px 20px;
-      border-radius: 12px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    #timeDisplay {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 1.2em;
     }
 
     @media (max-width: 768px) {
-      #dashboard {
+      .dashboard {
         flex-direction: column;
-        align-items: stretch;
+        align-items: center;
       }
     }
   </style>
 </head>
 <body>
+  <button class="theme-toggle" onclick="toggleTheme()">🌗 Rejim</button>
+  <header>
+    <h1>💼 Moliyaviy Dashboard</h1>
+    <div id="timeDisplay">⏱️ Vaqt: --:--:--</div>
+  </header>
 
-  <div id="dashboard">
-    <div class="column" id="incomeColumn">
-      <h2>Daromad</h2>
-      <p id="incomePerSecond">Soniyasiga: $0.00</p>
-      <p id="incomePerMinute">Minutiga: $0.00</p>
-      <p id="incomePerHour">Soatiga: $0.00</p>
-      <p id="incomePerDay">Kuniga: $0.00</p>
-      <p id="incomePerWeek">Haftasiga: $0.00</p>
-      <p id="incomePerMonth">Oyiga: $0.00</p>
-      <p id="incomePerYear">Yiliga: $0.00</p>
-      <p id="totalIncome">Umumiy Daromad: $120000.00</p>
+  <div class="dashboard">
+    <div class="card" id="incomeCard">
+      <h2>📈 Daromad</h2>
+      <div class="value" id="incomeTotal">Umumiy: $0.00</div>
+      <div class="value" id="incomePerSec">Soniyasiga: $0.0000</div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="incomeBar" style="background: #28a745; width: 0%;"></div>
+      </div>
     </div>
 
-    <div class="column" id="expenseColumn">
-      <h2>Harajat</h2>
-      <p id="expensePerSecond">Soniyasiga: $0.00</p>
-      <p id="expensePerMinute">Minutiga: $0.00</p>
-      <p id="expensePerHour">Soatiga: $0.00</p>
-      <p id="expensePerDay">Kuniga: $0.00</p>
-      <p id="expensePerWeek">Haftasiga: $0.00</p>
-      <p id="expensePerMonth">Oyiga: $0.00</p>
-      <p id="expensePerYear">Yiliga: $0.00</p>
-      <p id="totalExpense">Umumiy Harajat: $143000.00</p>
+    <div class="card" id="expenseCard">
+      <h2>📉 Harajat</h2>
+      <div class="value" id="expenseTotal">Umumiy: $0.00</div>
+      <div class="value" id="expensePerSec">Soniyasiga: $0.0000</div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="expenseBar" style="background: #dc3545; width: 0%;"></div>
+      </div>
     </div>
 
-    <div class="column" id="balanceColumn">
-      <h2>Balans</h2>
-      <p id="balance" class="balance">Balans: $0.00</p>
+    <div class="card" id="balanceCard">
+      <h2>💰 Balans</h2>
+      <div class="value balance" id="balanceAmount">$0.00</div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="balanceBar" style="background: #007bff; width: 50%;"></div>
+      </div>
     </div>
   </div>
 
-  <div id="time">Vaqt: 00:00:00</div>
-
   <script>
-    let startDate = new Date('2023-04-05T15:00:00');
-    let targetDate = new Date('2025-04-27T00:32:00');
-    let totalIncome = 120000;
-    let totalExpense = 143000;
-    let totalTime = (targetDate - startDate) / 1000;
+    const startDate = new Date('2023-04-05T15:00:00');
+    const targetDate = new Date('2025-04-27T00:32:00');
+    const totalIncome = 120000;
+    const totalExpense = 143000;
+    const totalTime = (targetDate - startDate) / 1000;
 
-    function updateDashboard() {
-      let currentDate = new Date();
-      let elapsedTime = (currentDate - startDate) / 1000;
-      let formattedTime = currentDate.toLocaleTimeString();
-
-      let income = totalIncome * (elapsedTime / totalTime);
-      let expense = totalExpense * (elapsedTime / totalTime);
-      let balance = income - expense;
-
-      let incomePerSecond = income / elapsedTime;
-      let incomePerMinute = incomePerSecond * 60;
-      let incomePerHour = incomePerMinute * 60;
-      let incomePerDay = incomePerHour * 24;
-      let incomePerWeek = incomePerDay * 7;
-      let incomePerMonth = incomePerDay * 30;
-      let incomePerYear = incomePerDay * 365;
-
-      let expensePerSecond = expense / elapsedTime;
-      let expensePerMinute = expensePerSecond * 60;
-      let expensePerHour = expensePerMinute * 60;
-      let expensePerDay = expensePerHour * 24;
-      let expensePerWeek = expensePerDay * 7;
-      let expensePerMonth = expensePerDay * 30;
-      let expensePerYear = expensePerDay * 365;
-
-      const balanceElem = document.getElementById('balance');
-      balanceElem.textContent = `Balans: $${balance.toFixed(2)}`;
-      balanceElem.className = 'balance' + (balance < 0 ? ' negative' : '');
-
-      document.getElementById('time').textContent = `Vaqt: ${formattedTime}`;
-      document.getElementById('incomePerSecond').textContent = `Soniyasiga: $${incomePerSecond.toFixed(4)}`;
-      document.getElementById('incomePerMinute').textContent = `Minutiga: $${incomePerMinute.toFixed(2)}`;
-      document.getElementById('incomePerHour').textContent = `Soatiga: $${incomePerHour.toFixed(2)}`;
-      document.getElementById('incomePerDay').textContent = `Kuniga: $${incomePerDay.toFixed(2)}`;
-      document.getElementById('incomePerWeek').textContent = `Haftasiga: $${incomePerWeek.toFixed(2)}`;
-      document.getElementById('incomePerMonth').textContent = `Oyiga: $${incomePerMonth.toFixed(2)}`;
-      document.getElementById('incomePerYear').textContent = `Yiliga: $${incomePerYear.toFixed(2)}`;
-
-      document.getElementById('expensePerSecond').textContent = `Soniyasiga: $${expensePerSecond.toFixed(4)}`;
-      document.getElementById('expensePerMinute').textContent = `Minutiga: $${expensePerMinute.toFixed(2)}`;
-      document.getElementById('expensePerHour').textContent = `Soatiga: $${expensePerHour.toFixed(2)}`;
-      document.getElementById('expensePerDay').textContent = `Kuniga: $${expensePerDay.toFixed(2)}`;
-      document.getElementById('expensePerWeek').textContent = `Haftasiga: $${expensePerWeek.toFixed(2)}`;
-      document.getElementById('expensePerMonth').textContent = `Oyiga: $${expensePerMonth.toFixed(2)}`;
-      document.getElementById('expensePerYear').textContent = `Yiliga: $${expensePerYear.toFixed(2)}`;
-
-      document.getElementById('totalIncome').textContent = `Umumiy Daromad: $${income.toFixed(2)}`;
-      document.getElementById('totalExpense').textContent = `Umumiy Harajat: $${expense.toFixed(2)}`;
+    function toggleTheme() {
+      document.body.classList.toggle('dark');
     }
 
-    setInterval(updateDashboard, 1000);
-  </script>
+    function update() {
+      const now = new Date();
+      const elapsed = (now - startDate) / 1000;
+      const formattedTime = now.toLocaleTimeString();
 
+      const income = totalIncome * (elapsed / totalTime);
+      const expense = totalExpense * (elapsed / totalTime);
+      const balance = income - expense;
+
+      const incomePerSec = income / elapsed;
+      const expensePerSec = expense / elapsed;
+
+      // Update UI
+      document.getElementById('timeDisplay').textContent = `⏱️ Vaqt: ${formattedTime}`;
+      document.getElementById('incomeTotal').textContent = `Umumiy: $${income.toFixed(2)}`;
+      document.getElementById('incomePerSec').textContent = `Soniyasiga: $${incomePerSec.toFixed(4)}`;
+      document.getElementById('expenseTotal').textContent = `Umumiy: $${expense.toFixed(2)}`;
+      document.getElementById('expensePerSec').textContent = `Soniyasiga: $${expensePerSec.toFixed(4)}`;
+      document.getElementById('balanceAmount').textContent = `$${balance.toFixed(2)}`;
+
+      // Balance color
+      const balanceEl = document.getElementById('balanceAmount');
+      if (balance > 1000) {
+        balanceEl.className = 'value balance positive';
+      } else if (balance > -1000) {
+        balanceEl.className = 'value balance warning';
+      } else {
+        balanceEl.className = 'value balance negative';
+      }
+
+      // Progress bar updates
+      document.getElementById('incomeBar').style.width = `${(income / totalIncome) * 100}%`;
+      document.getElementById('expenseBar').style.width = `${(expense / totalExpense) * 100}%`;
+
+      const balancePercent = Math.min(100, Math.max(0, (balance + 20000) / 40000 * 100));
+      document.getElementById('balanceBar').style.width = `${balancePercent}%`;
+    }
+
+    setInterval(update, 1000);
+    update();
+  </script>
 </body>
 </html>
