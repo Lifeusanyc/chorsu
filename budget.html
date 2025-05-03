@@ -3,127 +3,155 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Real-Time Dashboard</title>
+  <title>YTD Real-Time Dashboard</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    .card { @apply bg-white p-4 rounded-2xl shadow; }
+    .value { @apply text-2xl font-bold; }
+    .label { @apply text-gray-600 text-sm; }
+  </style>
 </head>
-<body class="bg-gray-100 text-gray-900">
-  <div class="p-6">
-    <h1 class="text-3xl font-bold mb-4">YTD Real-Time Dashboard</h1>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <!-- Sales Card -->
-      <div class="bg-white rounded-2xl shadow p-4">
-        <h2 class="text-xl font-semibold">Sales</h2>
-        <p class="text-3xl font-bold" id="salesAmount">0</p>
-        <p class="text-green-600">Target Achievement: <span id="salesTarget">0%</span></p>
-      </div>
-      <!-- Gross Profit Card -->
-      <div class="bg-white rounded-2xl shadow p-4">
-        <h2 class="text-xl font-semibold">Gross Profit</h2>
-        <p class="text-3xl font-bold" id="grossProfit">0</p>
-        <p class="text-green-600">Change YoY: <span id="grossYoY">0%</span></p>
-      </div>
-      <!-- Headcount Card -->
-      <div class="bg-white rounded-2xl shadow p-4">
-        <h2 class="text-xl font-semibold">Headcount</h2>
-        <p class="text-3xl font-bold" id="headcount">0</p>
-        <p class="text-blue-600">Change YoY: <span id="headcountChange">0</span></p>
-      </div>
+<body class="bg-gray-100 p-6">
+  <h1 class="text-3xl font-bold mb-6">YTD Dashboard</h1>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+    <div class="card">
+      <div class="value" id="sales">0</div>
+      <div class="label">Sales</div>
     </div>
-
-    <!-- Charts -->
-    <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div class="bg-white rounded-2xl shadow p-4">
-        <h3 class="text-lg font-semibold mb-2">Sales Over Time</h3>
-        <canvas id="salesChart"></canvas>
-      </div>
-      <div class="bg-white rounded-2xl shadow p-4">
-        <h3 class="text-lg font-semibold mb-2">Net Operating Cash Flow</h3>
-        <canvas id="cashFlowChart"></canvas>
-      </div>
+    <div class="card">
+      <div class="value" id="grossProfit">0</div>
+      <div class="label">Gross Profit</div>
+    </div>
+    <div class="card">
+      <div class="value" id="operatingProfit">0</div>
+      <div class="label">Operating Profit</div>
+    </div>
+    <div class="card">
+      <div class="value" id="netProfit">0</div>
+      <div class="label">Net Profit</div>
+    </div>
+    <div class="card">
+      <div class="value" id="headcount">0</div>
+      <div class="label">Headcount</div>
+    </div>
+    <div class="card">
+      <div class="value" id="receivables">0</div>
+      <div class="label">Receivables Outstanding</div>
+    </div>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="card">
+      <canvas id="salesChart"></canvas>
+    </div>
+    <div class="card">
+      <canvas id="cashFlowChart"></canvas>
+    </div>
+    <div class="card">
+      <canvas id="monthlyGrowthChart"></canvas>
+    </div>
+    <div class="card">
+      <canvas id="employeeChart"></canvas>
     </div>
   </div>
 
   <script>
-    // Initial Values
-    let sales = 100000;
-    let gross = 40000;
-    let headcount = 120;
+    const getRandom = (base, range) => base + Math.round(Math.random() * range - range / 2);
 
-    // DOM Elements
-    const salesEl = document.getElementById("salesAmount");
-    const targetEl = document.getElementById("salesTarget");
-    const grossEl = document.getElementById("grossProfit");
-    const grossYoYEl = document.getElementById("grossYoY");
-    const headEl = document.getElementById("headcount");
-    const headChangeEl = document.getElementById("headcountChange");
-
-    // Generate Random Change
-    function getRandomDelta() {
-      return Math.floor(Math.random() * 100 - 50);
-    }
-
-    // Update Dashboard Stats
     function updateStats() {
-      sales += getRandomDelta();
-      gross += getRandomDelta();
-      headcount += Math.round(Math.random() * 2 - 1);
-
-      salesEl.textContent = sales.toLocaleString();
-      targetEl.textContent = (100 + Math.random() * 10).toFixed(1) + "%";
-
-      grossEl.textContent = gross.toLocaleString();
-      grossYoYEl.textContent = (5 + Math.random() * 5).toFixed(1) + "%";
-
-      headEl.textContent = headcount;
-      headChangeEl.textContent = Math.round(Math.random() * 10 - 5);
+      document.getElementById("sales").innerText = getRandom(100000, 10000);
+      document.getElementById("grossProfit").innerText = getRandom(30000, 5000);
+      document.getElementById("operatingProfit").innerText = getRandom(17500, 3000);
+      document.getElementById("netProfit").innerText = getRandom(14000, 2000);
+      document.getElementById("headcount").innerText = getRandom(126, 10);
+      document.getElementById("receivables").innerText = getRandom(93, 20);
     }
 
-    // Create Charts
     const salesChartCtx = document.getElementById("salesChart").getContext("2d");
-    const cashFlowChartCtx = document.getElementById("cashFlowChart").getContext("2d");
-
     const salesChart = new Chart(salesChartCtx, {
-      type: 'line',
+      type: "bar",
       data: {
-        labels: [...Array(10)].map((_, i) => `T-${10 - i}s`),
+        labels: ["Product 1", "Product 2", "Product 3", "Product 4", "Product 5"],
         datasets: [{
-          label: 'Sales',
-          borderColor: 'rgba(75, 192, 192, 1)',
-          data: Array(10).fill(sales),
-          fill: false,
-        }]
+          label: "Sales by Product",
+          backgroundColor: "#3b82f6",
+          data: [12000, 15000, 17000, 9000, 11000],
+        }],
       },
-      options: { responsive: true }
+      options: { responsive: true, animation: false },
     });
 
+    const cashFlowChartCtx = document.getElementById("cashFlowChart").getContext("2d");
     const cashFlowChart = new Chart(cashFlowChartCtx, {
-      type: 'bar',
+      type: "bar",
       data: {
-        labels: [...Array(6)].map((_, i) => `Month ${i + 1}`),
+        labels: ["JAN", "FEB", "MAR", "APR", "MAY", "JUN"],
         datasets: [{
-          label: 'Cash Flow',
-          backgroundColor: 'rgba(153, 102, 255, 0.6)',
-          data: Array(6).fill(0).map(() => Math.random() * 500 - 250)
-        }]
+          label: "Net Operating Cash Flow",
+          backgroundColor: "#10b981",
+          data: [236, 239, 259, 281, 279, 132],
+        }],
       },
-      options: { responsive: true }
+      options: { responsive: true, animation: false },
     });
 
-    // Update Charts
+    const monthlyGrowthCtx = document.getElementById("monthlyGrowthChart").getContext("2d");
+    const monthlyGrowthChart = new Chart(monthlyGrowthCtx, {
+      type: "bar",
+      data: {
+        labels: ["JUL", "AUG", "SEP", "OCT", "NOV", "DEC"],
+        datasets: [{
+          label: "Monthly Sales Growth %",
+          backgroundColor: "#f59e0b",
+          data: [-7.5, 9.6, -13, 10.3, -0.9, 2.3],
+        }],
+      },
+      options: {
+        responsive: true,
+        indexAxis: 'y',
+        animation: false
+      },
+    });
+
+    const employeeChartCtx = document.getElementById("employeeChart").getContext("2d");
+    const employeeChart = new Chart(employeeChartCtx, {
+      type: "line",
+      data: {
+        labels: ["JUL", "AUG", "SEP", "OCT", "NOV", "DEC", "JAN", "FEB", "MAR", "APR", "MAY", "JUN"],
+        datasets: [
+          {
+            label: "Sales",
+            borderColor: "#6366f1",
+            data: Array(12).fill().map(() => getRandom(8000, 3000)),
+            fill: false,
+          },
+          {
+            label: "Employee Cost",
+            borderColor: "#ef4444",
+            data: Array(12).fill().map(() => getRandom(4000, 1000)),
+            fill: false,
+          }
+        ]
+      },
+      options: { responsive: true, animation: false },
+    });
+
     function updateCharts() {
-      salesChart.data.datasets[0].data.push(sales);
-      salesChart.data.datasets[0].data.shift();
+      salesChart.data.datasets[0].data = salesChart.data.datasets[0].data.map(() => getRandom(10000, 5000));
       salesChart.update();
 
-      cashFlowChart.data.datasets[0].data = cashFlowChart.data.datasets[0].data.map(
-        () => Math.random() * 500 - 250
-      );
+      cashFlowChart.data.datasets[0].data = cashFlowChart.data.datasets[0].data.map(() => getRandom(250, 200));
       cashFlowChart.update();
+
+      monthlyGrowthChart.data.datasets[0].data = monthlyGrowthChart.data.datasets[0].data.map(() => (Math.random() * 20 - 10).toFixed(1));
+      monthlyGrowthChart.update();
+
+      employeeChart.data.datasets.forEach(ds => {
+        ds.data = ds.data.map(() => getRandom(8000, 4000));
+      });
+      employeeChart.update();
     }
 
-    // Real-Time Loop
     setInterval(() => {
       updateStats();
       updateCharts();
