@@ -13,6 +13,7 @@
             height: 100vh;
             margin: 0;
             background-color: #f0f0f0;
+            flex-direction: column;
         }
         #dashboard {
             display: flex;
@@ -41,7 +42,7 @@
             font-size: 2em;
             color: #28a745;
         }
-        .column .negative {
+        .column .balance.negative {
             color: #dc3545;
         }
         #time {
@@ -87,43 +88,42 @@
     <div id="time">Vaqt: 00:00:00</div>
 
     <script>
-        let startDate = new Date('2023-04-05T15:00:00'); // 5-aprel 2023, 15:00 boshlanishi
-        let targetDate = new Date('2025-04-27T00:32:00'); // 27-aprel 2025, soat 00:32 holati
-        let currentDate = new Date(); // Hozirgi sana
-        let totalIncome = 120000; // 27-aprel 2025 yil holatiga ko'ra umumiy daromad
-        let totalExpense = 143000; // 27-aprel 2025 yil holatiga ko'ra umumiy harajat
-        let totalTime = (targetDate - startDate) / 1000; // Boshlanishdan tugashgacha bo'lgan vaqt (sekundlarda)
+        let startDate = new Date('2023-04-05T15:00:00');
+        let targetDate = new Date('2025-04-27T00:32:00');
+        let totalIncome = 120000;
+        let totalExpense = 143000;
+        let totalTime = (targetDate - startDate) / 1000;
 
-        // Funksiya har soniyada daromad va harajatlarni oshirib boradi
         function updateDashboard() {
-            let elapsedTime = (currentDate - startDate) / 1000; // O'tgan vaqtni sekundda hisoblash
-            let formattedTime = new Date().toLocaleTimeString(); // Hozirgi real vaqtni olish
+            let currentDate = new Date(); // Har safar yangilanadi
+            let elapsedTime = (currentDate - startDate) / 1000;
+            let formattedTime = currentDate.toLocaleTimeString();
 
-            // Daromad va harajatlar o'sishini hisoblash
             let income = totalIncome * (elapsedTime / totalTime);
             let expense = totalExpense * (elapsedTime / totalTime);
+            let balance = income - expense;
 
-            let balance = income - expense; // Balansni hisoblash
-
-            // Kirim va harajat miqdorlarini hisoblash
             let incomePerSecond = income / elapsedTime;
             let incomePerMinute = incomePerSecond * 60;
             let incomePerHour = incomePerMinute * 60;
             let incomePerDay = incomePerHour * 24;
             let incomePerWeek = incomePerDay * 7;
-            let incomePerMonth = incomePerDay * 30; // O'rtacha oylik (30 kun deb hisoblaymiz)
-            let incomePerYear = incomePerDay * 365; // Yillik kirim
+            let incomePerMonth = incomePerDay * 30;
+            let incomePerYear = incomePerDay * 365;
 
             let expensePerSecond = expense / elapsedTime;
             let expensePerMinute = expensePerSecond * 60;
             let expensePerHour = expensePerMinute * 60;
             let expensePerDay = expensePerHour * 24;
             let expensePerWeek = expensePerDay * 7;
-            let expensePerMonth = expensePerDay * 30; // O'rtacha oylik (30 kun deb hisoblaymiz)
-            let expensePerYear = expensePerDay * 365; // Yillik harajat
+            let expensePerMonth = expensePerDay * 30;
+            let expensePerYear = expensePerDay * 365;
 
-            // Dashboardni yangilash
-            document.getElementById('balance').textContent = `Balans: $${balance.toFixed(2)}`;
+            // Yangilash
+            let balanceElem = document.getElementById('balance');
+            balanceElem.textContent = `Balans: $${balance.toFixed(2)}`;
+            balanceElem.className = 'balance' + (balance < 0 ? ' negative' : '');
+
             document.getElementById('time').textContent = `Vaqt: ${formattedTime}`;
             document.getElementById('incomePerSecond').textContent = `Soniyasiga: $${incomePerSecond.toFixed(4)}`;
             document.getElementById('incomePerMinute').textContent = `Minutiga: $${incomePerMinute.toFixed(2)}`;
@@ -141,12 +141,11 @@
             document.getElementById('expensePerMonth').textContent = `Oyiga: $${expensePerMonth.toFixed(2)}`;
             document.getElementById('expensePerYear').textContent = `Yiliga: $${expensePerYear.toFixed(2)}`;
 
-            // Umumiy daromad va harajatni yangilash
             document.getElementById('totalIncome').textContent = `Umumiy Daromad: $${income.toFixed(2)}`;
             document.getElementById('totalExpense').textContent = `Umumiy Harajat: $${expense.toFixed(2)}`;
         }
 
-        setInterval(updateDashboard, 1000); // Har 1 soniyada yangilanishi
+        setInterval(updateDashboard, 1000);
     </script>
 </body>
 </html>
