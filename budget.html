@@ -1,165 +1,119 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uz">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>YTD Real-Time Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Balans Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <style>
-    .card { @apply bg-white p-4 rounded-2xl shadow; }
-    .value { @apply text-2xl font-bold; }
-    .label { @apply text-gray-600 text-sm; }
-  </style>
 </head>
-<body class="bg-gray-100 p-6">
-  <h1 class="text-3xl font-bold mb-6">YTD Dashboard</h1>
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-    <div class="card">
-      <div class="value" id="sales">0</div>
-      <div class="label">Sales</div>
-      <div class="label text-xs text-green-500" id="salesTarget">Target Achievement</div>
+<body class="bg-gray-950 text-white min-h-screen p-6">
+  <div class="max-w-4xl mx-auto space-y-8">
+    <h1 class="text-4xl font-bold text-center text-blue-400">💰 Real Vaqt Balans Dashboard</h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="bg-gray-900 rounded-2xl p-6 shadow-lg space-y-4">
+        <h2 class="text-2xl font-semibold">⏱ Joriy vaqt</h2>
+        <p id="time" class="text-xl font-mono text-green-400"></p>
+
+        <h2 class="text-2xl font-semibold">💸 Joriy balans</h2>
+        <p id="balance" class="text-3xl font-bold text-yellow-300"></p>
+      </div>
+
+      <div class="bg-gray-900 rounded-2xl p-6 shadow-lg">
+        <h2 class="text-2xl font-semibold mb-2">📉 Balans o‘sish grafigi</h2>
+        <canvas id="balanceChart" height="200"></canvas>
+      </div>
     </div>
-    <div class="card">
-      <div class="value" id="grossProfit">0</div>
-      <div class="label">Gross Profit</div>
-      <div class="label text-xs text-green-500" id="grossChange">Change Over Last Year</div>
-    </div>
-    <div class="card">
-      <div class="value" id="operatingProfit">0</div>
-      <div class="label">Operating Profit</div>
-    </div>
-    <div class="card">
-      <div class="value" id="netProfit">0</div>
-      <div class="label">Net Profit</div>
-    </div>
-    <div class="card">
-      <div class="value" id="headcount">0</div>
-      <div class="label">Headcount</div>
-    </div>
-    <div class="card">
-      <div class="value" id="receivables">0</div>
-      <div class="label">Receivables Outstanding</div>
-    </div>
-  </div>
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-    <div class="card">
-      <canvas id="salesChart"></canvas>
-    </div>
-    <div class="card">
-      <canvas id="cashFlowChart"></canvas>
-    </div>
-    <div class="card">
-      <canvas id="monthlyGrowthChart"></canvas>
-    </div>
-    <div class="card">
-      <canvas id="employeeChart"></canvas>
-    </div>
-  </div>
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-    <div class="card">
-      <canvas id="incomeStatementChart"></canvas>
-    </div>
-    <div class="card">
-      <canvas id="inventoryTrendChart"></canvas>
+
+    <div class="bg-gray-900 rounded-2xl p-6 shadow-lg">
+      <h2 class="text-2xl font-semibold mb-4">📊 Oxirgi balanslar tarixi (so‘nggi 10 sekund)</h2>
+      <ul id="history" class="space-y-1 font-mono text-sm text-gray-300"></ul>
     </div>
   </div>
 
   <script>
-    const getRandom = (base, range) => base + Math.round(Math.random() * range - range / 2);
+    const startDate = new Date("2023-04-04T00:00:00");
+    const date2024 = new Date("2024-01-01T00:00:00");
+    const date2025 = new Date("2025-01-01T00:00:00");
+    const balance2024 = 15000;
+    const balance2025 = 30000;
 
-    function updateStats() {
-      const sales = getRandom(100000, 10000);
-      const gross = getRandom(30000, 5000);
-      document.getElementById("sales").innerText = sales;
-      document.getElementById("grossProfit").innerText = gross;
-      document.getElementById("operatingProfit").innerText = getRandom(17500, 3000);
-      document.getElementById("netProfit").innerText = getRandom(14000, 2000);
-      document.getElementById("headcount").innerText = getRandom(126, 10);
-      document.getElementById("receivables").innerText = getRandom(93, 20);
-      document.getElementById("salesTarget").innerText = `Target Achievement ${Math.floor(sales / 1000)}%`;
-      document.getElementById("grossChange").innerText = `Change Over Last Year ${Math.floor(Math.random() * 15)}%`;
+    const totalDays1 = (date2024 - startDate) / (1000 * 60 * 60 * 24);
+    const totalDays2 = (date2025 - date2024) / (1000 * 60 * 60 * 24);
+
+    const dailyGrowth1 = balance2024 / totalDays1;
+    const dailyGrowth2 = (balance2025 - balance2024) / totalDays2;
+
+    const balanceHistory = [];
+    const labels = [];
+    const chartData = {
+      labels: labels,
+      datasets: [{
+        label: 'Balans ($)',
+        backgroundColor: 'rgba(34,197,94,0.2)',
+        borderColor: 'rgb(34,197,94)',
+        data: [],
+        tension: 0.3
+      }]
+    };
+
+    const ctx = document.getElementById('balanceChart').getContext('2d');
+    const balanceChart = new Chart(ctx, {
+      type: 'line',
+      data: chartData,
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+
+    function getCurrentBalance(now) {
+      let balance = 0;
+      if (now < startDate) {
+        balance = 0;
+      } else if (now < date2024) {
+        const daysPassed = (now - startDate) / (1000 * 60 * 60 * 24);
+        balance = daysPassed * dailyGrowth1;
+      } else {
+        const daysPassed = (now - date2024) / (1000 * 60 * 60 * 24);
+        balance = balance2024 + daysPassed * dailyGrowth2;
+      }
+      return balance;
     }
 
-    const salesChart = new Chart(document.getElementById("salesChart").getContext("2d"), {
-      type: "bar",
-      data: {
-        labels: ["Product 1", "Product 2", "Product 3", "Product 4", "Product 5"],
-        datasets: [{ label: "Sales by Product", backgroundColor: "#3b82f6", data: [] }],
-      },
-      options: { responsive: true, animation: false },
-    });
+    function update() {
+      const now = new Date();
+      const balance = getCurrentBalance(now);
 
-    const cashFlowChart = new Chart(document.getElementById("cashFlowChart").getContext("2d"), {
-      type: "bar",
-      data: {
-        labels: ["JAN", "FEB", "MAR", "APR", "MAY", "JUN"],
-        datasets: [{ label: "Net Operating Cash Flow", backgroundColor: "#10b981", data: [] }],
-      },
-      options: { responsive: true, animation: false },
-    });
+      // UI yangilash
+      document.getElementById("time").textContent = now.toLocaleString();
+      document.getElementById("balance").textContent = "$" + balance.toFixed(2);
 
-    const monthlyGrowthChart = new Chart(document.getElementById("monthlyGrowthChart").getContext("2d"), {
-      type: "bar",
-      data: {
-        labels: ["JUL", "AUG", "SEP", "OCT", "NOV", "DEC"],
-        datasets: [{ label: "Monthly Sales Growth %", backgroundColor: "#f59e0b", data: [] }],
-      },
-      options: { responsive: true, indexAxis: 'y', animation: false },
-    });
+      // Grafik uchun yangilash
+      const timeLabel = now.toLocaleTimeString();
+      labels.push(timeLabel);
+      chartData.datasets[0].data.push(balance);
+      if (labels.length > 20) {
+        labels.shift();
+        chartData.datasets[0].data.shift();
+      }
+      balanceChart.update();
 
-    const employeeChart = new Chart(document.getElementById("employeeChart").getContext("2d"), {
-      type: "line",
-      data: {
-        labels: ["JUL", "AUG", "SEP", "OCT", "NOV", "DEC", "JAN", "FEB", "MAR", "APR", "MAY", "JUN"],
-        datasets: [
-          { label: "Sales", borderColor: "#6366f1", data: [], fill: false },
-          { label: "Employee Cost", borderColor: "#ef4444", data: [], fill: false },
-        ]
-      },
-      options: { responsive: true, animation: false },
-    });
+      // Tarixga qo‘shish
+      balanceHistory.unshift(`${timeLabel} — $${balance.toFixed(2)}`);
+      if (balanceHistory.length > 10) balanceHistory.pop();
 
-    const incomeStatementChart = new Chart(document.getElementById("incomeStatementChart").getContext("2d"), {
-      type: "bar",
-      data: {
-        labels: ["Revenue", "COGS", "OpEx", "Non-Op Income", "Finance Exp", "Profit"],
-        datasets: [{ label: "Income Statement", backgroundColor: "#8b5cf6", data: [] }],
-      },
-      options: { responsive: true, animation: false },
-    });
-
-    const inventoryTrendChart = new Chart(document.getElementById("inventoryTrendChart").getContext("2d"), {
-      type: "line",
-      data: {
-        labels: ["J", "A", "S", "O", "N", "D", "J", "F", "M", "A", "M", "J"],
-        datasets: [{ label: "Inventory Trend", borderColor: "#0ea5e9", data: [], fill: false }],
-      },
-      options: { responsive: true, animation: false },
-    });
-
-    function updateCharts() {
-      salesChart.data.datasets[0].data = Array(5).fill().map(() => getRandom(10000, 5000));
-      cashFlowChart.data.datasets[0].data = Array(6).fill().map(() => getRandom(250, 200));
-      monthlyGrowthChart.data.datasets[0].data = Array(6).fill().map(() => (Math.random() * 20 - 10).toFixed(1));
-      employeeChart.data.datasets.forEach(ds => {
-        ds.data = Array(12).fill().map(() => getRandom(8000, 4000));
-      });
-      incomeStatementChart.data.datasets[0].data = [108000, 77300, 13500, 800, 4300, 14000].map(x => getRandom(x, x * 0.2));
-      inventoryTrendChart.data.datasets[0].data = Array(12).fill().map(() => getRandom(10000, 4000));
-
-      salesChart.update();
-      cashFlowChart.update();
-      monthlyGrowthChart.update();
-      employeeChart.update();
-      incomeStatementChart.update();
-      inventoryTrendChart.update();
+      document.getElementById("history").innerHTML =
+        balanceHistory.map(item => `<li>${item}</li>`).join('');
     }
 
-    setInterval(() => {
-      updateStats();
-      updateCharts();
-    }, 1000);
+    setInterval(update, 1000);
   </script>
 </body>
 </html>
