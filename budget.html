@@ -57,11 +57,10 @@
   </div>
 
   <script>
-    const startDate = new Date("2023-04-04");
-    const monthlyIncome = 6000;
-    const monthlyExpense = 5000;
-
+    // Omonatning boshlang'ich parametrlarini belgilash
     let balance = 0;
+    const incomeRange = { min: 5000, max: 7000 };
+    const expenseRange = { min: 4000, max: 5000 };
     const labels = [], incomeData = [], expenseData = [], balanceData = [];
     const history = [];
 
@@ -106,21 +105,26 @@
     });
 
     function update() {
+      // Kirim va chiqimni tasodifiy tanlash
+      const income = Math.random() * (incomeRange.max - incomeRange.min) + incomeRange.min;
+      const expense = Math.random() * (expenseRange.max - expenseRange.min) + expenseRange.min;
+      
+      // Balansni hisoblash
+      balance += income - expense;
+
+      // Vaqtni ko‘rsatish
       const now = new Date();
-      const monthsPassed = Math.floor((now - startDate) / (1000 * 60 * 60 * 24 * 30));  // O‘tgan oylar soni
-
-      // Har oyda balansni yangilash
-      balance = monthsPassed * (monthlyIncome - monthlyExpense);
-
       document.getElementById('time').textContent = now.toLocaleString();
       document.getElementById('balance').textContent = "$" + balance.toFixed(2);
 
+      // Grafik uchun ma'lumotlar
       const timeLabel = now.toLocaleTimeString();
       labels.push(timeLabel);
-      incomeData.push(monthlyIncome * monthsPassed);
-      expenseData.push(monthlyExpense * monthsPassed);
+      incomeData.push(income);
+      expenseData.push(expense);
       balanceData.push(balance);
 
+      // Oxirgi 10 soniyani saqlash
       if (labels.length > 20) {
         labels.shift();
         incomeData.shift();
@@ -130,7 +134,8 @@
 
       chart.update();
 
-      history.unshift(`${timeLabel} - Kirim: $${(monthlyIncome * monthsPassed).toFixed(2)} | Chiqim: $${(monthlyExpense * monthsPassed).toFixed(2)} | Balans: $${balance.toFixed(2)}`);
+      // Tarixni yangilash
+      history.unshift(`${timeLabel} - Kirim: $${income.toFixed(2)} | Chiqim: $${expense.toFixed(2)} | Balans: $${balance.toFixed(2)}`);
       if (history.length > 10) history.pop();
       document.getElementById("history").innerHTML = history.map(e => `<li>${e}</li>`).join('');
     }
@@ -145,6 +150,7 @@
       const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
       saveAs(blob, "balans_tarixi.csv");
     }
+
   </script>
 </body>
 </html>
