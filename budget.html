@@ -10,8 +10,6 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.0"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.157.0/build/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.157.0/examples/js/controls/OrbitControls.min.js"></script>
 
   <style>
     body {
@@ -60,24 +58,10 @@
 
   <script>
     const startDate = new Date("2023-04-04");
-    const date2024 = new Date("2024-01-01");
-    const date2025 = new Date("2025-01-01");
+    const monthlyIncome = 6000;
+    const monthlyExpense = 5000;
 
-    // Kirim va chiqim summalari
-    const income2023 = 50000, income2024 = 75000;
-    const expense2023 = 50000, expense2024 = 75000;
-
-    // O‘tgan vaqtdan hisoblash
-    const totalDays1 = (date2024 - startDate) / (1000 * 60 * 60 * 24);
-    const totalDays2 = (date2025 - date2024) / (1000 * 60 * 60 * 24);
-
-    // Har kunlik kirim/chiqim o‘sish
-    const dailyIncomeGrowth1 = income2023 / totalDays1;
-    const dailyIncomeGrowth2 = (income2024 - income2023) / totalDays2;
-
-    const dailyExpenseGrowth1 = expense2023 / totalDays1;
-    const dailyExpenseGrowth2 = (expense2024 - expense2023) / totalDays2;
-
+    let balance = 0;
     const labels = [], incomeData = [], expenseData = [], balanceData = [];
     const history = [];
 
@@ -121,31 +105,20 @@
       }
     });
 
-    function getIncome(date) {
-      if (date < startDate) return 0;
-      if (date < date2024) return ((date - startDate) / (1000 * 60 * 60 * 24)) * dailyIncomeGrowth1;
-      return income2023 + ((date - date2024) / (1000 * 60 * 60 * 24)) * dailyIncomeGrowth2;
-    }
-
-    function getExpense(date) {
-      if (date < startDate) return 0;
-      if (date < date2024) return ((date - startDate) / (1000 * 60 * 60 * 24)) * dailyExpenseGrowth1;
-      return expense2023 + ((date - date2024) / (1000 * 60 * 60 * 24)) * dailyExpenseGrowth2;
-    }
-
     function update() {
       const now = new Date();
-      const income = getIncome(now);
-      const expense = getExpense(now);
-      const balance = income - expense;
+      const monthsPassed = Math.floor((now - startDate) / (1000 * 60 * 60 * 24 * 30));  // O‘tgan oylar soni
+
+      // Har oyda balansni yangilash
+      balance = monthsPassed * (monthlyIncome - monthlyExpense);
 
       document.getElementById('time').textContent = now.toLocaleString();
       document.getElementById('balance').textContent = "$" + balance.toFixed(2);
 
       const timeLabel = now.toLocaleTimeString();
       labels.push(timeLabel);
-      incomeData.push(income);
-      expenseData.push(expense);
+      incomeData.push(monthlyIncome * monthsPassed);
+      expenseData.push(monthlyExpense * monthsPassed);
       balanceData.push(balance);
 
       if (labels.length > 20) {
@@ -157,7 +130,7 @@
 
       chart.update();
 
-      history.unshift(`${timeLabel} - Kirim: $${income.toFixed(2)} | Chiqim: $${expense.toFixed(2)} | Balans: $${balance.toFixed(2)}`);
+      history.unshift(`${timeLabel} - Kirim: $${(monthlyIncome * monthsPassed).toFixed(2)} | Chiqim: $${(monthlyExpense * monthsPassed).toFixed(2)} | Balans: $${balance.toFixed(2)}`);
       if (history.length > 10) history.pop();
       document.getElementById("history").innerHTML = history.map(e => `<li>${e}</li>`).join('');
     }
@@ -172,37 +145,6 @@
       const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
       saveAs(blob, "balans_tarixi.csv");
     }
-
-    // 🎥 Three.js Yer fon animatsiyasi
-    const canvas = document.querySelector(".webgl-bg");
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, innerWidth / innerHeight, 0.1, 100);
-    camera.position.z = 3;
-
-    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
-    renderer.setSize(innerWidth, innerHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
-
-    const geometry = new THREE.SphereGeometry(1, 64, 64);
-    const material = new THREE.MeshStandardMaterial({ color: 0x2266cc, wireframe: false });
-    const sphere = new THREE.Mesh(geometry, material);
-    scene.add(sphere);
-
-    const light = new THREE.PointLight(0xffffff, 1);
-    light.position.set(5, 3, 5);
-    scene.add(light);
-
-    function animate() {
-      requestAnimationFrame(animate);
-      sphere.rotation.y += 0.001;
-      renderer.render(scene, camera);
-    }
-    animate();
-    window.addEventListener("resize", () => {
-      camera.aspect = innerWidth / innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(innerWidth, innerHeight);
-    });
   </script>
 </body>
 </html>
