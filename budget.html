@@ -3,173 +3,106 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Super Balans Dashboard</title>
-
-  <!-- Kutubxonalar -->
+  <title>Kirim / Chiqim / Balans Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.0"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.157.0/build/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.157.0/examples/js/controls/OrbitControls.min.js"></script>
-
-  <style>
-    body {
-      margin: 0;
-      overflow-x: hidden;
-    }
-    canvas.webgl-bg {
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: -1;
-    }
-  </style>
 </head>
-<body class="bg-gray-900 text-white min-h-screen p-6">
-  <canvas class="webgl-bg"></canvas>
+<body class="bg-gray-900 text-white min-h-screen p-8">
+  <h1 class="text-3xl font-bold text-center mb-6 text-yellow-400">📊 Kirim / Chiqim / Balans Dashboard</h1>
 
-  <div class="max-w-5xl mx-auto space-y-6">
-    <h1 class="text-4xl font-bold text-center text-blue-400">🌍 Super Balans Dashboard</h1>
-
-    <div class="flex flex-wrap justify-between items-center gap-4">
-      <div>
-        <label class="text-sm">📅 Sana tanlang:</label>
-        <input id="datePicker" type="date" class="bg-gray-800 p-2 rounded text-white" />
-      </div>
-      <div>
-        <button onclick="exportCSV()" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded font-semibold">⬇️ CSV eksport</button>
-      </div>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div class="bg-gray-800 p-6 rounded-2xl space-y-3 shadow-lg">
-        <div class="text-xl font-mono">⏰ Joriy vaqt: <span id="time" class="text-green-400"></span></div>
-        <div class="text-2xl">💰 Balans: <span id="balance" class="text-yellow-400 font-bold"></span></div>
-      </div>
-      <div class="bg-gray-800 p-4 rounded-2xl shadow-lg">
-        <canvas id="balanceChart" height="180"></canvas>
-      </div>
-    </div>
-
-    <div class="bg-gray-800 p-4 rounded-2xl shadow-lg">
-      <h2 class="text-xl mb-2">🧾 So‘nggi balanslar tarixi</h2>
-      <ul id="history" class="text-sm font-mono space-y-1 text-gray-300"></ul>
-    </div>
+  <div class="bg-gray-800 p-6 rounded-xl shadow-lg max-w-5xl mx-auto">
+    <canvas id="balanceChart" height="150"></canvas>
   </div>
 
   <script>
     const startDate = new Date("2023-04-04");
-    const date2024 = new Date("2024-01-01");
-    const date2025 = new Date("2025-01-01");
-    const balance2024 = 15000;
-    const balance2025 = 30000;
+    const today = new Date();
+    const dayCount = Math.floor((today - startDate) / (1000 * 60 * 60 * 24)) + 1;
 
-    const totalDays1 = (date2024 - startDate) / (1000 * 60 * 60 * 24);
-    const totalDays2 = (date2025 - date2024) / (1000 * 60 * 60 * 24);
-    const dailyGrowth1 = balance2024 / totalDays1;
-    const dailyGrowth2 = (balance2025 - balance2024) / totalDays2;
+    // Yil bo'yicha umumiy maqsadlar
+    const targets = {
+      2023: { income: 50000, expense: 50000 },
+      2024: { income: 75000, expense: 75000 },
+      2025: { income: 0, expense: 0 }
+    };
 
-    const labels = [], data = [];
-    const history = [];
+    function generateDailyValues(year, total, days) {
+      // Tasodifiy raqamlar bilan kunlik qiymatlar yaratamiz
+      let values = Array.from({ length: days }, () => Math.random());
+      let sum = values.reduce((a, b) => a + b, 0);
+      return values.map(v => (v / sum) * total);
+    }
 
-    const chart = new Chart(document.getElementById('balanceChart'), {
+    const incomeData = [], expenseData = [], balanceData = [], labels = [];
+    let balance = 0;
+
+    for (let i = 0; i < dayCount; i++) {
+      const currentDate = new Date(startDate);
+      currentDate.setDate(startDate.getDate() + i);
+      const year = currentDate.getFullYear();
+
+      // yil uchun qanchalik ko'p kun bor
+      let daysInYear = 0;
+      if (year === 2023) daysInYear = Math.floor((new Date("2023-12-31") - startDate) / 86400000) + 1;
+      else if (year === 2024) daysInYear = 365;
+      else daysInYear = 0;
+
+      // Maqsadga qarab tasodifiy bo'lib taqsimlangan kirim/chiqim
+      if (i === 0 || currentDate.getDate() === 1 && currentDate.getMonth() === 0) {
+        if (targets[year].income) {
+          targets[year].incomeArray = generateDailyValues(year, targets[year].income, daysInYear);
+          targets[year].expenseArray = generateDailyValues(year, targets[year].expense, daysInYear);
+        }
+      }
+
+      const yOffset = year === 2023 ? i : i - daysInYear;
+      const dailyIncome = (targets[year].incomeArray || [])[yOffset] || 0;
+      const dailyExpense = (targets[year].expenseArray || [])[yOffset] || 0;
+
+      balance += dailyIncome - dailyExpense;
+
+      incomeData.push(dailyIncome);
+      expenseData.push(dailyExpense);
+      balanceData.push(balance);
+      labels.push(currentDate.toISOString().split('T')[0]);
+    }
+
+    // Grafikni chizish
+    const ctx = document.getElementById('balanceChart').getContext('2d');
+    new Chart(ctx, {
       type: 'line',
       data: {
         labels: labels,
-        datasets: [{
-          label: "Balans",
-          data: data,
-          borderColor: "rgb(59, 130, 246)",
-          backgroundColor: "rgba(59,130,246,0.1)",
-          tension: 0.3
-        }]
+        datasets: [
+          {
+            label: 'Kirim',
+            data: incomeData,
+            borderColor: 'lime',
+            backgroundColor: 'rgba(0,255,0,0.1)',
+            tension: 0.3
+          },
+          {
+            label: 'Chiqim',
+            data: expenseData,
+            borderColor: 'red',
+            backgroundColor: 'rgba(255,0,0,0.1)',
+            tension: 0.3
+          },
+          {
+            label: 'Balans',
+            data: balanceData,
+            borderColor: 'deepskyblue',
+            backgroundColor: 'rgba(0,191,255,0.1)',
+            tension: 0.3
+          }
+        ]
       },
       options: {
-        plugins: {
-          zoom: {
-            zoom: { wheel: { enabled: true }, mode: 'x' },
-            pan: { enabled: true, mode: 'x' }
-          }
-        },
-        scales: { y: { beginAtZero: true } },
-        responsive: true
+        responsive: true,
+        scales: {
+          y: { beginAtZero: true }
+        }
       }
-    });
-
-    function getBalance(date) {
-      if (date < startDate) return 0;
-      if (date < date2024) return ((date - startDate) / (1000 * 60 * 60 * 24)) * dailyGrowth1;
-      return balance2024 + ((date - date2024) / (1000 * 60 * 60 * 24)) * dailyGrowth2;
-    }
-
-    function update() {
-      const now = new Date();
-      const balance = getBalance(now);
-
-      document.getElementById('time').textContent = now.toLocaleString();
-      document.getElementById('balance').textContent = "$" + balance.toFixed(2);
-
-      const timeLabel = now.toLocaleTimeString();
-      labels.push(timeLabel);
-      data.push(balance);
-      if (labels.length > 30) {
-        labels.shift();
-        data.shift();
-      }
-      chart.update();
-
-      history.unshift(`${timeLabel} - $${balance.toFixed(2)}`);
-      if (history.length > 10) history.pop();
-      document.getElementById("history").innerHTML = history.map(e => `<li>${e}</li>`).join('');
-    }
-
-    setInterval(update, 1000);
-
-    document.getElementById("datePicker").addEventListener("change", e => {
-      const d = new Date(e.target.value);
-      const b = getBalance(d);
-      alert(`📅 ${d.toLocaleDateString()} kuni balans: $${b.toFixed(2)}`);
-    });
-
-    function exportCSV() {
-      let csv = "Vaqt,Balans\n";
-      for (let i = 0; i < labels.length; i++) {
-        csv += `${labels[i]},${data[i].toFixed(2)}\n`;
-      }
-      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-      saveAs(blob, "balans_tarixi.csv");
-    }
-
-    // 🎥 Three.js Yer fon animatsiyasi
-    const canvas = document.querySelector(".webgl-bg");
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, innerWidth / innerHeight, 0.1, 100);
-    camera.position.z = 3;
-
-    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
-    renderer.setSize(innerWidth, innerHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
-
-    const geometry = new THREE.SphereGeometry(1, 64, 64);
-    const material = new THREE.MeshStandardMaterial({ color: 0x2266cc, wireframe: false });
-    const sphere = new THREE.Mesh(geometry, material);
-    scene.add(sphere);
-
-    const light = new THREE.PointLight(0xffffff, 1);
-    light.position.set(5, 3, 5);
-    scene.add(light);
-
-    function animate() {
-      requestAnimationFrame(animate);
-      sphere.rotation.y += 0.001;
-      renderer.render(scene, camera);
-    }
-    animate();
-    window.addEventListener("resize", () => {
-      camera.aspect = innerWidth / innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(innerWidth, innerHeight);
     });
   </script>
 </body>
