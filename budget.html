@@ -3,117 +3,174 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Balans Dashboard</title>
+  <title>Super Balans Dashboard</title>
+
+  <!-- Kutubxonalar -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.0"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.157.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.157.0/examples/js/controls/OrbitControls.min.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      overflow-x: hidden;
+    }
+    canvas.webgl-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: -1;
+    }
+  </style>
 </head>
-<body class="bg-gray-950 text-white min-h-screen p-6">
-  <div class="max-w-4xl mx-auto space-y-8">
-    <h1 class="text-4xl font-bold text-center text-blue-400">💰 Real Vaqt Balans Dashboard</h1>
+<body class="bg-gray-900 text-white min-h-screen p-6">
+  <canvas class="webgl-bg"></canvas>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div class="bg-gray-900 rounded-2xl p-6 shadow-lg space-y-4">
-        <h2 class="text-2xl font-semibold">⏱ Joriy vaqt</h2>
-        <p id="time" class="text-xl font-mono text-green-400"></p>
+  <div class="max-w-5xl mx-auto space-y-6">
+    <h1 class="text-4xl font-bold text-center text-blue-400">🌍 Super Balans Dashboard</h1>
 
-        <h2 class="text-2xl font-semibold">💸 Joriy balans</h2>
-        <p id="balance" class="text-3xl font-bold text-yellow-300"></p>
+    <div class="flex flex-wrap justify-between items-center gap-4">
+      <div>
+        <label class="text-sm">📅 Sana tanlang:</label>
+        <input id="datePicker" type="date" class="bg-gray-800 p-2 rounded text-white" />
       </div>
-
-      <div class="bg-gray-900 rounded-2xl p-6 shadow-lg">
-        <h2 class="text-2xl font-semibold mb-2">📉 Balans o‘sish grafigi</h2>
-        <canvas id="balanceChart" height="200"></canvas>
+      <div>
+        <button onclick="exportCSV()" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded font-semibold">⬇️ CSV eksport</button>
       </div>
     </div>
 
-    <div class="bg-gray-900 rounded-2xl p-6 shadow-lg">
-      <h2 class="text-2xl font-semibold mb-4">📊 Oxirgi balanslar tarixi (so‘nggi 10 sekund)</h2>
-      <ul id="history" class="space-y-1 font-mono text-sm text-gray-300"></ul>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="bg-gray-800 p-6 rounded-2xl space-y-3 shadow-lg">
+        <div class="text-xl font-mono">⏰ Joriy vaqt: <span id="time" class="text-green-400"></span></div>
+        <div class="text-2xl">💰 Balans: <span id="balance" class="text-yellow-400 font-bold"></span></div>
+      </div>
+      <div class="bg-gray-800 p-4 rounded-2xl shadow-lg">
+        <canvas id="balanceChart" height="180"></canvas>
+      </div>
+    </div>
+
+    <div class="bg-gray-800 p-4 rounded-2xl shadow-lg">
+      <h2 class="text-xl mb-2">🧾 So‘nggi balanslar tarixi</h2>
+      <ul id="history" class="text-sm font-mono space-y-1 text-gray-300"></ul>
     </div>
   </div>
 
   <script>
-    const startDate = new Date("2023-04-04T00:00:00");
-    const date2024 = new Date("2024-01-01T00:00:00");
-    const date2025 = new Date("2025-01-01T00:00:00");
+    const startDate = new Date("2023-04-04");
+    const date2024 = new Date("2024-01-01");
+    const date2025 = new Date("2025-01-01");
     const balance2024 = 15000;
     const balance2025 = 30000;
 
     const totalDays1 = (date2024 - startDate) / (1000 * 60 * 60 * 24);
     const totalDays2 = (date2025 - date2024) / (1000 * 60 * 60 * 24);
-
     const dailyGrowth1 = balance2024 / totalDays1;
     const dailyGrowth2 = (balance2025 - balance2024) / totalDays2;
 
-    const balanceHistory = [];
-    const labels = [];
-    const chartData = {
-      labels: labels,
-      datasets: [{
-        label: 'Balans ($)',
-        backgroundColor: 'rgba(34,197,94,0.2)',
-        borderColor: 'rgb(34,197,94)',
-        data: [],
-        tension: 0.3
-      }]
-    };
+    const labels = [], data = [];
+    const history = [];
 
-    const ctx = document.getElementById('balanceChart').getContext('2d');
-    const balanceChart = new Chart(ctx, {
+    const chart = new Chart(document.getElementById('balanceChart'), {
       type: 'line',
-      data: chartData,
+      data: {
+        labels: labels,
+        datasets: [{
+          label: "Balans",
+          data: data,
+          borderColor: "rgb(59, 130, 246)",
+          backgroundColor: "rgba(59,130,246,0.1)",
+          tension: 0.3
+        }]
+      },
       options: {
-        responsive: true,
         plugins: {
-          legend: { display: false }
+          zoom: {
+            zoom: { wheel: { enabled: true }, mode: 'x' },
+            pan: { enabled: true, mode: 'x' }
+          }
         },
-        scales: {
-          y: { beginAtZero: true }
-        }
+        scales: { y: { beginAtZero: true } },
+        responsive: true
       }
     });
 
-    function getCurrentBalance(now) {
-      let balance = 0;
-      if (now < startDate) {
-        balance = 0;
-      } else if (now < date2024) {
-        const daysPassed = (now - startDate) / (1000 * 60 * 60 * 24);
-        balance = daysPassed * dailyGrowth1;
-      } else {
-        const daysPassed = (now - date2024) / (1000 * 60 * 60 * 24);
-        balance = balance2024 + daysPassed * dailyGrowth2;
-      }
-      return balance;
+    function getBalance(date) {
+      if (date < startDate) return 0;
+      if (date < date2024) return ((date - startDate) / (1000 * 60 * 60 * 24)) * dailyGrowth1;
+      return balance2024 + ((date - date2024) / (1000 * 60 * 60 * 24)) * dailyGrowth2;
     }
 
     function update() {
       const now = new Date();
-      const balance = getCurrentBalance(now);
+      const balance = getBalance(now);
 
-      // UI yangilash
-      document.getElementById("time").textContent = now.toLocaleString();
-      document.getElementById("balance").textContent = "$" + balance.toFixed(2);
+      document.getElementById('time').textContent = now.toLocaleString();
+      document.getElementById('balance').textContent = "$" + balance.toFixed(2);
 
-      // Grafik uchun yangilash
       const timeLabel = now.toLocaleTimeString();
       labels.push(timeLabel);
-      chartData.datasets[0].data.push(balance);
-      if (labels.length > 20) {
+      data.push(balance);
+      if (labels.length > 30) {
         labels.shift();
-        chartData.datasets[0].data.shift();
+        data.shift();
       }
-      balanceChart.update();
+      chart.update();
 
-      // Tarixga qo‘shish
-      balanceHistory.unshift(`${timeLabel} — $${balance.toFixed(2)}`);
-      if (balanceHistory.length > 10) balanceHistory.pop();
-
-      document.getElementById("history").innerHTML =
-        balanceHistory.map(item => `<li>${item}</li>`).join('');
+      history.unshift(`${timeLabel} - $${balance.toFixed(2)}`);
+      if (history.length > 10) history.pop();
+      document.getElementById("history").innerHTML = history.map(e => `<li>${e}</li>`).join('');
     }
 
     setInterval(update, 1000);
+
+    document.getElementById("datePicker").addEventListener("change", e => {
+      const d = new Date(e.target.value);
+      const b = getBalance(d);
+      alert(`📅 ${d.toLocaleDateString()} kuni balans: $${b.toFixed(2)}`);
+    });
+
+    function exportCSV() {
+      let csv = "Vaqt,Balans\n";
+      for (let i = 0; i < labels.length; i++) {
+        csv += `${labels[i]},${data[i].toFixed(2)}\n`;
+      }
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      saveAs(blob, "balans_tarixi.csv");
+    }
+
+    // 🎥 Three.js Yer fon animatsiyasi
+    const canvas = document.querySelector(".webgl-bg");
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, innerWidth / innerHeight, 0.1, 100);
+    camera.position.z = 3;
+
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
+    renderer.setSize(innerWidth, innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+
+    const geometry = new THREE.SphereGeometry(1, 64, 64);
+    const material = new THREE.MeshStandardMaterial({ color: 0x2266cc, wireframe: false });
+    const sphere = new THREE.Mesh(geometry, material);
+    scene.add(sphere);
+
+    const light = new THREE.PointLight(0xffffff, 1);
+    light.position.set(5, 3, 5);
+    scene.add(light);
+
+    function animate() {
+      requestAnimationFrame(animate);
+      sphere.rotation.y += 0.001;
+      renderer.render(scene, camera);
+    }
+    animate();
+    window.addEventListener("resize", () => {
+      camera.aspect = innerWidth / innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(innerWidth, innerHeight);
+    });
   </script>
 </body>
 </html>
