@@ -10,6 +10,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.0"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 
   <style>
     body {
@@ -30,14 +31,8 @@
   <div class="max-w-5xl mx-auto space-y-6">
     <h1 class="text-4xl font-bold text-center text-blue-400">🌍 Real Vaqtli Balans Dashboard</h1>
 
-    <div class="flex flex-wrap justify-between items-center gap-4">
-      <div>
-        <label class="text-sm">📅 Sana tanlang:</label>
-        <input id="datePicker" type="date" class="bg-gray-800 p-2 rounded text-white" />
-      </div>
-      <div>
-        <button onclick="exportCSV()" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded font-semibold">⬇️ CSV eksport</button>
-      </div>
+    <div class="flex justify-end">
+      <button onclick="exportCSV()" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded font-semibold">⬇️ CSV eksport</button>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -57,13 +52,14 @@
   </div>
 
   <script>
-    // Omonatning boshlang'ich parametrlarini belgilash
-    let balance = 0;
+    // 🔁 Ma'lumotlarni boshlash
+    let balance = parseFloat(localStorage.getItem("balance")) || 0;
     const incomeRange = { min: 5000, max: 7000 };
     const expenseRange = { min: 4000, max: 5000 };
     const labels = [], incomeData = [], expenseData = [], balanceData = [];
     const history = [];
 
+    // 📊 Grafikni yaratish
     const chart = new Chart(document.getElementById('balanceChart'), {
       type: 'line',
       data: {
@@ -105,27 +101,25 @@
     });
 
     function update() {
-      // Kirim va chiqimni tasodifiy tanlash
       const income = Math.random() * (incomeRange.max - incomeRange.min) + incomeRange.min;
       const expense = Math.random() * (expenseRange.max - expenseRange.min) + expenseRange.min;
-      
-      // Balansni hisoblash
       balance += income - expense;
 
-      // Vaqtni ko‘rsatish
+      // Saqlash
+      localStorage.setItem("balance", balance.toFixed(2));
+
       const now = new Date();
+      const timeLabel = now.toLocaleTimeString();
+
       document.getElementById('time').textContent = now.toLocaleString();
       document.getElementById('balance').textContent = "$" + balance.toFixed(2);
 
-      // Grafik uchun ma'lumotlar
-      const timeLabel = now.toLocaleTimeString();
       labels.push(timeLabel);
       incomeData.push(income);
       expenseData.push(expense);
       balanceData.push(balance);
 
-      // Oxirgi 10 soniyani saqlash
-      if (labels.length > 20) {
+      if (labels.length > 30) {
         labels.shift();
         incomeData.shift();
         expenseData.shift();
@@ -134,7 +128,6 @@
 
       chart.update();
 
-      // Tarixni yangilash
       history.unshift(`${timeLabel} - Kirim: $${income.toFixed(2)} | Chiqim: $${expense.toFixed(2)} | Balans: $${balance.toFixed(2)}`);
       if (history.length > 10) history.pop();
       document.getElementById("history").innerHTML = history.map(e => `<li>${e}</li>`).join('');
@@ -151,6 +144,36 @@
       saveAs(blob, "balans_tarixi.csv");
     }
 
+    // 🌌 Three.js fon animatsiyasi
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ canvas: document.querySelector(".webgl-bg") });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    const geometry = new THREE.SphereGeometry(1, 32, 32);
+    const material = new THREE.MeshStandardMaterial({ color: 0x0077ff, wireframe: true });
+    const sphere = new THREE.Mesh(geometry, material);
+    scene.add(sphere);
+
+    const light = new THREE.PointLight(0xffffff, 1, 100);
+    light.position.set(5, 5, 5);
+    scene.add(light);
+
+    camera.position.z = 3;
+
+    function animate() {
+      requestAnimationFrame(animate);
+      sphere.rotation.x += 0.005;
+      sphere.rotation.y += 0.01;
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
   </script>
 </body>
 </html>
