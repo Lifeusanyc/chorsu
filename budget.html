@@ -1,105 +1,67 @@
 <!DOCTYPE html>
-<html lang="uz">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Real Vaqtdagi Balans</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      background: #f0f0f0;
-      text-align: center;
-      padding: 30px;
-    }
-    .time, .balance {
-      font-size: 1.5em;
-      margin: 10px 0;
-    }
-    ul {
-      list-style: none;
-      padding: 0;
-      max-width: 600px;
-      margin: auto;
-      text-align: left;
-    }
-    li {
-      background: #fff;
-      margin: 5px 0;
-      padding: 10px;
-      border-radius: 6px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-time Balance Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f4f4f9;
+        }
+        #balance {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        #minuteChange, #secondChange {
+            font-size: 18px;
+        }
+        #changeHistory {
+            margin-top: 20px;
+            font-size: 16px;
+            color: #555;
+        }
+    </style>
 </head>
 <body>
-  <h2>Real vaqtli balans o‘sishi</h2>
-  <div class="time" id="currentTime"></div>
-  <div class="balance" id="currentBalance"></div>
-  <h3>So‘nggi 10 ta holat:</h3>
-  <ul id="historyList"></ul>
+    <h1>Real-time Balance Tracker</h1>
+    <p id="balance">Joriy balans: $0.00</p>
+    <p id="minuteChange">Har minutdagi o'zgarish: $0.00</p>
+    <p id="secondChange">Har soniyadagi o'zgarish: $0.00</p>
+    <p id="changeHistory">Oxirgi 10 o'zgarish: </p>
 
-  <script>
-    const startDate = new Date("2023-04-04T00:00:00");
-    const middleDate = new Date("2024-04-04T00:00:00");
-    const endDate = new Date("2025-04-04T00:00:00");
+    <script>
+        // Parametrlar
+        let hourlyAmount = 1000; // Soatiga kiritilgan summa (masalan 1000$)
+        let changeHistory = []; // Oxirgi 10 o'zgarishlarni saqlash uchun massiv
+        let currentBalance = 0; // Joriy balans
 
-    const startValue = 0;          // 2023-04-04
-    const middleValue = 1200000000;    // 2024-04-04
-    const endValue = 2400000000;       // 2025-04-04
+        // Har bir soniyada, minutda va soatda qanday o'zgarish bo'lishini hisoblash
+        let secondChange = hourlyAmount / 3600; // Soatiga 3600 soniya bor
+        let minuteChange = hourlyAmount / 60; // Soatiga 60 minut bor
 
-    const history = [];
+        // O'zgarishlarni yangilash
+        function updateBalance() {
+            currentBalance += secondChange; // Har soniyada balansni yangilash
 
-    // Balansni hisoblash (real vaqtga nisbatan)
-    function calculateBalance(now) {
-      let balance;
+            // Oxirgi 10 o'zgarishlarni saqlash
+            if (changeHistory.length >= 10) {
+                changeHistory.shift(); // 10 ta o'zgarishdan eski eng kichigini olib tashlash
+            }
+            changeHistory.push(currentBalance.toFixed(2)); // Yangilangan balansni saqlash (ikkilik nuqtali formatda)
 
-      if (now < startDate) return 0; // 2023-04-04 dan oldingi vaqt
-      if (now >= endDate) return endValue; // 2025-04-04 dan keyin
+            // O'zgarishni ekranlashtirish
+            document.getElementById("balance").innerText = `Joriy balans: $${currentBalance.toFixed(2)}`;
+            document.getElementById("minuteChange").innerText = `Har minutdagi o'zgarish: $${minuteChange.toFixed(2)}`;
+            document.getElementById("secondChange").innerText = `Har soniyadagi o'zgarish: $${secondChange.toFixed(2)}`;
 
-      // 2023-04-04 dan 2024-04-04 gacha chiziqli o‘sish
-      if (now < middleDate) {
-        const progress = (now - startDate) / (middleDate - startDate);
-        balance = startValue + (progress * (middleValue - startValue));
-      } else {
-        // 2024-04-04 dan 2025-04-04 gacha chiziqli o‘sish
-        const progress = (now - middleDate) / (endDate - middleDate);
-        balance = middleValue + (progress * (endValue - middleValue));
-      }
-      return balance;
-    }
+            // Oxirgi 10 o'zgarishni ko'rsatish
+            document.getElementById("changeHistory").innerText = "Oxirgi 10 o'zgarish: " + changeHistory.join(", ");
+        }
 
-    // Balansni dollar va sentlarda formatlash
-    function formatCurrency(val) {
-      const dollars = Math.floor(val);
-      const cents = Math.round((val - dollars) * 100);
-      return `${dollars.toLocaleString('en-US')}.${cents.toString().padStart(2, '0')} $`;
-    }
-
-    // Sana formatlash
-    function formatTime(date) {
-      return date.toLocaleString('uz-UZ');
-    }
-
-    // Yangilash
-    function update() {
-      const now = new Date();
-      const balance = calculateBalance(now);
-
-      document.getElementById("currentTime").textContent = "Vaqt: " + formatTime(now);
-      document.getElementById("currentBalance").textContent = "Balans: " + formatCurrency(balance);
-
-      history.unshift({
-        time: formatTime(now),
-        balance: formatCurrency(balance)
-      });
-
-      if (history.length > 10) history.pop();
-
-      const list = document.getElementById("historyList");
-      list.innerHTML = history.map(item => `<li><strong>${item.time}</strong> — ${item.balance}</li>`).join('');
-    }
-
-    update();
-    setInterval(update, 1000);
-  </script>
+        // Yangilanishni har soniyada takrorlash
+        setInterval(updateBalance, 1000); // Har 1 soniyada yangilanadi
+    </script>
 </body>
 </html>
