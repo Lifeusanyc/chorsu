@@ -2,68 +2,61 @@
 <html lang="uz">
 <head>
   <meta charset="UTF-8">
-  <title>Real Balans Hisobi</title>
+  <title>Real Vaqtdagi Balans</title>
   <style>
     body {
       font-family: sans-serif;
-      background-color: #f5f5f5;
-      padding: 20px;
+      background: #f0f0f0;
       text-align: center;
+      padding: 30px;
     }
-    .time {
+    .time, .balance {
       font-size: 1.5em;
-      margin-bottom: 10px;
-    }
-    .balance {
-      font-size: 2em;
-      margin-bottom: 20px;
-      font-weight: bold;
+      margin: 10px 0;
     }
     ul {
-      list-style-type: none;
+      list-style: none;
       padding: 0;
       max-width: 600px;
-      margin: 0 auto;
+      margin: auto;
       text-align: left;
     }
     li {
       background: #fff;
-      padding: 8px 12px;
-      margin-bottom: 5px;
+      margin: 5px 0;
+      padding: 10px;
       border-radius: 6px;
       box-shadow: 0 0 5px rgba(0,0,0,0.1);
-      font-size: 1.1em;
     }
   </style>
 </head>
 <body>
+  <h2>Real vaqtli balans o‘sishi</h2>
   <div class="time" id="currentTime"></div>
   <div class="balance" id="currentBalance"></div>
-  <h3>So‘nggi 10 ta balans holati:</h3>
+  <h3>So‘nggi 10 ta holat:</h3>
   <ul id="historyList"></ul>
 
   <script>
-    const points = [
-      { date: new Date("2023-04-04T00:00:00"), value: 0 },
-      { date: new Date("2024-04-04T00:00:00"), value: 120000 },
-      { date: new Date("2025-04-04T00:00:00"), value: 280000 },
-    ];
+    const startDate = new Date("2023-04-04T00:00:00");
+    const middleDate = new Date("2024-04-04T00:00:00");
+    const endDate = new Date("2025-04-04T00:00:00");
+    const middleValue = 120000;
+    const endValue = 280000;
 
     const history = [];
 
-    function getInterpolatedBalance(now) {
-      for (let i = 0; i < points.length - 1; i++) {
-        const a = points[i];
-        const b = points[i + 1];
+    function calculateBalance(now) {
+      if (now < startDate) return 0;
+      if (now >= endDate) return endValue;
 
-        if (now >= a.date && now <= b.date) {
-          const totalTime = b.date - a.date;
-          const elapsed = now - a.date;
-          const ratio = elapsed / totalTime;
-          return a.value + ratio * (b.value - a.value);
-        }
+      if (now < middleDate) {
+        const progress = (now - startDate) / (middleDate - startDate);
+        return progress * middleValue;
+      } else {
+        const progress = (now - middleDate) / (endDate - middleDate);
+        return middleValue + progress * (endValue - middleValue);
       }
-      return now < points[0].date ? 0 : points[points.length - 1].value;
     }
 
     function formatCurrency(val) {
@@ -76,9 +69,9 @@
 
     function update() {
       const now = new Date();
-      const balance = getInterpolatedBalance(now);
-      
-      document.getElementById("currentTime").textContent = "Hozirgi vaqt: " + formatTime(now);
+      const balance = calculateBalance(now);
+
+      document.getElementById("currentTime").textContent = "Vaqt: " + formatTime(now);
       document.getElementById("currentBalance").textContent = "Balans: " + formatCurrency(balance);
 
       history.unshift({
