@@ -2,49 +2,31 @@
 <html lang="uz">
 <head>
   <meta charset="UTF-8" />
-  <title>Balans Vaqtga Nisbatan</title>
+  <title>Real Vaqt Balans</title>
   <style>
-    body { font-family: sans-serif; text-align: center; padding: 40px; }
-    .balans { font-size: 2em; margin-top: 20px; }
+    body { font-family: sans-serif; text-align: center; margin-top: 50px; font-size: 24px; }
   </style>
 </head>
 <body>
-  <h1>Real Vaqtga Nisbatan Balans</h1>
-  <div class="balans" id="balance">Hisoblanmoqda...</div>
+  <h1>Real Vaqt Balans</h1>
+  <div id="balans">Hisoblanmoqda...</div>
 
   <script>
-    const checkpoints = [
-      { date: "2023-04-04T00:00:00", amount: 0 },
-      { date: "2023-04-04T12:00:00", amount: -12000 },
-      { date: "2023-04-04T23:59:59", amount: 24000 },
-      { date: "2025-04-04T00:00:00", amount: 48000 }
-    ];
-
-    function getInterpolatedBalance(now) {
-      const nowTime = now.getTime();
-
-      for (let i = 0; i < checkpoints.length - 1; i++) {
-        const start = new Date(checkpoints[i].date);
-        const end = new Date(checkpoints[i + 1].date);
-
-        const startTime = start.getTime();
-        const endTime = end.getTime();
-
-        if (nowTime >= startTime && nowTime <= endTime) {
-          const t = (nowTime - startTime) / (endTime - startTime);
-          const balance = checkpoints[i].amount + t * (checkpoints[i + 1].amount - checkpoints[i].amount);
-          return Math.round(balance);
-        }
-      }
-
-      if (nowTime < new Date(checkpoints[0].date).getTime()) return checkpoints[0].amount;
-      if (nowTime > new Date(checkpoints.at(-1).date).getTime()) return checkpoints.at(-1).amount;
-    }
+    const startDate = new Date("2023-04-04T00:00:00");
+    const endDate = new Date("2025-04-04T00:00:00");
+    const totalSeconds = (endDate - startDate) / 1000;
+    const finalBalance = 48000;
+    const balancePerSecond = finalBalance / totalSeconds;
 
     function updateBalance() {
       const now = new Date();
-      const balance = getInterpolatedBalance(now);
-      document.getElementById("balance").innerText = `Balans: ${balance.toLocaleString('uz-UZ')} so‘m`;
+      const elapsedSeconds = (now - startDate) / 1000;
+      let currentBalance = Math.floor(balancePerSecond * elapsedSeconds);
+
+      if (now >= endDate) currentBalance = finalBalance;
+      if (now < startDate) currentBalance = 0;
+
+      document.getElementById("balans").textContent = "Balans: $" + currentBalance.toLocaleString();
     }
 
     setInterval(updateBalance, 1000);
