@@ -1,1 +1,99 @@
-<!DOCTYPE html> <html lang="uz"> <head> <meta charset="UTF-8" /> <title>Real Balans Hisobi</title> <style> body { font-family: sans-serif; background: #f4f4f4; text-align: center; padding: 20px; } .time { font-size: 1.5em; margin-bottom: 10px; } .balance { font-size: 2em; margin-bottom: 20px; font-weight: bold; } ul { list-style: none; padding: 0; max-width: 400px; margin: auto; } li { padding: 5px; border-bottom: 1px solid #ddd; font-size: 1.1em; } </style> </head> <body> <div class="time" id="time"></div> <div class="balance" id="balance">0 so‘m</div> <h3>So‘nggi 10 yangilanish</h3> <ul id="history"></ul> <script> const points = [ { date: new Date("2023-04-04T00:00:00"), value: 0 }, { date: new Date("2024-04-04T00:00:00"), value: 120000 }, { date: new Date("2025-04-04T00:00:00"), value: 280000 }, ]; const history = []; function interpolateBalance(now) { for (let i = 0; i < points.length - 1; i++) { const a = points[i]; const b = points[i + 1]; if (now >= a.date && now <= b.date) { const total = b.date - a.date; const elapsed = now - a.date; const ratio = elapsed / total; return a.value + ratio * (b.value - a.value); } } return now < points[0].date ? 0 : points[points.length - 1].value; } function format(num) { return Math.round(num).toLocaleString('uz-UZ') + " so‘m"; } function update() { const now = new Date(); document.getElementById("time").textContent = now.toLocaleString(); const balance = interpolateBalance(now); document.getElementById("balance").textContent = format(balance); history.unshift(format(balance)); if (history.length > 10) history.pop(); const historyEl = document.getElementById("history"); historyEl.innerHTML = history.map(h => `<li>${h}</li>`).join(""); } update(); setInterval(update, 1000); </script> </body> </html>
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <title>Real Balans Hisobi</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #f5f5f5;
+      padding: 20px;
+      text-align: center;
+    }
+    .time {
+      font-size: 1.5em;
+      margin-bottom: 10px;
+    }
+    .balance {
+      font-size: 2em;
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+    ul {
+      list-style-type: none;
+      padding: 0;
+      max-width: 600px;
+      margin: 0 auto;
+      text-align: left;
+    }
+    li {
+      background: #fff;
+      padding: 8px 12px;
+      margin-bottom: 5px;
+      border-radius: 6px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+      font-size: 1.1em;
+    }
+  </style>
+</head>
+<body>
+  <div class="time" id="currentTime"></div>
+  <div class="balance" id="currentBalance"></div>
+  <h3>So‘nggi 10 ta balans holati:</h3>
+  <ul id="historyList"></ul>
+
+  <script>
+    const points = [
+      { date: new Date("2023-04-04T00:00:00"), value: 0 },
+      { date: new Date("2024-04-04T00:00:00"), value: 120000 },
+      { date: new Date("2025-04-04T00:00:00"), value: 280000 },
+    ];
+
+    const history = [];
+
+    function getInterpolatedBalance(now) {
+      for (let i = 0; i < points.length - 1; i++) {
+        const a = points[i];
+        const b = points[i + 1];
+
+        if (now >= a.date && now <= b.date) {
+          const totalTime = b.date - a.date;
+          const elapsed = now - a.date;
+          const ratio = elapsed / totalTime;
+          return a.value + ratio * (b.value - a.value);
+        }
+      }
+      return now < points[0].date ? 0 : points[points.length - 1].value;
+    }
+
+    function formatCurrency(val) {
+      return Math.round(val).toLocaleString('uz-UZ') + " so‘m";
+    }
+
+    function formatTime(date) {
+      return date.toLocaleString('uz-UZ');
+    }
+
+    function update() {
+      const now = new Date();
+      const balance = getInterpolatedBalance(now);
+      
+      document.getElementById("currentTime").textContent = "Hozirgi vaqt: " + formatTime(now);
+      document.getElementById("currentBalance").textContent = "Balans: " + formatCurrency(balance);
+
+      history.unshift({
+        time: formatTime(now),
+        balance: formatCurrency(balance)
+      });
+
+      if (history.length > 10) history.pop();
+
+      const list = document.getElementById("historyList");
+      list.innerHTML = history.map(item => `<li><strong>${item.time}</strong> — ${item.balance}</li>`).join('');
+    }
+
+    update();
+    setInterval(update, 1000);
+  </script>
+</body>
+</html>
