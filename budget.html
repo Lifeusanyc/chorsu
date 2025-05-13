@@ -1,22 +1,50 @@
-<input type="date" id="datePicker" />
-<p>Balans: <span id="balance">$0</span></p>
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <title>Balans Hisoblash</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    input, button { font-size: 16px; padding: 8px; margin-top: 10px; }
+    #balance { margin-top: 20px; font-size: 20px; font-weight: bold; }
+  </style>
+</head>
+<body>
 
-<script>
-function calculateBalance(selectedDateStr) {
-    const startDate = new Date("2023-04-04");
-    const selectedDate = new Date(selectedDateStr);
-    const daysPassed = Math.floor((selectedDate - startDate) / (1000 * 60 * 60 * 24));
-    const maxDays = 365 * 2;
-    const dailyIncrease = 12000 / 365;
+  <label for="datePicker">Sanani tanlang:</label><br>
+  <input type="date" id="datePicker" min="1986-01-01" max="2200-12-31"><br>
+  <button id="okButton">OK</button>
 
-    if (daysPassed <= 0) return 0;
-    if (daysPassed >= maxDays) return 24000;
-    return +(dailyIncrease * daysPassed).toFixed(2);
-}
+  <div id="balance">Balans: $0</div>
 
-document.getElementById("datePicker").addEventListener("change", function() {
-    const selectedDate = this.value;
-    const balance = calculateBalance(selectedDate);
-    document.getElementById("balance").textContent = `$${balance}`;
-});
-</script>
+  <script>
+    function calculateBalance(selectedDateStr) {
+      const startDate = new Date("2023-04-04");
+      const endDate = new Date("2025-04-04");
+      const selectedDate = new Date(selectedDateStr);
+
+      const totalDays = (endDate - startDate) / (1000 * 60 * 60 * 24); // 730 kun
+      const dailyIncrease = 24000 / totalDays;
+
+      const daysPassed = (selectedDate - startDate) / (1000 * 60 * 60 * 24);
+
+      if (daysPassed <= 0) return 0;
+      if (daysPassed >= totalDays) return 24000;
+
+      return +(dailyIncrease * daysPassed).toFixed(2);
+    }
+
+    document.getElementById("okButton").addEventListener("click", function() {
+      const dateInput = document.getElementById("datePicker").value;
+      if (!dateInput) {
+        alert("Iltimos, sanani tanlang.");
+        return;
+      }
+
+      const balance = calculateBalance(dateInput);
+      document.getElementById("balance").textContent = `Balans: $${balance}`;
+    });
+  </script>
+
+</body>
+</html>
