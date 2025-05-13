@@ -1,107 +1,22 @@
-<!DOCTYPE html>
-<html lang="uz">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Real vaqtli daromad</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      background-color: #f2f2f2;
-      padding: 20px;
-    }
-    h1 {
-      text-align: center;
-    }
-    table {
-      width: 100%;
-      max-width: 600px;
-      margin: 0 auto;
-      background: white;
-      border-collapse: collapse;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    th, td {
-      padding: 12px 15px;
-      border: 1px solid #ddd;
-      text-align: left;
-    }
-    th {
-      background-color: #007BFF;
-      color: white;
-    }
-    #timestamp {
-      text-align: center;
-      margin: 20px 0;
-      font-size: 18px;
-    }
-  </style>
-</head>
-<body>
-
-<h1>Real vaqtli daromad (yiliga $120,000)</h1>
-<div id="timestamp">Vaqt: --:--:--</div>
-
-<table>
-  <thead>
-    <tr>
-      <th>Davr</th>
-      <th>Daromad</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr><td>Yillik</td><td id="year"></td></tr>
-    <tr><td>Oylik</td><td id="month"></td></tr>
-    <tr><td>Haftalik</td><td id="week"></td></tr>
-    <tr><td>Kunlik</td><td id="day"></td></tr>
-    <tr><td>Soatlik</td><td id="hour"></td></tr>
-    <tr><td>Minutlik</td><td id="minute"></td></tr>
-    <tr><td>Soniyalik</td><td id="second"></td></tr>
-  </tbody>
-</table>
+<input type="date" id="datePicker" />
+<p>Balans: <span id="balance">$0</span></p>
 
 <script>
-  const start = new Date("2023-04-04T00:00:00Z"); // boshlanish sanasi
-  const yearly = 120000;
-  const monthly = yearly / 12;
-  const weekly = yearly / 52.1429;
-  const daily = yearly / 365;
-  const hourly = daily / 24;
-  const minutely = hourly / 60;
-  const secondly = hourly / 3600;
+function calculateBalance(selectedDateStr) {
+    const startDate = new Date("2023-04-04");
+    const selectedDate = new Date(selectedDateStr);
+    const daysPassed = Math.floor((selectedDate - startDate) / (1000 * 60 * 60 * 24));
+    const maxDays = 365 * 2;
+    const dailyIncrease = 12000 / 365;
 
-  function formatUSD(value) {
-    return "$" + value.toFixed(2);
-  }
+    if (daysPassed <= 0) return 0;
+    if (daysPassed >= maxDays) return 24000;
+    return +(dailyIncrease * daysPassed).toFixed(2);
+}
 
-  function update() {
-    const now = new Date();
-    const secondsPassed = (now - start) / 1000;
-
-    const total = {
-      year: yearly * (secondsPassed / (365 * 24 * 3600)),
-      month: monthly * (secondsPassed / (30.4375 * 24 * 3600)),
-      week: weekly * (secondsPassed / (7 * 24 * 3600)),
-      day: daily * (secondsPassed / (24 * 3600)),
-      hour: hourly * (secondsPassed / 3600),
-      minute: minutely * (secondsPassed / 60),
-      second: secondly * secondsPassed
-    };
-
-    document.getElementById("year").innerText = formatUSD(total.year);
-    document.getElementById("month").innerText = formatUSD(total.month);
-    document.getElementById("week").innerText = formatUSD(total.week);
-    document.getElementById("day").innerText = formatUSD(total.day);
-    document.getElementById("hour").innerText = formatUSD(total.hour);
-    document.getElementById("minute").innerText = formatUSD(total.minute);
-    document.getElementById("second").innerText = formatUSD(total.second);
-
-    document.getElementById("timestamp").innerText = "Vaqt: " + now.toLocaleTimeString();
-  }
-
-  setInterval(update, 1000);
-  update(); // dastlab ishlatish
+document.getElementById("datePicker").addEventListener("change", function() {
+    const selectedDate = this.value;
+    const balance = calculateBalance(selectedDate);
+    document.getElementById("balance").textContent = `$${balance}`;
+});
 </script>
-
-</body>
-</html>
