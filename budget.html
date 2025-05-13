@@ -2,7 +2,7 @@
 <html lang="uz">
 <head>
   <meta charset="UTF-8">
-  <title>Dinamik Balans Hisoblash</title>
+  <title>Dinamik Balans</title>
   <style>
     body { font-family: sans-serif; padding: 20px; }
     input, button { font-size: 16px; padding: 8px; margin-top: 10px; }
@@ -20,16 +20,16 @@
   <script>
     function calculateBalance(selectedDateStr) {
       const startDate = new Date("2023-04-04");
-      const endDate = new Date("2025-04-04");
+      const endDate = new Date("2025-05-04");
       const selectedDate = new Date(selectedDateStr);
 
-      const totalDays = (endDate - startDate) / (1000 * 60 * 60 * 24); // 730 kun
-      const dailyIncrease = 24000 / totalDays;
+      const totalDays = (endDate - startDate) / (1000 * 60 * 60 * 24); // 761 kun
+      const dailyIncrease = 25000 / totalDays;
 
       const daysPassed = (selectedDate - startDate) / (1000 * 60 * 60 * 24);
 
       if (daysPassed <= 0) return 0;
-      if (daysPassed >= totalDays) return 24000;
+      if (daysPassed >= totalDays) return 25000;
 
       return +(dailyIncrease * daysPassed).toFixed(2);
     }
