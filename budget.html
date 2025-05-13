@@ -1,85 +1,104 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uz">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Soatlik Daromad Hisoblagich</title>
+  <meta charset="UTF-8">
+  <title>Daromad Vaqt Bo‘yicha</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      padding: 20px;
-      background-color: #f4f4f9;
+      padding: 30px;
+      background: #f0f4f8;
+      color: #333;
     }
-    input, button {
-      font-size: 16px;
-      padding: 8px;
-      margin: 5px 0;
+    h1 {
+      margin-bottom: 20px;
     }
     button {
-      background-color: #4CAF50;
+      padding: 10px 20px;
+      font-size: 16px;
+      background: #4CAF50;
       color: white;
       border: none;
-      border-radius: 5px;
+      border-radius: 6px;
       cursor: pointer;
     }
     button:hover {
-      background-color: #45a049;
+      background: #45a049;
     }
-    #output p {
-      font-size: 18px;
-      margin: 10px 0;
+    table {
+      width: 100%;
+      margin-top: 25px;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 12px;
+      text-align: left;
+    }
+    th {
+      background: #f8f8f8;
     }
   </style>
 </head>
 <body>
-  <h1>Soatlik Daromad Hisoblagich</h1>
 
-  <p>4-aprel 2023 dan boshlab 1 yilda 120,000$ tempda daromad hisoblanadi.</p>
+<h1>Vaqt bo‘yicha daromad o‘zgarishlari</h1>
+<p>4 Aprel 2023 dan boshlab, yillik $120,000 temp asosida:</p>
+<button id="start">Hisoblashni boshlash</button>
 
-  <button id="startButton">Hisoblashni boshlash</button>
+<table>
+  <thead>
+    <tr>
+      <th>Vaqt oraliği</th>
+      <th>O'zgarish ($)</th>
+      <th>Hisoblangan vaqt</th>
+    </tr>
+  </thead>
+  <tbody id="dataTable">
+    <!-- Dynamic rows -->
+  </tbody>
+</table>
 
-  <div id="output">
-    <p id="balance">Joriy balans: $0.00</p>
-    <p id="hour">Soatlik daromad: $13.70</p>
-    <p id="minute">Har minutdagi o'zgarish: $0.23</p>
-    <p id="second">Har soniyadagi o'zgarish: $0.0038</p>
-    <p id="history">Oxirgi 10 o'zgarish: </p>
-  </div>
+<script>
+  const yearlyIncome = 120000;
+  const now = () => new Date().toLocaleString();
 
-  <script>
-    const yearlyIncome = 120000;
-    const hoursPerYear = 365 * 24;
-    const hourlyIncome = yearlyIncome / hoursPerYear; // ≈ 13.70
-    const minuteIncome = hourlyIncome / 60;
-    const secondIncome = hourlyIncome / 3600;
+  const breakdown = {
+    "Yillik": yearlyIncome,
+    "Oylik": yearlyIncome / 12,
+    "Haftalik": yearlyIncome / 52,
+    "Kunlik": yearlyIncome / 365,
+    "Soatlik": yearlyIncome / (365 * 24),
+    "Minutlik": yearlyIncome / (365 * 24 * 60),
+    "Soniyalik": yearlyIncome / (365 * 24 * 60 * 60),
+  };
 
-    let currentBalance = 0;
-    let history = [];
+  const dataTable = document.getElementById("dataTable");
+  const startBtn = document.getElementById("start");
 
-    let intervalId;
+  startBtn.addEventListener("click", () => {
+    dataTable.innerHTML = ""; // tozalash
 
-    document.getElementById("startButton").addEventListener("click", () => {
-      currentBalance = 0;
-      history = [];
-      clearInterval(intervalId); // agar avval ishlayotgan bo‘lsa, to‘xtat
-      intervalId = setInterval(updateBalance, 1000);
-    });
+    for (let key in breakdown) {
+      const row = document.createElement("tr");
 
-    function updateBalance() {
-      currentBalance += secondIncome;
+      const timeCell = document.createElement("td");
+      timeCell.textContent = key;
 
-      if (history.length >= 10) {
-        history.shift(); // eng eski o‘zgarishni olib tashlash
-      }
-      history.push(currentBalance.toFixed(2));
+      const valueCell = document.createElement("td");
+      valueCell.textContent = `$${breakdown[key].toFixed(6)}`;
 
-      // DOM elementlarini yangilash
-      document.getElementById("balance").innerText = `Joriy balans: $${currentBalance.toFixed(2)}`;
-      document.getElementById("hour").innerText = `Soatlik daromad: $${hourlyIncome.toFixed(2)}`;
-      document.getElementById("minute").innerText = `Har minutdagi o'zgarish: $${minuteIncome.toFixed(2)}`;
-      document.getElementById("second").innerText = `Har soniyadagi o'zgarish: $${secondIncome.toFixed(4)}`;
-      document.getElementById("history").innerText = "Oxirgi 10 o'zgarish: " + history.join(", ");
+      const timeNow = document.createElement("td");
+      timeNow.textContent = now();
+
+      row.appendChild(timeCell);
+      row.appendChild(valueCell);
+      row.appendChild(timeNow);
+
+      dataTable.appendChild(row);
     }
-  </script>
+  });
+</script>
+
 </body>
 </html>
