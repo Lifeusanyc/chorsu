@@ -2,46 +2,197 @@
 <html lang="uz">
 <head>
   <meta charset="UTF-8">
-  <title>Cheksiz Balans O‘sishi</title>
+  <title>Real Vaqt Moliyaviy Kuzatuv</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    body { font-family: sans-serif; padding: 20px; }
-    input, button { font-size: 16px; padding: 8px; margin-top: 10px; }
-    #balance { margin-top: 20px; font-size: 20px; font-weight: bold; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f9fafb;
+      padding: 30px;
+      color: #1f2937;
+    }
+    h1 { margin-bottom: 10px; }
+    #balance {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    #balance.up { color: green; }
+    #balance.down { color: darkred; }
+    #history, #stats {
+      background: white;
+      padding: 10px 15px;
+      border-radius: 8px;
+      margin-top: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+    canvas {
+      background: white;
+      border-radius: 8px;
+      margin-top: 20px;
+      padding: 15px;
+    }
+    label {
+      margin-top: 20px;
+      display: block;
+    }
+    input, select {
+      font-size: 16px;
+      padding: 5px 10px;
+      margin-top: 5px;
+    }
   </style>
 </head>
 <body>
 
-  <label for="datePicker">Sanani tanlang:</label><br>
-  <input type="date" id="datePicker" min="1986-01-01" max="2200-12-31"><br>
-  <button id="okButton">OK</button>
+  <h1>📈 Real Vaqt Balans Kuzatuvchi</h1>
+
+  <label for="datePicker">Sana tanlang:</label>
+  <input type="date" id="datePicker">
+
+  <label for="timezone">Vaqt zonasi:</label>
+  <select id="timezone"></select>
 
   <div id="balance">Balans: $0</div>
 
+  <canvas id="balanceChart" width="600" height="300"></canvas>
+
+  <div id="history">
+    <strong>🕓 Oxirgi 10 ta o‘zgarish:</strong>
+    <ul id="changesList"></ul>
+  </div>
+
+  <div id="stats">
+    <strong>📊 Statistikalar:</strong><br>
+    <div id="monthlyStats"></div>
+    <div id="yearlyStats"></div>
+  </div>
+
   <script>
-    function calculateBalance(selectedDateStr) {
-      const startDate = new Date("2023-04-04");
-      const selectedDate = new Date(selectedDateStr);
+    const startDate = new Date("2023-04-04");
+    const dailyIncrease = 25000 / 761;
+    let changes = [];
+    let chart;
+    let lastBalance = 0;
 
-      const oneDay = 1000 * 60 * 60 * 24;
-      const daysPassed = Math.floor((selectedDate - startDate) / oneDay);
+    const list = document.getElementById("changesList");
+    const timezoneSelect = document.getElementById("timezone");
 
-      const dailyIncrease = 25000 / 761; // ≈ 32.84
+    // Vaqt zonalarini to‘ldirish
+    const timezones = Intl.supportedValuesOf("timeZone");
+    timezones.forEach(tz => {
+      const opt = document.createElement("option");
+      opt.value = tz;
+      opt.textContent = tz;
+      timezoneSelect.appendChild(opt);
+    });
+    timezoneSelect.value = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-      const balance = dailyIncrease * daysPassed;
-
-      return balance < 0 ? 0 : balance.toFixed(2);
+    function getCurrentDateTime() {
+      const tz = timezoneSelect.value;
+      return new Date(new Date().toLocaleString("en-US", { timeZone: tz }));
     }
 
-    document.getElementById("okButton").addEventListener("click", function() {
+    function calculateBalance(dateObj) {
+      const daysPassed = Math.floor((dateObj - startDate) / (1000 * 60 * 60 * 24));
+      const income = dailyIncrease * daysPassed;
+      const expense = (Math.sin(daysPassed / 30) + 1) * 200; // sun'iy chiqim
+      const netBalance = income - expense;
+      return netBalance < 0 ? 0 : netBalance.toFixed(2);
+    }
+
+    function updateStats(balance) {
+      const now = getCurrentDateTime();
+      const month = now.getMonth() + 1;
+      const year = now.getFullYear();
+
+      const monthlyIncome = (Math.random() * 1500 + 3000).toFixed(2);
+      const monthlyExpense = (Math.random() * 800 + 2000).toFixed(2);
+      const yearlyIncome = (month * monthlyIncome).toFixed(2);
+      const yearlyExpense = (month * monthlyExpense).toFixed(2);
+
+      document.getElementById("monthlyStats").textContent = 
+        `Oy: ${month}, Daromad: $${monthlyIncome}, Chiqim: $${monthlyExpense}`;
+      document.getElementById("yearlyStats").textContent = 
+        `Yil: ${year}, Yillik daromad: $${yearlyIncome}, Yillik chiqim: $${yearlyExpense}`;
+    }
+
+    function updateDisplay() {
+      const now = getCurrentDateTime();
       const dateInput = document.getElementById("datePicker").value;
-      if (!dateInput) {
-        alert("Iltimos, sanani tanlang.");
-        return;
+      const customDate = dateInput ? new Date(dateInput) : now;
+      const balance = calculateBalance(customDate);
+
+      // Balansni ko‘rsatish
+      const balanceEl = document.getElementById("balance");
+      balanceEl.textContent = `Balans: $${balance}`;
+      balanceEl.className = balance > lastBalance ? 'up' : (balance < lastBalance ? 'down' : '');
+      lastBalance = balance;
+
+      // O‘zgarishlar
+      const timeLabel = now.toLocaleTimeString();
+      changes.push({ time: timeLabel, value: balance });
+      if (changes.length > 10) changes.shift();
+
+      list.innerHTML = '';
+      for (let i = changes.length - 1; i >= 0; i--) {
+        const item = document.createElement("li");
+        item.textContent = `${changes[i].time} - $${changes[i].value}`;
+        list.appendChild(item);
       }
 
-      const balance = calculateBalance(dateInput);
-      document.getElementById("balance").textContent = `Balans: $${balance}`;
-    });
+      // Grafikni yangilash
+      if (chart) {
+        chart.data.labels = changes.map(c => c.time);
+        chart.data.datasets[0].data = changes.map(c => c.value);
+        chart.update();
+      }
+
+      // Statistikalar
+      updateStats(balance);
+
+      // LocalStorage saqlash
+      localStorage.setItem('lastBalance', balance);
+      localStorage.setItem('lastChanges', JSON.stringify(changes));
+    }
+
+    function initChart() {
+      const ctx = document.getElementById("balanceChart").getContext("2d");
+      chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: [],
+          datasets: [{
+            label: 'Balans',
+            data: [],
+            borderColor: '#0ea5e9',
+            backgroundColor: 'rgba(14, 165, 233, 0.1)',
+            fill: true,
+            tension: 0.4,
+            pointRadius: 3,
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: val => `$${val}`
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Dastlabki yuklash
+    initChart();
+    setInterval(updateDisplay, 1000);
   </script>
 
 </body>
