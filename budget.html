@@ -22,28 +22,67 @@
             font-size: 16px;
             color: #555;
         }
+        input[type="number"] {
+            padding: 8px;
+            font-size: 16px;
+            width: 150px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
 <body>
     <h1>Real-time Balance Tracker</h1>
+
+    <!-- Input field for the user to enter the hourly amount -->
+    <label for="hourlyAmount">Soatiga kiritiladigan summa ($):</label>
+    <input type="number" id="hourlyAmount" value="1000" min="0" step="1">
+
+    <!-- Button to calculate the changes -->
+    <button id="calculateButton">Hisoblash</button>
+
     <p id="balance">Joriy balans: $0.00</p>
     <p id="minuteChange">Har minutdagi o'zgarish: $0.00</p>
     <p id="secondChange">Har soniyadagi o'zgarish: $0.00</p>
     <p id="changeHistory">Oxirgi 10 o'zgarish: </p>
 
     <script>
-        // Parametrlar
-        let hourlyAmount = 1000; // Soatiga kiritilgan summa (masalan 1000$)
         let changeHistory = []; // Oxirgi 10 o'zgarishlarni saqlash uchun massiv
         let currentBalance = 0; // Joriy balans
+        let secondChange = 0; // Har soniyadagi o'zgarish
+        let minuteChange = 0; // Har minutdagi o'zgarish
 
-        // Har bir soniyada, minutda va soatda qanday o'zgarish bo'lishini hisoblash
-        let secondChange = hourlyAmount / 3600; // Soatiga 3600 soniya bor
-        let minuteChange = hourlyAmount / 60; // Soatiga 60 minut bor
+        // Hisoblash tugmasini bosganda ishlaydigan funksiya
+        document.getElementById("calculateButton").addEventListener("click", function() {
+            // Foydalanuvchi kiritgan soatlik summa
+            let hourlyAmount = parseFloat(document.getElementById("hourlyAmount").value);
+
+            // Hisoblash
+            secondChange = hourlyAmount / 3600; // Soatiga 3600 soniya bor
+            minuteChange = hourlyAmount / 60; // Soatiga 60 minut bor
+
+            // Balansni har soniyada yangilash
+            currentBalance = 0; // Har safar hisoblash tugmasi bosilganda balansni nolga o'rnatamiz
+            changeHistory = []; // Oxirgi o'zgarishlarni tozalash
+
+            // O'zgarishlarni yangilash
+            updateBalance();
+        });
 
         // O'zgarishlarni yangilash
         function updateBalance() {
-            currentBalance += secondChange; // Har soniyada balansni yangilash
+            // Har soniyada balansni yangilash
+            currentBalance += secondChange;
 
             // Oxirgi 10 o'zgarishlarni saqlash
             if (changeHistory.length >= 10) {
@@ -60,7 +99,7 @@
             document.getElementById("changeHistory").innerText = "Oxirgi 10 o'zgarish: " + changeHistory.join(", ");
         }
 
-        // Yangilanishni har soniyada takrorlash
+        // Yangilanishni har 1 soniyada takrorlash
         setInterval(updateBalance, 1000); // Har 1 soniyada yangilanadi
     </script>
 </body>
