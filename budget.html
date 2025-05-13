@@ -1,245 +1,66 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Real Vaqtli Balans Dashboard</title>
-
-  <!-- Kutubxonalar -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.0"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
-
+  <meta charset="UTF-8">
+  <title>Real Vaqt Balans</title>
   <style>
     body {
-      margin: 0;
-      overflow-x: hidden;
+      font-family: sans-serif;
+      font-size: 24px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #f2f2f2;
     }
-    canvas.webgl-bg {
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: -1;
+    .balance {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
     }
   </style>
 </head>
-<body class="bg-gray-900 text-white min-h-screen p-6">
-  <canvas class="webgl-bg"></canvas>
-
-  <!-- Kirish -->
-  <div id="loginScreen" class="fixed inset-0 bg-gray-900 flex items-center justify-center z-50">
-    <div class="bg-gray-800 p-6 rounded-xl space-y-4 max-w-sm w-full">
-      <h2 class="text-2xl font-bold text-center">🔐 Kirish</h2>
-      <input id="username" type="text" placeholder="Foydalanuvchi nomi" class="w-full p-2 rounded bg-gray-700 text-white"/>
-      <button onclick="login()" class="bg-blue-600 hover:bg-blue-700 w-full p-2 rounded">Kirish</button>
-    </div>
-  </div>
-
-  <!-- Dashboard -->
-  <div id="dashboard" style="display:none" class="max-w-5xl mx-auto space-y-6">
-    <div class="flex justify-between items-center">
-      <h1 class="text-4xl font-bold text-blue-400">🌍 <span id="greeting">Dashboard</span></h1>
-      <select id="language" class="bg-gray-800 p-2 rounded text-white" onchange="changeLanguage(this.value)">
-        <option value="uz">🇺🇿 UZ</option>
-        <option value="ru">🇷🇺 RU</option>
-        <option value="en">🇺🇸 EN</option>
-      </select>
-    </div>
-
-    <div class="flex flex-wrap justify-between items-center gap-4">
-      <div>
-        <label id="dateLabel" class="text-sm">📅 Sana tanlang:</label>
-        <input id="datePicker" type="date" class="bg-gray-800 p-2 rounded text-white" />
-      </div>
-      <div>
-        <button onclick="exportCSV()" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded font-semibold">⬇️ CSV eksport</button>
-      </div>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div class="bg-gray-800 p-6 rounded-2xl space-y-3 shadow-lg">
-        <div class="text-xl font-mono">⏰ <span id="timeLabel">Joriy vaqt</span>: <span id="time" class="text-green-400"></span></div>
-        <div class="text-2xl">💰 <span id="balanceLabel">Balans</span>: <span id="balance" class="text-yellow-400 font-bold"></span></div>
-      </div>
-      <div class="bg-gray-800 p-4 rounded-2xl shadow-lg">
-        <canvas id="balanceChart" height="180"></canvas>
-      </div>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div class="bg-gray-800 p-4 rounded-2xl shadow-lg">
-        <h2 id="historyTitle" class="text-xl mb-2">🧾 So‘nggi balanslar tarixi</h2>
-        <ul id="history" class="text-sm font-mono space-y-1 text-gray-300"></ul>
-      </div>
-      <div class="bg-gray-800 p-4 rounded-2xl shadow-lg">
-        <h2 id="statsTitle" class="text-xl mb-2">📊 Statistika (oy/yil)</h2>
-        <div id="statistics" class="space-y-1 text-sm font-mono text-gray-300"></div>
-      </div>
-    </div>
+<body>
+  <div class="balance">
+    <div>Hozirgi sana: <span id="nowDate"></span></div>
+    <div>Balans: <b><span id="balance">0</span> so'm</b></div>
   </div>
 
   <script>
-    // Sozlamalar
-    let balance = parseFloat(localStorage.getItem("balance")) || 0;
-    const incomeRange = { min: 5000, max: 7000 };
-    const expenseRange = { min: 4000, max: 5000 };
-    const labels = [], incomeData = [], expenseData = [], balanceData = [];
-    const history = [];
-    const stats = [];
+    const balancePoints = [
+      { date: new Date('2023-04-04T00:00:00'), value: 0 },
+      { date: new Date('2023-04-04T12:00:00'), value: 12000 },
+      { date: new Date('2023-04-04T23:59:59'), value: 24000 },
+      { date: new Date('2025-04-04T00:00:00'), value: 48000 },
+    ];
 
-    // Til resurslari
-    const translations = {
-      uz: {
-        greeting: "Real Vaqtli Balans",
-        dateLabel: "📅 Sana tanlang:",
-        balanceLabel: "Balans",
-        timeLabel: "Joriy vaqt",
-        historyTitle: "🧾 So‘nggi balanslar tarixi",
-        statsTitle: "📊 Statistika (oy/yil)",
-      },
-      ru: {
-        greeting: "Реальное Время Баланса",
-        dateLabel: "📅 Выберите дату:",
-        balanceLabel: "Баланс",
-        timeLabel: "Текущее время",
-        historyTitle: "🧾 История баланса",
-        statsTitle: "📊 Статистика (мес/год)",
-      },
-      en: {
-        greeting: "Real-Time Balance",
-        dateLabel: "📅 Select date:",
-        balanceLabel: "Balance",
-        timeLabel: "Current Time",
-        historyTitle: "🧾 Recent Balance History",
-        statsTitle: "📊 Statistics (Month/Year)",
-      },
-    };
+    function getInterpolatedBalance(now) {
+      // Agar vaqt chegara tashqarisida bo‘lsa
+      if (now <= balancePoints[0].date) return balancePoints[0].value;
+      if (now >= balancePoints[balancePoints.length - 1].date) return balancePoints[balancePoints.length - 1].value;
 
-    function changeLanguage(lang) {
-      const t = translations[lang];
-      for (let key in t) {
-        document.getElementById(key).textContent = t[key];
-      }
-    }
+      // Oradagi nuqtani topamiz
+      for (let i = 0; i < balancePoints.length - 1; i++) {
+        const a = balancePoints[i];
+        const b = balancePoints[i + 1];
 
-    // Grafik
-    const chart = new Chart(document.getElementById('balanceChart'), {
-      type: 'line',
-      data: {
-        labels,
-        datasets: [
-          { label: "Kirim", data: incomeData, borderColor: "#3B82F6", backgroundColor: "rgba(59,130,246,0.1)", tension: 0.3 },
-          { label: "Chiqim", data: expenseData, borderColor: "#EF4444", backgroundColor: "rgba(239,68,68,0.1)", tension: 0.3 },
-          { label: "Balans", data: balanceData, borderColor: "#22C55E", backgroundColor: "rgba(34,197,94,0.1)", tension: 0.3 }
-        ]
-      },
-      options: {
-        plugins: {
-          zoom: { zoom: { wheel: { enabled: true }, mode: 'x' }, pan: { enabled: true, mode: 'x' } }
-        },
-        scales: { y: { beginAtZero: true } },
-        responsive: true
-      }
-    });
-
-    function update() {
-      const income = Math.random() * (incomeRange.max - incomeRange.min) + incomeRange.min;
-      const expense = Math.random() * (expenseRange.max - expenseRange.min) + expenseRange.min;
-      balance += income - expense;
-      localStorage.setItem("balance", balance);
-
-      const now = new Date();
-      const timeLabel = now.toLocaleTimeString();
-      labels.push(timeLabel);
-      incomeData.push(income);
-      expenseData.push(expense);
-      balanceData.push(balance);
-
-      if (labels.length > 20) {
-        labels.shift(); incomeData.shift(); expenseData.shift(); balanceData.shift();
-      }
-
-      chart.update();
-
-      document.getElementById("time").textContent = now.toLocaleString();
-      document.getElementById("balance").textContent = "$" + balance.toFixed(2);
-
-      history.unshift(`${timeLabel} - Kirim: $${income.toFixed(2)} | Chiqim: $${expense.toFixed(2)} | Balans: $${balance.toFixed(2)}`);
-      if (history.length > 10) history.pop();
-      document.getElementById("history").innerHTML = history.map(e => `<li>${e}</li>`).join('');
-
-      stats.push({ date: now, income, expense });
-      updateStats();
-    }
-
-    function updateStats() {
-      const now = new Date();
-      const month = now.getMonth(), year = now.getFullYear();
-      let mincome = 0, mexpense = 0, yincome = 0, yexpense = 0;
-
-      stats.forEach(({ date, income, expense }) => {
-        if (date.getFullYear() === year) {
-          yincome += income; yexpense += expense;
-          if (date.getMonth() === month) {
-            mincome += income; mexpense += expense;
-          }
+        if (now >= a.date && now <= b.date) {
+          const progress = (now - a.date) / (b.date - a.date);
+          return Math.round(a.value + progress * (b.value - a.value));
         }
-      });
-
-      document.getElementById("statistics").innerHTML = `
-        📅 Oy: Kirim: $${mincome.toFixed(2)} | Chiqim: $${mexpense.toFixed(2)} | Balans: $${(mincome - mexpense).toFixed(2)}<br>
-        🗓️ Yil: Kirim: $${yincome.toFixed(2)} | Chiqim: $${yexpense.toFixed(2)} | Balans: $${(yincome - yexpense).toFixed(2)}
-      `;
-    }
-
-    function exportCSV() {
-      let csv = "Vaqt,Kirim,Chiqim,Balans\n";
-      for (let i = 0; i < labels.length; i++) {
-        csv += `${labels[i]},${incomeData[i].toFixed(2)},${expenseData[i].toFixed(2)},${balanceData[i].toFixed(2)}\n`;
-      }
-      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-      saveAs(blob, "balans_tarixi.csv");
-    }
-
-    function login() {
-      const user = document.getElementById("username").value.trim();
-      if (user) {
-        document.getElementById("loginScreen").style.display = "none";
-        document.getElementById("dashboard").style.display = "block";
-        document.getElementById("greeting").textContent += ` - ${user}`;
-        changeLanguage("uz");
-        setInterval(update, 1000);
       }
     }
 
-    // Three.js fon animatsiyasi
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ canvas: document.querySelector('.webgl-bg') });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    const geometry = new THREE.SphereGeometry(5, 64, 64);
-    const material = new THREE.MeshStandardMaterial({ wireframe: true, color: 0x00ffff });
-    const sphere = new THREE.Mesh(geometry, material);
-    scene.add(sphere);
-    camera.position.z = 15;
-    const light = new THREE.PointLight(0xffffff, 1);
-    light.position.set(10, 10, 10);
-    scene.add(light);
-
-    function animate() {
-      requestAnimationFrame(animate);
-      sphere.rotation.y += 0.002;
-      renderer.render(scene, camera);
+    function updateBalance() {
+      const now = new Date();
+      document.getElementById('nowDate').textContent = now.toLocaleString();
+      const currentBalance = getInterpolatedBalance(now);
+      document.getElementById('balance').textContent = currentBalance.toLocaleString();
     }
-    animate();
 
-    window.addEventListener('resize', () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    });
+    setInterval(updateBalance, 1000);
+    updateBalance(); // Initial call
   </script>
 </body>
 </html>
