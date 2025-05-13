@@ -1,66 +1,54 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-  <meta charset="UTF-8">
-  <title>Real Vaqt Balans</title>
+  <meta charset="UTF-8" />
+  <title>Balans Vaqtga Nisbatan</title>
   <style>
-    body {
-      font-family: sans-serif;
-      font-size: 24px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      background: #f2f2f2;
-    }
-    .balance {
-      background: white;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    }
+    body { font-family: sans-serif; text-align: center; padding: 40px; }
+    .balans { font-size: 2em; margin-top: 20px; }
   </style>
 </head>
 <body>
-  <div class="balance">
-    <div>Hozirgi sana: <span id="nowDate"></span></div>
-    <div>Balans: <b><span id="balance">0</span> so'm</b></div>
-  </div>
+  <h1>Real Vaqtga Nisbatan Balans</h1>
+  <div class="balans" id="balance">Hisoblanmoqda...</div>
 
   <script>
-    const balancePoints = [
-      { date: new Date('2023-04-04T00:00:00'), value: 0 },
-      { date: new Date('2023-04-04T12:00:00'), value: 12000 },
-      { date: new Date('2023-04-04T23:59:59'), value: 24000 },
-      { date: new Date('2025-04-04T00:00:00'), value: 48000 },
+    const checkpoints = [
+      { date: "2023-04-04T00:00:00", amount: 0 },
+      { date: "2023-04-04T12:00:00", amount: -12000 },
+      { date: "2023-04-04T23:59:59", amount: 24000 },
+      { date: "2025-04-04T00:00:00", amount: 48000 }
     ];
 
     function getInterpolatedBalance(now) {
-      // Agar vaqt chegara tashqarisida bo‘lsa
-      if (now <= balancePoints[0].date) return balancePoints[0].value;
-      if (now >= balancePoints[balancePoints.length - 1].date) return balancePoints[balancePoints.length - 1].value;
+      const nowTime = now.getTime();
 
-      // Oradagi nuqtani topamiz
-      for (let i = 0; i < balancePoints.length - 1; i++) {
-        const a = balancePoints[i];
-        const b = balancePoints[i + 1];
+      for (let i = 0; i < checkpoints.length - 1; i++) {
+        const start = new Date(checkpoints[i].date);
+        const end = new Date(checkpoints[i + 1].date);
 
-        if (now >= a.date && now <= b.date) {
-          const progress = (now - a.date) / (b.date - a.date);
-          return Math.round(a.value + progress * (b.value - a.value));
+        const startTime = start.getTime();
+        const endTime = end.getTime();
+
+        if (nowTime >= startTime && nowTime <= endTime) {
+          const t = (nowTime - startTime) / (endTime - startTime);
+          const balance = checkpoints[i].amount + t * (checkpoints[i + 1].amount - checkpoints[i].amount);
+          return Math.round(balance);
         }
       }
+
+      if (nowTime < new Date(checkpoints[0].date).getTime()) return checkpoints[0].amount;
+      if (nowTime > new Date(checkpoints.at(-1).date).getTime()) return checkpoints.at(-1).amount;
     }
 
     function updateBalance() {
       const now = new Date();
-      document.getElementById('nowDate').textContent = now.toLocaleString();
-      const currentBalance = getInterpolatedBalance(now);
-      document.getElementById('balance').textContent = currentBalance.toLocaleString();
+      const balance = getInterpolatedBalance(now);
+      document.getElementById("balance").innerText = `Balans: ${balance.toLocaleString('uz-UZ')} so‘m`;
     }
 
     setInterval(updateBalance, 1000);
-    updateBalance(); // Initial call
+    updateBalance();
   </script>
 </body>
 </html>
