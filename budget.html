@@ -41,11 +41,8 @@
     const startDate = new Date("2023-04-04T00:00:00");
     const middleDate = new Date("2024-04-04T00:00:00");
     const endDate = new Date("2025-04-04T00:00:00");
-    const middleValue = 120000;
-    const endValue = 280000;
-
-    // Real vaqtga asoslangan o'sish
-    const today = new Date();
+    const middleValue = 12000;  // Dollar
+    const endValue = 28000;     // Dollar
 
     const history = [];
 
@@ -55,23 +52,25 @@
       if (now < startDate) return 0; // 2023-04-04 dan oldingi vaqt
       if (now >= endDate) {
         // 2025-04-04 dan keyingi vaqt
-        const yearsPassed = (now - endDate) / (1000 * 60 * 60 * 24 * 365); // Yillarni hisoblash
-        balance = endValue + (yearsPassed * (endValue * 0.05)); // Har yili 5% ortadi
+        balance = endValue; // 2025 yildan keyin o'sishni ko'rsatmaymiz
       } else {
         // 2023-04-04 va 2025-04-04 orasidagi vaqt
         if (now < middleDate) {
           const progress = (now - startDate) / (middleDate - startDate);
-          balance = progress * middleValue;
+          balance = middleValue * progress;
         } else {
           const progress = (now - middleDate) / (endDate - middleDate);
-          balance = middleValue + progress * (endValue - middleValue);
+          balance = middleValue + (progress * (endValue - middleValue));
         }
       }
+
       return balance;
     }
 
     function formatCurrency(val) {
-      return Math.round(val).toLocaleString('uz-UZ') + " so‘m";
+      const dollars = Math.floor(val);
+      const cents = Math.round((val - dollars) * 100);
+      return `${dollars.toLocaleString('en-US')}.${cents.toString().padStart(2, '0')} $`;
     }
 
     function formatTime(date) {
