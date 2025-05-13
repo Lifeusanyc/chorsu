@@ -4,33 +4,54 @@
   <meta charset="UTF-8" />
   <title>Real Vaqt Balans</title>
   <style>
-    body { font-family: sans-serif; text-align: center; margin-top: 50px; font-size: 24px; }
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      margin-top: 50px;
+      font-size: 24px;
+    }
+    #time {
+      font-size: 32px;
+      margin-bottom: 20px;
+      color: #2e86de;
+    }
+    #balans {
+      font-size: 28px;
+      font-weight: bold;
+      color: #27ae60;
+    }
   </style>
 </head>
 <body>
-  <h1>Real Vaqt Balans</h1>
-  <div id="balans">Hisoblanmoqda...</div>
+  <h1>⏱ Real Vaqt Balans</h1>
+  <div id="time">Vaqt: </div>
+  <div id="balans">Balans hisoblanmoqda...</div>
 
   <script>
     const startDate = new Date("2023-04-04T00:00:00");
     const endDate = new Date("2025-04-04T00:00:00");
-    const totalSeconds = (endDate - startDate) / 1000;
     const finalBalance = 48000;
+    const totalSeconds = (endDate - startDate) / 1000;
     const balancePerSecond = finalBalance / totalSeconds;
 
-    function updateBalance() {
+    function formatTime(date) {
+      return date.toLocaleTimeString("uz-UZ", { hour12: false });
+    }
+
+    function update() {
       const now = new Date();
       const elapsedSeconds = (now - startDate) / 1000;
+
       let currentBalance = Math.floor(balancePerSecond * elapsedSeconds);
-
-      if (now >= endDate) currentBalance = finalBalance;
       if (now < startDate) currentBalance = 0;
+      if (now > endDate) currentBalance = finalBalance;
 
+      document.getElementById("time").textContent = "Vaqt: " + formatTime(now);
       document.getElementById("balans").textContent = "Balans: $" + currentBalance.toLocaleString();
     }
 
-    setInterval(updateBalance, 1000);
-    updateBalance();
+    setInterval(update, 1000);
+    update();
   </script>
 </body>
 </html>
