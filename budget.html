@@ -1,106 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Real-time Balance Tracker</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-            background-color: #f4f4f9;
-        }
-        #balance {
-            font-size: 24px;
-            font-weight: bold;
-        }
-        #minuteChange, #secondChange {
-            font-size: 18px;
-        }
-        #changeHistory {
-            margin-top: 20px;
-            font-size: 16px;
-            color: #555;
-        }
-        input[type="number"] {
-            padding: 8px;
-            font-size: 16px;
-            width: 150px;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Soatlik Daromad Hisoblagich</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f4f4f9;
+    }
+    input, button {
+      font-size: 16px;
+      padding: 8px;
+      margin: 5px 0;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    #output p {
+      font-size: 18px;
+      margin: 10px 0;
+    }
+  </style>
 </head>
 <body>
-    <h1>Real-time Balance Tracker</h1>
+  <h1>Soatlik Daromad Hisoblagich</h1>
 
-    <!-- Input field for the user to enter the hourly amount -->
-    <label for="hourlyAmount">Soatiga kiritiladigan summa ($):</label>
-    <input type="number" id="hourlyAmount" value="1000" min="0" step="1">
+  <p>4-aprel 2023 dan boshlab 1 yilda 120,000$ tempda daromad hisoblanadi.</p>
 
-    <!-- Button to calculate the changes -->
-    <button id="calculateButton">Hisoblash</button>
+  <button id="startButton">Hisoblashni boshlash</button>
 
+  <div id="output">
     <p id="balance">Joriy balans: $0.00</p>
-    <p id="minuteChange">Har minutdagi o'zgarish: $0.00</p>
-    <p id="secondChange">Har soniyadagi o'zgarish: $0.00</p>
-    <p id="changeHistory">Oxirgi 10 o'zgarish: </p>
+    <p id="hour">Soatlik daromad: $13.70</p>
+    <p id="minute">Har minutdagi o'zgarish: $0.23</p>
+    <p id="second">Har soniyadagi o'zgarish: $0.0038</p>
+    <p id="history">Oxirgi 10 o'zgarish: </p>
+  </div>
 
-    <script>
-        let changeHistory = []; // Oxirgi 10 o'zgarishlarni saqlash uchun massiv
-        let currentBalance = 0; // Joriy balans
-        let secondChange = 0; // Har soniyadagi o'zgarish
-        let minuteChange = 0; // Har minutdagi o'zgarish
+  <script>
+    const yearlyIncome = 120000;
+    const hoursPerYear = 365 * 24;
+    const hourlyIncome = yearlyIncome / hoursPerYear; // ≈ 13.70
+    const minuteIncome = hourlyIncome / 60;
+    const secondIncome = hourlyIncome / 3600;
 
-        // Hisoblash tugmasini bosganda ishlaydigan funksiya
-        document.getElementById("calculateButton").addEventListener("click", function() {
-            // Foydalanuvchi kiritgan soatlik summa
-            let hourlyAmount = parseFloat(document.getElementById("hourlyAmount").value);
+    let currentBalance = 0;
+    let history = [];
 
-            // Hisoblash
-            secondChange = hourlyAmount / 3600; // Soatiga 3600 soniya bor
-            minuteChange = hourlyAmount / 60; // Soatiga 60 minut bor
+    let intervalId;
 
-            // Balansni har soniyada yangilash
-            currentBalance = 0; // Har safar hisoblash tugmasi bosilganda balansni nolga o'rnatamiz
-            changeHistory = []; // Oxirgi o'zgarishlarni tozalash
+    document.getElementById("startButton").addEventListener("click", () => {
+      currentBalance = 0;
+      history = [];
+      clearInterval(intervalId); // agar avval ishlayotgan bo‘lsa, to‘xtat
+      intervalId = setInterval(updateBalance, 1000);
+    });
 
-            // O'zgarishlarni yangilash
-            updateBalance();
-        });
+    function updateBalance() {
+      currentBalance += secondIncome;
 
-        // O'zgarishlarni yangilash
-        function updateBalance() {
-            // Har soniyada balansni yangilash
-            currentBalance += secondChange;
+      if (history.length >= 10) {
+        history.shift(); // eng eski o‘zgarishni olib tashlash
+      }
+      history.push(currentBalance.toFixed(2));
 
-            // Oxirgi 10 o'zgarishlarni saqlash
-            if (changeHistory.length >= 10) {
-                changeHistory.shift(); // 10 ta o'zgarishdan eski eng kichigini olib tashlash
-            }
-            changeHistory.push(currentBalance.toFixed(2)); // Yangilangan balansni saqlash (ikkilik nuqtali formatda)
-
-            // O'zgarishni ekranlashtirish
-            document.getElementById("balance").innerText = `Joriy balans: $${currentBalance.toFixed(2)}`;
-            document.getElementById("minuteChange").innerText = `Har minutdagi o'zgarish: $${minuteChange.toFixed(2)}`;
-            document.getElementById("secondChange").innerText = `Har soniyadagi o'zgarish: $${secondChange.toFixed(2)}`;
-
-            // Oxirgi 10 o'zgarishni ko'rsatish
-            document.getElementById("changeHistory").innerText = "Oxirgi 10 o'zgarish: " + changeHistory.join(", ");
-        }
-
-        // Yangilanishni har 1 soniyada takrorlash
-        setInterval(updateBalance, 1000); // Har 1 soniyada yangilanadi
-    </script>
+      // DOM elementlarini yangilash
+      document.getElementById("balance").innerText = `Joriy balans: $${currentBalance.toFixed(2)}`;
+      document.getElementById("hour").innerText = `Soatlik daromad: $${hourlyIncome.toFixed(2)}`;
+      document.getElementById("minute").innerText = `Har minutdagi o'zgarish: $${minuteIncome.toFixed(2)}`;
+      document.getElementById("second").innerText = `Har soniyadagi o'zgarish: $${secondIncome.toFixed(4)}`;
+      document.getElementById("history").innerText = "Oxirgi 10 o'zgarish: " + history.join(", ");
+    }
+  </script>
 </body>
 </html>
