@@ -1,80 +1,73 @@
 <!DOCTYPE html>
-<html lang="uz">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mini Portal</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NYC TLC Driver Links</title>
   <style>
     body {
       font-family: sans-serif;
+      background: #f4f4f4;
       margin: 0;
-      padding: 0;
-      background: #f4f7fa;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+      padding: 2rem;
     }
-    .container {
-      display: grid;
-      grid-template-columns: repeat(3, 130px);
-      gap: 20px;
-    }
-    .icon-box {
-      background: #fff;
-      border-radius: 16px;
-      padding: 20px;
+    h1 {
       text-align: center;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-      transition: transform 0.2s, background 0.2s;
+      margin-bottom: 2rem;
     }
-    .icon-box:hover {
-      transform: translateY(-6px);
-      background: #e6f7ff;
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
     }
-    .icon-box i {
-      font-size: 30px;
-      color: #007acc;
+    .card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      padding: 1rem;
+      text-align: center;
+      transition: 0.3s;
     }
-    .icon-box span {
-      display: block;
-      margin-top: 10px;
-      font-size: 14px;
+    .card:hover {
+      transform: scale(1.03);
+      box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+    }
+    .card a {
+      text-decoration: none;
       color: #333;
     }
-    a {
-      text-decoration: none;
-      color: inherit;
+    .icon {
+      font-size: 40px;
+      margin-bottom: 0.5rem;
+      color: #0072ce;
     }
   </style>
+  <!-- Icons from Font Awesome -->
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </head>
 <body>
-  <div class="container">
-    <a href="#" class="icon-box">
-      <i class="fas fa-search"></i>
-      <span>Jarimalarni tekshirish</span>
-    </a>
-    <a href="#" class="icon-box">
-      <i class="fas fa-user-shield"></i>
-      <span>TLC portaliga kirish</span>
-    </a>
-    <a href="https://a836-citypay.nyc.gov/citypay/Parking#!/by-plate-form" class="icon-box">
-      <i class="fas fa-credit-card"></i>
-      <span>Ticket to‘lash</span>
-    </a>
-    <a href="#" class="icon-box">
-      <i class="fas fa-map-marker-alt"></i>
-      <span>Journey pick up manzillar</span>
-    </a>
-    <a href="https://chorsu.vercel.app/jurny/point.html" class="icon-box">
-      <i class="fas fa-traffic-light"></i>
-      <span>Point va jarimalar</span>
-    </a>
-    <a href="#" class="icon-box">
-      <i class="fas fa-info-circle"></i>
-      <span>Qo‘shimcha ma’lumotlar</span>
-    </a>
+  <h1>NYC TLC Driver Portallar</h1>
+  <div class="grid">
+    <div class="card"><a href="https://www.nyc.gov/tlc" target="_blank"><div class="icon"><i class="fas fa-taxi"></i></div>NYC TLC Rasmiy</a></div>
+    <div class="card"><a href="https://www.nyc.gov/lup" target="_blank"><div class="icon"><i class="fas fa-user-shield"></i></div>TLC UP Portal</a></div>
+    <div class="card"><a href="https://www1.nyc.gov/lup/login.jsp" target="_blank"><div class="icon"><i class="fas fa-id-card"></i></div>Self Service Portal</a></div>
+    <div class="card"><a href="https://bookeo.com/tlcdriver" target="_blank"><div class="icon"><i class="fas fa-calendar-alt"></i></div>Randevu olish</a></div>
+    <div class="card"><a href="https://www.nyc.gov/site/tlc/vehicles/driver-education.page" target="_blank"><div class="icon"><i class="fas fa-graduation-cap"></i></div>Talim Kurslari</a></div>
+    <div class="card"><a href="https://www.uber.com/us/en/drive/new-york/" target="_blank"><div class="icon"><i class="fab fa-uber"></i></div>Uber Portal</a></div>
+    <div class="card"><a href="https://www.lyft.com/drive-with-lyft/regions/new-york-city" target="_blank"><div class="icon"><i class="fab fa-lyft"></i></div>Lyft Portal</a></div>
+    <div class="card"><a href="https://drivewithvia.com/nyc/" target="_blank"><div class="icon"><i class="fas fa-shuttle-van"></i></div>Via Driver Portal</a></div>
+    <div class="card"><a href="https://www.juno.com/" target="_blank"><div class="icon"><i class="fas fa-car-crash"></i></div>Juno (Yopilgan)</a></div>
+    <div class="card"><a href="https://www.gocurb.com/drivers/" target="_blank"><div class="icon"><i class="fas fa-taxi"></i></div>Curb Portal</a></div>
+    <div class="card"><a href="https://dmv.ny.gov/" target="_blank"><div class="icon"><i class="fas fa-id-badge"></i></div>NY DMV</a></div>
+    <div class="card"><a href="https://www.nyc.gov/site/tlc/vehicles/insurance-requirements.page" target="_blank"><div class="icon"><i class="fas fa-file-medical"></i></div>Sug'urta Talablari</a></div>
+    <div class="card"><a href="https://www.nyc.gov/assets/tlc/downloads/pdf/approved_vehicle_list.pdf" target="_blank"><div class="icon"><i class="fas fa-car"></i></div>Ruxsat Et. Mashinalar</a></div>
+    <div class="card"><a href="https://www.nyc.gov/html/dot/html/motorist/parking-regulations.shtml" target="_blank"><div class="icon"><i class="fas fa-parking"></i></div>Parking Qoidalari</a></div>
+    <div class="card"><a href="https://www.nyc.gov/site/tlc/about/tlc-payment.page" target="_blank"><div class="icon"><i class="fas fa-money-check-alt"></i></div>Jarima To'lash</a></div>
+    <div class="card"><a href="https://www.nyc.gov/dca" target="_blank"><div class="icon"><i class="fas fa-balance-scale"></i></div>DCA Yordam</a></div>
+    <div class="card"><a href="https://www.irs.gov/businesses/small-businesses-self-employed/ride-share-drivers" target="_blank"><div class="icon"><i class="fas fa-file-invoice-dollar"></i></div>IRS Soliq Qo’llanma</a></div>
+    <div class="card"><a href="https://www.uberpeople.net/" target="_blank"><div class="icon"><i class="fas fa-users"></i></div>UberPeople Forum</a></div>
+    <div class="card"><a href="https://www.drivers-united.org/" target="_blank"><div class="icon"><i class="fas fa-hands-helping"></i></div>Drivers United</a></div>
+    <div class="card"><a href="https://www.facebook.com/groups/nyctlcdrivers/" target="_blank"><div class="icon"><i class="fab fa-facebook"></i></div>FB: TLC Drivers</a></div>
   </div>
 </body>
 </html>
