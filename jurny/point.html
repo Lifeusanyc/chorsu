@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Qoidabuzarliklar jadvali</title>
+<title>Qoidabuzarliklar jadvali - Ko'p ustunli tartiblash</title>
 <style>
   table {
     border-collapse: collapse;
     width: 100%;
-    max-width: 900px;
+    max-width: 1000px;
     margin: 20px auto;
     font-family: Arial, sans-serif;
   }
@@ -16,6 +16,7 @@
     border: 1px solid #ccc;
     padding: 8px 12px;
     text-align: left;
+    white-space: nowrap;
   }
   th {
     background: #f0f0f0;
@@ -35,11 +36,11 @@
 <table id="violationTable">
   <thead>
     <tr>
-      <th>№</th>
-      <th>Qoidabuzarlik turi (O'zbek)</th>
-      <th>Violation Type (English)</th>
-      <th id="pointsHeader">Ballar (Points)</th>
-      <th>Taxminiy Jarima (USD)</th>
+      <th data-type="number">№</th>
+      <th data-type="string">Qoidabuzarlik turi (O'zbek)</th>
+      <th data-type="string">Violation Type (English)</th>
+      <th data-type="points">Ballar (Points)</th>
+      <th data-type="fine">Taxminiy Jarima (USD)</th>
     </tr>
   </thead>
   <tbody>
@@ -78,16 +79,15 @@
 
 <script>
   const table = document.getElementById('violationTable');
-  const pointsHeader = document.getElementById('pointsHeader');
+  const headers = table.querySelectorAll('th');
+  let sortColumnIndex = -1;
   let asc = true;
 
+  // Function to parse points string to number (minimal value)
   function parsePoints(pointsStr) {
-    // Convert strings like '3–11', '5+', '0–3', '3' to a single numeric value for sorting
-    // We'll take the minimum value for sorting purpose
     if (!pointsStr) return 0;
     pointsStr = pointsStr.trim();
     if (pointsStr.includes('–')) {
-      // Range: take minimum part
       return parseFloat(pointsStr.split('–')[0]) || 0;
     }
     if (pointsStr.endsWith('+')) {
@@ -96,30 +96,66 @@
     return parseFloat(pointsStr) || 0;
   }
 
-  pointsHeader.addEventListener('click', () => {
-    const tbody = table.tBodies[0];
-    const rows = Array.from(tbody.rows);
+  // Function to parse fine amount (take minimal USD number)
+  function parseFine(fineStr) {
+    if (!fineStr) return 0;
+    // Remove $ and +, split by dash or en dash, take minimum number
+    fineStr = fineStr.replace(/\$/g, '').replace(/\+/g, '').trim();
+    let parts = fineStr.split(/[–-]/); // en dash or hyphen
+    let numbers = parts.map(p => parseFloat(p.trim())).filter(n => !isNaN(n));
+    if (numbers.length === 0) return 0;
+    return Math.min(...numbers);
+  }
 
-    rows.sort((a, b) => {
-      const aPoints = parsePoints(a.cells[3].textContent);
-      const bPoints = parsePoints(b.cells[3].textContent);
-      return asc ? aPoints - bPoints : bPoints - aPoints;
+  headers.forEach((header, idx) => {
+    header.addEventListener('click', () => {
+      const type = header.getAttribute('data-type') || 'string';
+      const tbody = table.tBodies[0];
+      const rows = Array.from(tbody.rows);
+
+      // Determine sort direction
+      if (sortColumnIndex === idx) {
+        asc = !asc;
+      } else {
+        asc = true;
+        if (sortColumnIndex >= 0) headers[sortColumnIndex].classList.remove('sort-asc', 'sort-desc');
+        sortColumnIndex = idx;
+      }
+
+      rows.sort((a, b) => {
+        let aText = a.cells[idx].textContent.trim();
+        let bText = b.cells[idx].textContent.trim();
+
+        switch (type) {
+          case 'number':
+            return asc ? (+aText - +bText) : (+bText - +aText);
+          case 'points':
+            let aPoints = parsePoints(aText);
+            let bPoints = parsePoints(bText);
+            return asc ? (aPoints - bPoints) : (bPoints - aPoints);
+          case 'fine':
+            let aFine = parseFine(aText);
+            let bFine = parseFine(bText);
+            return asc ? (aFine - bFine) : (bFine - aFine);
+          case 'string':
+          default:
+            return asc ? aText.localeCompare(bText) : bText.localeCompare(aText);
+        }
+      });
+
+      // Remove old rows
+      while (tbody.firstChild) {
+        tbody.removeChild(tbody.firstChild);
+      }
+
+      // Append sorted rows
+      rows.forEach(row => tbody.appendChild(row));
+
+      // Update header arrows
+      headers.forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
+      header.classList.toggle('sort-asc', asc);
+      header.classList.toggle('sort-desc', !asc);
     });
-
-    // Remove existing rows
-    while(tbody.firstChild) {
-      tbody.removeChild(tbody.firstChild);
-    }
-
-    // Append sorted rows
-    rows.forEach(row => tbody.appendChild(row));
-
-    // Toggle sort direction
-    asc = !asc;
-
-    // Update header arrow indicators
-    pointsHeader.classList.toggle('sort-asc', !asc);
-    pointsHeader.classList.toggle('sort-desc', asc);
   });
 </script>
 
