@@ -1,163 +1,169 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Qoidabuzarliklar jadvali - Ko'p ustunli tartiblash</title>
-<style>
-  table {
-    border-collapse: collapse;
-    width: 100%;
-    max-width: 1000px;
-    margin: 20px auto;
-    font-family: Arial, sans-serif;
-  }
-  th, td {
-    border: 1px solid #ccc;
-    padding: 8px 12px;
-    text-align: left;
-    white-space: nowrap;
-  }
-  th {
-    background: #f0f0f0;
-    cursor: pointer;
-    user-select: none;
-  }
-  th.sort-asc::after {
-    content: " ▲";
-  }
-  th.sort-desc::after {
-    content: " ▼";
-  }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Qoidabuzarliklar Jadvali</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f9f9fb;
+      color: #333;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 20px;
+    }
+
+    .table-container {
+      max-width: 100%;
+      overflow-x: auto;
+      background: white;
+      box-shadow: 0 0 12px rgba(0,0,0,0.05);
+      border-radius: 10px;
+      padding: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 700px;
+    }
+
+    thead {
+      background: #f0f4f8;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 12px 16px;
+      border-bottom: 1px solid #e2e6ea;
+      white-space: nowrap;
+    }
+
+    th {
+      font-weight: 600;
+      position: relative;
+      cursor: pointer;
+      user-select: none;
+      color: #2c3e50;
+    }
+
+    th.sort-asc::after {
+      content: " ▲";
+      position: absolute;
+      right: 10px;
+    }
+
+    th.sort-desc::after {
+      content: " ▼";
+      position: absolute;
+      right: 10px;
+    }
+
+    tbody tr:hover {
+      background: #f9fafc;
+    }
+
+    @media (max-width: 768px) {
+      table {
+        font-size: 14px;
+      }
+
+      th, td {
+        padding: 10px;
+      }
+
+      .table-container {
+        padding: 5px;
+      }
+    }
+  </style>
 </head>
 <body>
 
-<table id="violationTable">
-  <thead>
-    <tr>
-      <th data-type="number">№</th>
-      <th data-type="string">Qoidabuzarlik turi (O'zbek)</th>
-      <th data-type="string">Violation Type (English)</th>
-      <th data-type="points">Ballar (Points)</th>
-      <th data-type="fine">Taxminiy Jarima (USD)</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr><td>1</td><td>Tezlikni oshirish</td><td>Speeding</td><td>3–11</td><td>$150 – $600+</td></tr>
-    <tr><td>2</td><td>Qizil chiroqda o‘tish</td><td>Running Red Light</td><td>3</td><td>$200 – $300</td></tr>
-    <tr><td>3</td><td>Harakat yo‘llarini noto‘g‘ri kesib o‘tish</td><td>Improper Lane Change</td><td>3</td><td>$115</td></tr>
-    <tr><td>4</td><td>To‘xtash belgisida to‘xtamaslik</td><td>Failure to Stop at Stop Sign</td><td>3</td><td>$115</td></tr>
-    <tr><td>5</td><td>Yo‘l berish qoidalarini buzish</td><td>Failure to Yield Right of Way</td><td>3</td><td>$115 – $250</td></tr>
-    <tr><td>6</td><td>Xavfsizlik kamaridan foydalanmaslik</td><td>Failure to Use Seat Belt</td><td>0</td><td>$50 – $100</td></tr>
-    <tr><td>7</td><td>Bolalar uchun xavfsizlik kamarini ishlatmaslik</td><td>Failure to Use Child Safety Seat</td><td>2</td><td>$100 – $300</td></tr>
-    <tr><td>8</td><td>O‘ngga/yugurishga burilishdan oldin signal bermaslik</td><td>Failure to Signal Before Turning</td><td>0–3</td><td>$50 – $115</td></tr>
-    <tr><td>9</td><td>Piyodalarga yo‘l bermaslik</td><td>Failure to Yield Right of Way to Pedestrians</td><td>2</td><td>$50 – $250</td></tr>
-    <tr><td>10</td><td>Haydovchilikda mast holatda bo‘lish</td><td>Driving Under Influence</td><td>5+</td><td>$500 – $10,000+</td></tr>
-    <tr><td>11</td><td>Qoidalarga zid ravishda burilish</td><td>Illegal Turn</td><td>3</td><td>$115</td></tr>
-    <tr><td>12</td><td>Yo‘l qoidalarini takroran buzish</td><td>Reckless Driving</td><td>5+</td><td>$500 – $2000+</td></tr>
-    <tr><td>13</td><td>Yaqin masofani buzish</td><td>Following Too Closely</td><td>3</td><td>$115 – $300</td></tr>
-    <tr><td>14</td><td>Haydovchilik huquqi bekor qilingan holatda haydash</td><td>Driving with Suspended License</td><td>5</td><td>$500 – $1000</td></tr>
-    <tr><td>15</td><td>To‘xtab turish joyida qoidalarni buzish</td><td>Illegal Parking</td><td>0</td><td>$65 – $115</td></tr>
-    <tr><td>16</td><td>Noto‘g‘ri o‘ng yo‘nalish</td><td>Driving the Wrong Way</td><td>5</td><td>$200 – $500</td></tr>
-    <tr><td>17</td><td>Yo‘l chizig‘ini noto‘g‘ri kesib o‘tish</td><td>Improper Lane Usage</td><td>2</td><td>$50 – $115</td></tr>
-    <tr><td>18</td><td>Haydovchilik guvohnomasini ko‘rsatmaslik</td><td>Failure to Show License</td><td>0</td><td>$50 – $100</td></tr>
-    <tr><td>19</td><td>Haydovchilik paytida telefon bilan gaplashish</td><td>Distracted Driving</td><td>0</td><td>$50 – $200</td></tr>
-    <tr><td>20</td><td>Yo‘l harakati qoidalarini buzib yurgan piyodalarga yo‘l bermaslik</td><td>Failure to Yield to Pedestrians</td><td>2</td><td>$50 – $250</td></tr>
-    <tr><td>21</td><td>Tezlikni haddan tashqari oshirish</td><td>Excessive Speeding</td><td>5–11</td><td>$300 – $1000+</td></tr>
-    <tr><td>22</td><td>Trafik belgisiz hududda to‘xtash</td><td>Stopping in No Stopping Zone</td><td>0</td><td>$115</td></tr>
-    <tr><td>23</td><td>Transport vositasini avtobus to‘xtash joyida to‘xtatish</td><td>Illegal Parking at Bus Stop</td><td>0</td><td>$115</td></tr>
-    <tr><td>24</td><td>Chiroqni noto‘g‘ri yoqish</td><td>Improper Use of Headlights</td><td>0</td><td>$50 – $115</td></tr>
-    <tr><td>25</td><td>Yo‘l chizig‘ini kesib o‘tish</td><td>Crossing Double Lines</td><td>3</td><td>$115</td></tr>
-    <tr><td>26</td><td>Yo‘lga piyodalarni o‘tkazmaslik</td><td>Failure to Yield to Pedestrian</td><td>3</td><td>$115 – $250</td></tr>
-    <tr><td>27</td><td>Transport vositasining texnik holatini buzish</td><td>Defective Vehicle Equipment</td><td>0</td><td>$50 – $200</td></tr>
-    <tr><td>28</td><td>Ogohlantirish belgisiz o‘ngga burilish</td><td>Illegal Right Turn on Red</td><td>3</td><td>$115</td></tr>
-    <tr><td>29</td><td>To‘xtash joyida tezlikni oshirish</td><td>Speeding in Parking Lot</td><td>3</td><td>$115</td></tr>
-    <tr><td>30</td><td>Transport vositasini qoidabuzarlik joyida qoldirish</td><td>Abandoned Vehicle</td><td>0</td><td>$115 – $200</td></tr>
-  </tbody>
-</table>
+  <h1>Qoidabuzarliklar Jadvali</h1>
 
-<script>
-  const table = document.getElementById('violationTable');
-  const headers = table.querySelectorAll('th');
-  let sortColumnIndex = -1;
-  let asc = true;
+  <div class="table-container">
+    <table id="violationTable">
+      <thead>
+        <tr>
+          <th data-type="number">№</th>
+          <th data-type="string">Qoidabuzarlik (UZ)</th>
+          <th data-type="string">Violation (EN)</th>
+          <th data-type="points">Ballar</th>
+          <th data-type="fine">Jarima (USD)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>Tezlikni oshirish</td><td>Speeding</td><td>3–11</td><td>$150 – $600+</td></tr>
+        <tr><td>2</td><td>Qizil chiroqda o‘tish</td><td>Running Red Light</td><td>3</td><td>$200 – $300</td></tr>
+        <tr><td>3</td><td>To‘xtash belgisida to‘xtamaslik</td><td>Failure to Stop</td><td>3</td><td>$115</td></tr>
+        <tr><td>4</td><td>Mast holda haydash</td><td>DUI</td><td>5+</td><td>$500 – $10,000+</td></tr>
+        <tr><td>5</td><td>Xavfsizlik kamaridan foydalanmaslik</td><td>No Seatbelt</td><td>0</td><td>$50 – $100</td></tr>
+        <tr><td>6</td><td>Bolalar uchun xavfsizlik o‘rindig‘i yo‘q</td><td>No Child Seat</td><td>2</td><td>$100 – $300</td></tr>
+        <tr><td>7</td><td>Piyodaga yo‘l bermaslik</td><td>No Yield to Pedestrian</td><td>2</td><td>$50 – $250</td></tr>
+        <tr><td>8</td><td>Noto‘g‘ri burilish</td><td>Illegal Turn</td><td>3</td><td>$115</td></tr>
+        <tr><td>9</td><td>Telefon orqali gaplashish</td><td>Distracted Driving</td><td>0</td><td>$50 – $200</td></tr>
+        <tr><td>10</td><td>Reketsiz haydovchilik</td><td>Reckless Driving</td><td>5+</td><td>$500 – $2000+</td></tr>
+      </tbody>
+    </table>
+  </div>
 
-  // Function to parse points string to number (minimal value)
-  function parsePoints(pointsStr) {
-    if (!pointsStr) return 0;
-    pointsStr = pointsStr.trim();
-    if (pointsStr.includes('–')) {
-      return parseFloat(pointsStr.split('–')[0]) || 0;
+  <script>
+    const table = document.getElementById('violationTable');
+    const headers = table.querySelectorAll('th');
+    let sortColumnIndex = -1;
+    let asc = true;
+
+    function parsePoints(str) {
+      if (!str) return 0;
+      str = str.trim().replace('+', '');
+      if (str.includes('–')) return parseFloat(str.split('–')[0]) || 0;
+      return parseFloat(str) || 0;
     }
-    if (pointsStr.endsWith('+')) {
-      return parseFloat(pointsStr.slice(0, -1)) || 0;
+
+    function parseFine(str) {
+      if (!str) return 0;
+      str = str.replace(/\$/g, '').replace('+', '');
+      let parts = str.split(/[–-]/);
+      let nums = parts.map(p => parseFloat(p.trim())).filter(n => !isNaN(n));
+      return nums[0] || 0;
     }
-    return parseFloat(pointsStr) || 0;
-  }
 
-  // Function to parse fine amount (take minimal USD number)
-  function parseFine(fineStr) {
-    if (!fineStr) return 0;
-    // Remove $ and +, split by dash or en dash, take minimum number
-    fineStr = fineStr.replace(/\$/g, '').replace(/\+/g, '').trim();
-    let parts = fineStr.split(/[–-]/); // en dash or hyphen
-    let numbers = parts.map(p => parseFloat(p.trim())).filter(n => !isNaN(n));
-    if (numbers.length === 0) return 0;
-    return Math.min(...numbers);
-  }
+    function compare(a, b, type) {
+      if (type === 'number') return Number(a) - Number(b);
+      if (type === 'points') return parsePoints(a) - parsePoints(b);
+      if (type === 'fine') return parseFine(a) - parseFine(b);
+      return a.localeCompare(b);
+    }
 
-  headers.forEach((header, idx) => {
-    header.addEventListener('click', () => {
-      const type = header.getAttribute('data-type') || 'string';
-      const tbody = table.tBodies[0];
-      const rows = Array.from(tbody.rows);
+    headers.forEach((th, index) => {
+      th.addEventListener('click', () => {
+        const type = th.dataset.type || 'string';
+        const tbody = table.tBodies[0];
+        const rows = Array.from(tbody.rows);
 
-      // Determine sort direction
-      if (sortColumnIndex === idx) {
-        asc = !asc;
-      } else {
-        asc = true;
-        if (sortColumnIndex >= 0) headers[sortColumnIndex].classList.remove('sort-asc', 'sort-desc');
-        sortColumnIndex = idx;
-      }
+        if (sortColumnIndex === index) asc = !asc;
+        else { sortColumnIndex = index; asc = true; }
 
-      rows.sort((a, b) => {
-        let aText = a.cells[idx].textContent.trim();
-        let bText = b.cells[idx].textContent.trim();
+        rows.sort((r1, r2) => {
+          let v1 = r1.cells[index].textContent.trim();
+          let v2 = r2.cells[index].textContent.trim();
+          return compare(v1, v2, type) * (asc ? 1 : -1);
+        });
 
-        switch (type) {
-          case 'number':
-            return asc ? (+aText - +bText) : (+bText - +aText);
-          case 'points':
-            let aPoints = parsePoints(aText);
-            let bPoints = parsePoints(bText);
-            return asc ? (aPoints - bPoints) : (bPoints - aPoints);
-          case 'fine':
-            let aFine = parseFine(aText);
-            let bFine = parseFine(bText);
-            return asc ? (aFine - bFine) : (bFine - aFine);
-          case 'string':
-          default:
-            return asc ? aText.localeCompare(bText) : bText.localeCompare(aText);
-        }
+        headers.forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
+        th.classList.add(asc ? 'sort-asc' : 'sort-desc');
+
+        rows.forEach(row => tbody.appendChild(row));
       });
-
-      // Remove old rows
-      while (tbody.firstChild) {
-        tbody.removeChild(tbody.firstChild);
-      }
-
-      // Append sorted rows
-      rows.forEach(row => tbody.appendChild(row));
-
-      // Update header arrows
-      headers.forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
-      header.classList.toggle('sort-asc', asc);
-      header.classList.toggle('sort-desc', !asc);
     });
-  });
-</script>
+  </script>
 
 </body>
 </html>
