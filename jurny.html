@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mini Portal</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #f0f4f8;
+    }
+    .container {
+      display: grid;
+      grid-template-columns: repeat(3, 120px);
+      gap: 30px;
+    }
+    .icon-box {
+      background: white;
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      transition: transform 0.2s;
+    }
+    .icon-box:hover {
+      transform: translateY(-5px);
+      background-color: #e0f7ff;
+    }
+    .icon-box i {
+      font-size: 36px;
+      color: #007acc;
+      margin-bottom: 10px;
+    }
+    .icon-box span {
+      display: block;
+      font-size: 14px;
+      color: #333;
+      margin-top: 5px;
+    }
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="https://example.com/news" class="icon-box">
+      <i class="fas fa-newspaper"></i>
+      <span>Yangiliklar</span>
+    </a>
+    <a href="https://example.com/edu" class="icon-box">
+      <i class="fas fa-book"></i>
+      <span>Ta’lim</span>
+    </a>
+    <a href="https://example.com/shop" class="icon-box">
+      <i class="fas fa-shopping-cart"></i>
+      <span>Do‘kon</span>
+    </a>
+    <a href="https://example.com/video" class="icon-box">
+      <i class="fas fa-video"></i>
+      <span>Video</span>
+    </a>
+    <a href="https://example.com/chat" class="icon-box">
+      <i class="fas fa-comments"></i>
+      <span>Chat</span>
+    </a>
+    <a href="https://example.com/profile" class="icon-box">
+      <i class="fas fa-user"></i>
+      <span>Profil</span>
+    </a>
+  </div>
+</body>
+</html>
