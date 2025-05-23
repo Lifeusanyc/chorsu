@@ -6,98 +6,109 @@
   <title>YTD Dashboard</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    canvas {
+      max-height: 150px !important;
+    }
+    .chart-box {
+      height: 200px;
+    }
+    @media (min-width: 1024px) {
+      .grid-dashboard {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+    @media (max-width: 1023px) {
+      .grid-dashboard {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    @media (max-width: 639px) {
+      .grid-dashboard {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
-<body class="bg-gray-100 text-gray-800 p-4">
-  <div class="max-w-full mx-auto bg-white p-6 shadow-lg">
-    <div class="flex justify-between items-center mb-6">
-      <h1 class="text-xl font-bold">4. YTD Dashboard</h1>
-      <div class="flex items-center space-x-2">
-        <label class="font-semibold">Select YTD Month</label>
-        <button class="bg-gray-300 text-gray-800 px-4 py-1 rounded">JUN</button>
+<body class="bg-gray-100 text-gray-800 p-2">
+  <div class="max-w-full mx-auto bg-white p-4 shadow rounded">
+    <div class="flex flex-col sm:flex-row justify-between items-center mb-4">
+      <h1 class="text-lg font-bold">📊 YTD Dashboard</h1>
+      <div class="flex items-center space-x-2 mt-2 sm:mt-0">
+        <label class="font-semibold">Month:</label>
+        <button class="bg-gray-200 text-gray-700 px-3 py-1 rounded">JUN</button>
       </div>
     </div>
 
-    <div class="grid grid-cols-3 gap-4 text-sm">
-      <!-- KPI Cards -->
-      <div class="bg-gray-100 p-4 rounded shadow">
-        <h2 class="font-bold">Sales</h2>
-        <p class="text-2xl font-semibold">108,325</p>
-        <p>Target Achievement: <span class="font-semibold">101%</span></p>
-        <p>Change Over Last Year: <span class="font-semibold">1%</span></p>
+    <!-- Grid Layout -->
+    <div class="grid gap-3 grid-dashboard text-sm">
+      <!-- KPIs -->
+      <div class="bg-gray-100 p-2 rounded shadow">
+        <h2 class="font-bold text-xs">Sales</h2>
+        <p class="text-lg font-semibold">108,325</p>
+        <p>🎯 101% | 🔼 1%</p>
       </div>
-      <div class="bg-gray-100 p-4 rounded shadow">
-        <h2 class="font-bold">Gross Profit</h2>
-        <p class="text-2xl font-semibold">31,020</p>
-        <p>Target Achievement: <span class="font-semibold">108%</span></p>
-        <p>Change Over Last Year: <span class="font-semibold">6%</span></p>
+      <div class="bg-gray-100 p-2 rounded shadow">
+        <h2 class="font-bold text-xs">Gross Profit</h2>
+        <p class="text-lg font-semibold">31,020</p>
+        <p>🎯 108% | 🔼 6%</p>
       </div>
-      <div class="bg-gray-100 p-4 rounded shadow">
-        <h2 class="font-bold">Operating Profit</h2>
-        <p class="text-2xl font-semibold">17,513</p>
-        <p>Target Achievement: <span class="font-semibold">110%</span></p>
-        <p>Change Over Last Year: <span class="font-semibold">8%</span></p>
+      <div class="bg-gray-100 p-2 rounded shadow">
+        <h2 class="font-bold text-xs">Operating Profit</h2>
+        <p class="text-lg font-semibold">17,513</p>
+        <p>🎯 110% | 🔼 8%</p>
       </div>
-
-      <div class="bg-gray-100 p-4 rounded shadow">
-        <h2 class="font-bold">Net Profit</h2>
-        <p class="text-2xl font-semibold">13,968</p>
-        <p>Target Achievement: <span class="font-semibold">114%</span></p>
-        <p>Change Over Last Year: <span class="font-semibold">9%</span></p>
+      <div class="bg-gray-100 p-2 rounded shadow">
+        <h2 class="font-bold text-xs">Net Profit</h2>
+        <p class="text-lg font-semibold">13,968</p>
+        <p>🎯 114% | 🔼 9%</p>
       </div>
 
-      <!-- Sales by Product/Category -->
-      <div class="col-span-2 bg-gray-100 p-4 rounded shadow">
-        <h2 class="font-bold">Sales (Amount) by Product/Category</h2>
-        <canvas id="categoryChart" class="mt-2"></canvas>
+      <!-- Charts -->
+      <div class="bg-gray-100 p-2 rounded shadow col-span-2">
+        <h2 class="font-bold text-xs">Sales by Product/Category</h2>
+        <canvas id="categoryChart"></canvas>
       </div>
 
-      <!-- Actual Sales vs Target -->
-      <div class="col-span-3 bg-gray-100 p-4 rounded shadow">
-        <h2 class="font-bold">Actual Sales vs Target</h2>
-        <canvas id="targetChart" class="mt-2"></canvas>
+      <div class="bg-gray-100 p-2 rounded shadow col-span-2">
+        <h2 class="font-bold text-xs">Actual Sales vs Target</h2>
+        <canvas id="targetChart"></canvas>
       </div>
 
-      <!-- Income Statement -->
-      <div class="col-span-2 bg-gray-100 p-4 rounded shadow">
-        <h2 class="font-bold">Income Statement</h2>
-        <canvas id="incomeChart" class="mt-2"></canvas>
+      <div class="bg-gray-100 p-2 rounded shadow col-span-2">
+        <h2 class="font-bold text-xs">Income Statement</h2>
+        <canvas id="incomeChart"></canvas>
       </div>
 
-      <!-- Net Operating Cash Flow -->
-      <div class="bg-gray-100 p-4 rounded shadow">
-        <h2 class="font-bold">Net Operating Cash Flow</h2>
-        <canvas id="cashFlowChart" class="mt-2"></canvas>
+      <div class="bg-gray-100 p-2 rounded shadow">
+        <h2 class="font-bold text-xs">Net Operating Cash Flow</h2>
+        <canvas id="cashFlowChart"></canvas>
       </div>
 
-      <!-- Monthly Sales Growth -->
-      <div class="bg-gray-100 p-4 rounded shadow">
-        <h2 class="font-bold">Monthly Sales Growth</h2>
-        <canvas id="growthChart" class="mt-2"></canvas>
+      <div class="bg-gray-100 p-2 rounded shadow">
+        <h2 class="font-bold text-xs">Monthly Sales Growth</h2>
+        <canvas id="growthChart"></canvas>
       </div>
 
-      <!-- Employee Cost vs Sales -->
-      <div class="bg-gray-100 p-4 rounded shadow">
-        <h2 class="font-bold">Employee Cost vs Sales</h2>
-        <canvas id="costChart" class="mt-2"></canvas>
+      <div class="bg-gray-100 p-2 rounded shadow">
+        <h2 class="font-bold text-xs">Employee Cost vs Sales</h2>
+        <canvas id="costChart"></canvas>
       </div>
 
-      <!-- Headcount -->
-      <div class="bg-gray-100 p-4 rounded shadow">
-        <h2 class="font-bold">Headcount</h2>
-        <div class="flex items-center justify-center h-40 text-3xl font-bold text-red-600">126</div>
-        <p class="text-center text-xs">Change vs Last Year: 1%</p>
+      <div class="bg-gray-100 p-2 rounded shadow flex flex-col justify-center items-center">
+        <h2 class="font-bold text-xs">Headcount</h2>
+        <p class="text-2xl font-bold text-red-600">126</p>
+        <p class="text-xs">Change: +1%</p>
       </div>
 
-      <!-- Days Receivable Outstanding -->
-      <div class="bg-gray-100 p-4 rounded shadow">
-        <h2 class="font-bold">Days Receivable Outstanding</h2>
-        <canvas id="receivableChart" class="mt-2"></canvas>
+      <div class="bg-gray-100 p-2 rounded shadow">
+        <h2 class="font-bold text-xs">Days Receivable Outstanding</h2>
+        <canvas id="receivableChart"></canvas>
       </div>
 
-      <!-- Days Inventory Outstanding -->
-      <div class="bg-gray-100 p-4 rounded shadow">
-        <h2 class="font-bold">Days Inventory Outstanding</h2>
-        <canvas id="inventoryChart" class="mt-2"></canvas>
+      <div class="bg-gray-100 p-2 rounded shadow">
+        <h2 class="font-bold text-xs">Days Inventory Outstanding</h2>
+        <canvas id="inventoryChart"></canvas>
       </div>
     </div>
   </div>
@@ -109,36 +120,39 @@
     new Chart(document.getElementById('categoryChart'), {
       type: 'bar',
       data: {
-        labels: ['Product A', 'Product B', 'Product C', 'Product D'],
+        labels: ['Product A', 'Product B', 'Product C'],
         datasets: [{
           label: 'Sales',
           data: randomData(),
           backgroundColor: '#60a5fa'
         }]
-      }
+      },
+      options: { responsive: true, maintainAspectRatio: false }
     });
 
     new Chart(document.getElementById('targetChart'), {
       type: 'line',
       data: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
         datasets: [
           { label: 'Actual', data: randomData(), borderColor: '#10b981', fill: false },
           { label: 'Target', data: randomData(), borderColor: '#ef4444', borderDash: [5, 5], fill: false }
         ]
-      }
+      },
+      options: { responsive: true, maintainAspectRatio: false }
     });
 
     new Chart(document.getElementById('incomeChart'), {
       type: 'bar',
       data: {
-        labels: ['Revenue', 'COGS', 'Operating Exp', 'Net Income'],
+        labels: ['Revenue', 'COGS', 'OpEx', 'Net Income'],
         datasets: [{
           label: 'Amount',
           data: randomData(),
           backgroundColor: ['#4ade80', '#f87171', '#facc15', '#60a5fa']
         }]
-      }
+      },
+      options: { responsive: true, maintainAspectRatio: false }
     });
 
     new Chart(document.getElementById('cashFlowChart'), {
@@ -150,30 +164,33 @@
           data: randomData(),
           backgroundColor: '#34d399'
         }]
-      }
+      },
+      options: { responsive: true, maintainAspectRatio: false }
     });
 
     new Chart(document.getElementById('growthChart'), {
       type: 'bar',
       data: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+        labels: ['Jan', 'Feb', 'Mar', 'Apr'],
         datasets: [{
           label: 'Growth %',
-          data: [5, 10, -3, 8, 12],
+          data: [5, 8, -2, 11],
           backgroundColor: '#818cf8'
         }]
-      }
+      },
+      options: { responsive: true, maintainAspectRatio: false }
     });
 
     new Chart(document.getElementById('costChart'), {
       type: 'line',
       data: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+        labels: ['Jan', 'Feb', 'Mar', 'Apr'],
         datasets: [
-          { label: 'Employee Cost', data: [2000, 2100, 2200, 2300, 2500], borderColor: '#fbbf24', fill: false },
-          { label: 'Sales', data: [6000, 6200, 6100, 6300, 7000], borderColor: '#3b82f6', fill: false }
+          { label: 'Employee Cost', data: [2000, 2100, 2200, 2300], borderColor: '#fbbf24', fill: false },
+          { label: 'Sales', data: [6000, 6200, 6100, 6300], borderColor: '#3b82f6', fill: false }
         ]
-      }
+      },
+      options: { responsive: true, maintainAspectRatio: false }
     });
 
     const createGauge = (ctx, label, value, color) => {
@@ -191,7 +208,9 @@
           rotation: -90,
           circumference: 180,
           plugins: { legend: { display: false } },
-          cutout: '80%',
+          cutout: '75%',
+          responsive: true,
+          maintainAspectRatio: false
         }
       });
     };
