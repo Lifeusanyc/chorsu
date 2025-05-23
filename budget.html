@@ -5,15 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>YTD Dashboard</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    .chart-placeholder {
-      background-color: #f3f4f6;
-      border: 1px dashed #ccc;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #666;
-      font-size: 0.875rem;
+    .chart-container {
+      position: relative;
+      height: 160px;
     }
   </style>
 </head>
@@ -23,11 +19,25 @@
       <h1 class="text-xl font-bold">4. YTD Dashboard</h1>
       <div class="flex items-center space-x-2">
         <label class="font-semibold">Select YTD Month</label>
-        <button class="bg-gray-300 text-gray-800 px-4 py-1 rounded">JUN</button>
+        <select class="bg-gray-200 text-gray-800 px-2 py-1 rounded">
+          <option>JAN</option>
+          <option>FEB</option>
+          <option>MAR</option>
+          <option>APR</option>
+          <option>MAY</option>
+          <option selected>JUN</option>
+          <option>JUL</option>
+          <option>AUG</option>
+          <option>SEP</option>
+          <option>OCT</option>
+          <option>NOV</option>
+          <option>DEC</option>
+        </select>
       </div>
     </div>
 
-    <div class="grid grid-cols-3 gap-4 text-sm">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
+      <!-- Summary Cards -->
       <div class="bg-gray-100 p-4 rounded shadow">
         <h2 class="font-bold">Sales</h2>
         <p class="text-2xl font-semibold">108,325</p>
@@ -46,7 +56,6 @@
         <p>Target Achievement: <span class="font-semibold">110%</span></p>
         <p>Change Over Last Year: <span class="font-semibold">8%</span></p>
       </div>
-
       <div class="bg-gray-100 p-4 rounded shadow">
         <h2 class="font-bold">Net Profit</h2>
         <p class="text-2xl font-semibold">13,968</p>
@@ -54,52 +63,135 @@
         <p>Change Over Last Year: <span class="font-semibold">9%</span></p>
       </div>
 
+      <!-- Sales by Product Chart -->
       <div class="col-span-2 bg-gray-100 p-4 rounded shadow">
         <h2 class="font-bold">Sales (Amount) by Product/Category</h2>
-        <div class="chart-placeholder h-40 mt-2">[Chart Here]</div>
+        <div class="chart-container mt-2">
+          <canvas id="productSalesChart"></canvas>
+        </div>
       </div>
 
+      <!-- Actual vs Target Chart -->
       <div class="col-span-3 bg-gray-100 p-4 rounded shadow">
         <h2 class="font-bold">Actual Sales vs Target</h2>
-        <div class="chart-placeholder h-40 mt-2">[Chart Here]</div>
+        <div class="chart-container mt-2">
+          <canvas id="actualVsTargetChart"></canvas>
+        </div>
       </div>
 
+      <!-- Income Statement -->
       <div class="col-span-2 bg-gray-100 p-4 rounded shadow">
         <h2 class="font-bold">Income Statement</h2>
         <div class="chart-placeholder h-40 mt-2">[Bar Chart Here]</div>
       </div>
 
+      <!-- Net Operating Cash Flow -->
       <div class="bg-gray-100 p-4 rounded shadow">
         <h2 class="font-bold">Net Operating Cash Flow</h2>
         <div class="chart-placeholder h-40 mt-2">[Bar Chart Here]</div>
       </div>
 
+      <!-- Monthly Sales Growth Chart -->
       <div class="bg-gray-100 p-4 rounded shadow">
         <h2 class="font-bold">Monthly Sales Growth</h2>
-        <div class="chart-placeholder h-40 mt-2">[Bar Chart Here]</div>
+        <div class="chart-container mt-2">
+          <canvas id="monthlySalesGrowthChart"></canvas>
+        </div>
       </div>
 
+      <!-- Employee Cost vs Sales -->
       <div class="bg-gray-100 p-4 rounded shadow">
         <h2 class="font-bold">Employee Cost vs Sales</h2>
         <div class="chart-placeholder h-40 mt-2">[Line Chart Here]</div>
       </div>
 
+      <!-- Headcount -->
       <div class="bg-gray-100 p-4 rounded shadow">
         <h2 class="font-bold">Headcount</h2>
         <div class="flex items-center justify-center h-40 text-3xl font-bold text-red-600">126</div>
         <p class="text-center text-xs">Change vs Last Year: 1%</p>
       </div>
 
+      <!-- Gauge Charts -->
       <div class="bg-gray-100 p-4 rounded shadow">
         <h2 class="font-bold">Days Receivable Outstanding</h2>
         <div class="chart-placeholder h-40 mt-2">[Gauge Chart]</div>
       </div>
-
       <div class="bg-gray-100 p-4 rounded shadow">
         <h2 class="font-bold">Days Inventory Outstanding</h2>
         <div class="chart-placeholder h-40 mt-2">[Gauge Chart]</div>
       </div>
     </div>
   </div>
+
+  <!-- Chart.js Initialization -->
+  <script>
+    const productSalesChart = new Chart(document.getElementById('productSalesChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Electronics', 'Clothing', 'Home', 'Toys'],
+        datasets: [{
+          label: 'Sales',
+          data: [30000, 20000, 15000, 25000],
+          backgroundColor: ['#4F46E5', '#3B82F6', '#06B6D4', '#10B981']
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false
+      }
+    });
+
+    const actualVsTargetChart = new Chart(document.getElementById('actualVsTargetChart'), {
+      type: 'line',
+      data: {
+        labels: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN'],
+        datasets: [
+          {
+            label: 'Actual',
+            data: [15000, 18000, 22000, 21000, 25000, 28000],
+            borderColor: '#3B82F6',
+            backgroundColor: '#DBEAFE',
+            tension: 0.4
+          },
+          {
+            label: 'Target',
+            data: [14000, 17000, 21000, 20000, 24000, 26000],
+            borderColor: '#F59E0B',
+            backgroundColor: '#FEF3C7',
+            tension: 0.4
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false
+      }
+    });
+
+    const monthlySalesGrowthChart = new Chart(document.getElementById('monthlySalesGrowthChart'), {
+      type: 'bar',
+      data: {
+        labels: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN'],
+        datasets: [{
+          label: 'Growth (%)',
+          data: [5, 7, 6, 8, 10, 12],
+          backgroundColor: '#10B981'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: value => value + '%'
+            }
+          }
+        }
+      }
+    });
+  </script>
 </body>
 </html>
