@@ -2,35 +2,63 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>YTD Dashboard</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
   <style>
+    /* Canvas balandligini cheklash */
     canvas {
       max-height: 150px !important;
+      width: 100% !important;
     }
-    .chart-box {
-      height: 200px;
+    /* Grid ustunlari uchun */
+    .grid-dashboard {
+      display: grid;
+      gap: 12px;
     }
     @media (min-width: 1024px) {
       .grid-dashboard {
         grid-template-columns: repeat(4, 1fr);
+      }
+      /* Ba'zi kartalarni 2 yoki 4 ustun kenglikda qilish */
+      .col-span-2 {
+        grid-column: span 2 / span 2;
+      }
+      .col-span-3 {
+        grid-column: span 3 / span 3;
+      }
+      .col-span-4 {
+        grid-column: span 4 / span 4;
       }
     }
     @media (max-width: 1023px) {
       .grid-dashboard {
         grid-template-columns: repeat(2, 1fr);
       }
+      .col-span-2 {
+        grid-column: span 2 / span 2;
+      }
+      .col-span-3 {
+        grid-column: span 2 / span 2; /* max 2 ustun */
+      }
+      .col-span-4 {
+        grid-column: span 2 / span 2; /* max 2 ustun */
+      }
     }
     @media (max-width: 639px) {
       .grid-dashboard {
         grid-template-columns: 1fr;
       }
+      .col-span-2,
+      .col-span-3,
+      .col-span-4 {
+        grid-column: span 1 / span 1;
+      }
     }
   </style>
 </head>
-<body class="bg-gray-100 text-gray-800 p-2">
+<body class="bg-gray-100 text-gray-800 p-3">
   <div class="max-w-full mx-auto bg-white p-4 shadow rounded">
     <div class="flex flex-col sm:flex-row justify-between items-center mb-4">
       <h1 class="text-lg font-bold">📊 YTD Dashboard</h1>
@@ -40,8 +68,7 @@
       </div>
     </div>
 
-    <!-- Grid Layout -->
-    <div class="grid gap-3 grid-dashboard text-sm">
+    <div class="grid-dashboard">
       <!-- KPIs -->
       <div class="bg-gray-100 p-2 rounded shadow">
         <h2 class="font-bold text-xs">Sales</h2>
@@ -64,48 +91,56 @@
         <p>🎯 114% | 🔼 9%</p>
       </div>
 
-      <!-- Charts -->
+      <!-- Sales by Product/Category -->
       <div class="bg-gray-100 p-2 rounded shadow col-span-2">
         <h2 class="font-bold text-xs">Sales by Product/Category</h2>
         <canvas id="categoryChart"></canvas>
       </div>
 
+      <!-- Actual Sales vs Target -->
       <div class="bg-gray-100 p-2 rounded shadow col-span-2">
         <h2 class="font-bold text-xs">Actual Sales vs Target</h2>
         <canvas id="targetChart"></canvas>
       </div>
 
+      <!-- Income Statement -->
       <div class="bg-gray-100 p-2 rounded shadow col-span-2">
         <h2 class="font-bold text-xs">Income Statement</h2>
         <canvas id="incomeChart"></canvas>
       </div>
 
+      <!-- Net Operating Cash Flow -->
       <div class="bg-gray-100 p-2 rounded shadow">
         <h2 class="font-bold text-xs">Net Operating Cash Flow</h2>
         <canvas id="cashFlowChart"></canvas>
       </div>
 
+      <!-- Monthly Sales Growth -->
       <div class="bg-gray-100 p-2 rounded shadow">
         <h2 class="font-bold text-xs">Monthly Sales Growth</h2>
         <canvas id="growthChart"></canvas>
       </div>
 
+      <!-- Employee Cost vs Sales -->
       <div class="bg-gray-100 p-2 rounded shadow">
         <h2 class="font-bold text-xs">Employee Cost vs Sales</h2>
         <canvas id="costChart"></canvas>
       </div>
 
+      <!-- Headcount -->
       <div class="bg-gray-100 p-2 rounded shadow flex flex-col justify-center items-center">
         <h2 class="font-bold text-xs">Headcount</h2>
         <p class="text-2xl font-bold text-red-600">126</p>
         <p class="text-xs">Change: +1%</p>
       </div>
 
+      <!-- Days Receivable Outstanding -->
       <div class="bg-gray-100 p-2 rounded shadow">
         <h2 class="font-bold text-xs">Days Receivable Outstanding</h2>
         <canvas id="receivableChart"></canvas>
       </div>
 
+      <!-- Days Inventory Outstanding -->
       <div class="bg-gray-100 p-2 rounded shadow">
         <h2 class="font-bold text-xs">Days Inventory Outstanding</h2>
         <canvas id="inventoryChart"></canvas>
@@ -113,88 +148,156 @@
     </div>
   </div>
 
-  <!-- Chart.js Config -->
   <script>
-    const randomData = () => Array.from({length: 6}, () => Math.floor(Math.random() * 10000));
+    // Tasodifiy ma'lumot yaratish funksiyasi
+    function randomData(length = 6, max = 10000) {
+      return Array.from({ length }, () => Math.floor(Math.random() * max));
+    }
 
+    // Category Sales Bar Chart
     new Chart(document.getElementById('categoryChart'), {
       type: 'bar',
       data: {
         labels: ['Product A', 'Product B', 'Product C'],
         datasets: [{
           label: 'Sales',
-          data: randomData(),
-          backgroundColor: '#60a5fa'
+          data: randomData(3, 120000),
+          backgroundColor: '#60a5fa',
+          borderRadius: 4
         }]
       },
-      options: { responsive: true, maintainAspectRatio: false }
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: { y: { beginAtZero: true } }
+      }
     });
 
+    // Actual Sales vs Target Line Chart
     new Chart(document.getElementById('targetChart'), {
       type: 'line',
       data: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
         datasets: [
-          { label: 'Actual', data: randomData(), borderColor: '#10b981', fill: false },
-          { label: 'Target', data: randomData(), borderColor: '#ef4444', borderDash: [5, 5], fill: false }
+          {
+            label: 'Actual',
+            data: randomData(6, 120000),
+            borderColor: '#10b981',
+            fill: false,
+            tension: 0.3,
+            pointRadius: 4
+          },
+          {
+            label: 'Target',
+            data: randomData(6, 120000),
+            borderColor: '#ef4444',
+            borderDash: [5, 5],
+            fill: false,
+            tension: 0.3,
+            pointRadius: 4
+          }
         ]
       },
-      options: { responsive: true, maintainAspectRatio: false }
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: { y: { beginAtZero: true } }
+      }
     });
 
+    // Income Statement Bar Chart
     new Chart(document.getElementById('incomeChart'), {
       type: 'bar',
       data: {
         labels: ['Revenue', 'COGS', 'OpEx', 'Net Income'],
         datasets: [{
           label: 'Amount',
-          data: randomData(),
-          backgroundColor: ['#4ade80', '#f87171', '#facc15', '#60a5fa']
+          data: randomData(4, 40000),
+          backgroundColor: ['#4ade80', '#f87171', '#facc15', '#60a5fa'],
+          borderRadius: 4
         }]
       },
-      options: { responsive: true, maintainAspectRatio: false }
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: { y: { beginAtZero: true } }
+      }
     });
 
+    // Net Operating Cash Flow Bar Chart
     new Chart(document.getElementById('cashFlowChart'), {
       type: 'bar',
       data: {
         labels: ['Q1', 'Q2', 'Q3', 'Q4'],
         datasets: [{
           label: 'Cash Flow',
-          data: randomData(),
-          backgroundColor: '#34d399'
+          data: randomData(4, 30000),
+          backgroundColor: '#34d399',
+          borderRadius: 4
         }]
       },
-      options: { responsive: true, maintainAspectRatio: false }
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: { y: { beginAtZero: true } }
+      }
     });
 
+    // Monthly Sales Growth Bar Chart
     new Chart(document.getElementById('growthChart'), {
       type: 'bar',
       data: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr'],
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
         datasets: [{
           label: 'Growth %',
-          data: [5, 8, -2, 11],
-          backgroundColor: '#818cf8'
+          data: [5, 8, -2, 11, 4],
+          backgroundColor: '#818cf8',
+          borderRadius: 4
         }]
       },
-      options: { responsive: true, maintainAspectRatio: false }
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: { beginAtZero: true, ticks: { callback: v => v + '%' } }
+        }
+      }
     });
 
+    // Employee Cost vs Sales Line Chart
     new Chart(document.getElementById('costChart'), {
       type: 'line',
       data: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr'],
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
         datasets: [
-          { label: 'Employee Cost', data: [2000, 2100, 2200, 2300], borderColor: '#fbbf24', fill: false },
-          { label: 'Sales', data: [6000, 6200, 6100, 6300], borderColor: '#3b82f6', fill: false }
+          {
+            label: 'Employee Cost',
+            data: [2000, 2100, 2200, 2300, 2400],
+            borderColor: '#fbbf24',
+            fill: false,
+            tension: 0.3,
+            pointRadius: 3
+          },
+          {
+            label: 'Sales',
+            data: [6000, 6200, 6100, 6300, 6500],
+            borderColor: '#3b82f6',
+            fill: false,
+            tension: 0.3,
+            pointRadius: 3
+          }
         ]
       },
-      options: { responsive: true, maintainAspectRatio: false }
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: { y: { beginAtZero: true } }
+      }
     });
 
-    const createGauge = (ctx, label, value, color) => {
-      new Chart(ctx, {
+    // Gauge Chart Creator - Doughnut style
+    function createGauge(ctx, label, value, color) {
+      return new Chart(ctx, {
         type: 'doughnut',
         data: {
           labels: [label, 'Remaining'],
@@ -205,18 +308,39 @@
           }]
         },
         options: {
-          rotation: -90,
-          circumference: 180,
-          plugins: { legend: { display: false } },
           cutout: '75%',
           responsive: true,
-          maintainAspectRatio: false
-        }
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: { enabled: false },
+            beforeDraw: (chart) => {
+              // Custom center text - handled in afterDraw instead
+            }
+          },
+          animation: { duration: 1000 }
+        },
+        plugins: [{
+          id: 'centerText',
+          afterDraw(chart) {
+            const {ctx, chartArea: {top, bottom, left, right, width, height}} = chart;
+            ctx.save();
+            ctx.font = 'bold 18px Arial';
+            ctx.fillStyle = '#111827';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(value + '%', left + width / 2, top + height / 2);
+            ctx.restore();
+          }
+        }]
       });
-    };
+    }
 
-    createGauge(document.getElementById('receivableChart'), 'Receivable', 65, '#f87171');
-    createGauge(document.getElementById('inventoryChart'), 'Inventory', 72, '#60a5fa');
+    // Days Receivable Outstanding Gauge Chart (~ value 61%)
+    createGauge(document.getElementById('receivableChart').getContext('2d'), 'DRO', 61, '#2563eb');
+
+    // Days Inventory Outstanding Gauge Chart (~ value 43%)
+    createGauge(document.getElementById('inventoryChart').getContext('2d'), 'DIO', 43, '#f97316');
   </script>
 </body>
 </html>
