@@ -7,12 +7,10 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
   <style>
-    /* Canvas balandligini cheklash */
     canvas {
       max-height: 150px !important;
       width: 100% !important;
     }
-    /* Grid ustunlari uchun */
     .grid-dashboard {
       display: grid;
       gap: 12px;
@@ -21,40 +19,21 @@
       .grid-dashboard {
         grid-template-columns: repeat(4, 1fr);
       }
-      /* Ba'zi kartalarni 2 yoki 4 ustun kenglikda qilish */
-      .col-span-2 {
-        grid-column: span 2 / span 2;
-      }
-      .col-span-3 {
-        grid-column: span 3 / span 3;
-      }
-      .col-span-4 {
-        grid-column: span 4 / span 4;
-      }
+      .col-span-2 { grid-column: span 2 / span 2; }
+      .col-span-3 { grid-column: span 3 / span 3; }
+      .col-span-4 { grid-column: span 4 / span 4; }
     }
     @media (max-width: 1023px) {
       .grid-dashboard {
         grid-template-columns: repeat(2, 1fr);
       }
-      .col-span-2 {
-        grid-column: span 2 / span 2;
-      }
-      .col-span-3 {
-        grid-column: span 2 / span 2; /* max 2 ustun */
-      }
-      .col-span-4 {
-        grid-column: span 2 / span 2; /* max 2 ustun */
-      }
+      .col-span-2, .col-span-3, .col-span-4 { grid-column: span 2 / span 2; }
     }
     @media (max-width: 639px) {
       .grid-dashboard {
         grid-template-columns: 1fr;
       }
-      .col-span-2,
-      .col-span-3,
-      .col-span-4 {
-        grid-column: span 1 / span 1;
-      }
+      .col-span-2, .col-span-3, .col-span-4 { grid-column: span 1 / span 1; }
     }
   </style>
 </head>
@@ -149,12 +128,10 @@
   </div>
 
   <script>
-    // Tasodifiy ma'lumot yaratish funksiyasi
     function randomData(length = 6, max = 10000) {
       return Array.from({ length }, () => Math.floor(Math.random() * max));
     }
 
-    // Category Sales Bar Chart
     new Chart(document.getElementById('categoryChart'), {
       type: 'bar',
       data: {
@@ -173,7 +150,6 @@
       }
     });
 
-    // Actual Sales vs Target Line Chart
     new Chart(document.getElementById('targetChart'), {
       type: 'line',
       data: {
@@ -205,7 +181,6 @@
       }
     });
 
-    // Income Statement Bar Chart
     new Chart(document.getElementById('incomeChart'), {
       type: 'bar',
       data: {
@@ -224,7 +199,6 @@
       }
     });
 
-    // Net Operating Cash Flow Bar Chart
     new Chart(document.getElementById('cashFlowChart'), {
       type: 'bar',
       data: {
@@ -243,7 +217,6 @@
       }
     });
 
-    // Monthly Sales Growth Bar Chart
     new Chart(document.getElementById('growthChart'), {
       type: 'bar',
       data: {
@@ -264,7 +237,6 @@
       }
     });
 
-    // Employee Cost vs Sales Line Chart
     new Chart(document.getElementById('costChart'), {
       type: 'line',
       data: {
@@ -295,7 +267,6 @@
       }
     });
 
-    // Gauge Chart Creator - Doughnut style
     function createGauge(ctx, label, value, color) {
       return new Chart(ctx, {
         type: 'doughnut',
@@ -313,17 +284,14 @@
           maintainAspectRatio: false,
           plugins: {
             legend: { display: false },
-            tooltip: { enabled: false },
-            beforeDraw: (chart) => {
-              // Custom center text - handled in afterDraw instead
-            }
+            tooltip: { enabled: false }
           },
           animation: { duration: 1000 }
         },
         plugins: [{
           id: 'centerText',
           afterDraw(chart) {
-            const {ctx, chartArea: {top, bottom, left, right, width, height}} = chart;
+            const {ctx, chartArea: {top, width, height, left}} = chart;
             ctx.save();
             ctx.font = 'bold 18px Arial';
             ctx.fillStyle = '#111827';
@@ -336,10 +304,7 @@
       });
     }
 
-    // Days Receivable Outstanding Gauge Chart (~ value 61%)
     createGauge(document.getElementById('receivableChart').getContext('2d'), 'DRO', 61, '#2563eb');
-
-    // Days Inventory Outstanding Gauge Chart (~ value 43%)
     createGauge(document.getElementById('inventoryChart').getContext('2d'), 'DIO', 43, '#f97316');
   </script>
 </body>
