@@ -1,199 +1,105 @@
 <!DOCTYPE html>
-<html lang="uz">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Real Vaqt Moliyaviy Kuzatuv</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YTD Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #f9fafb;
-      padding: 30px;
-      color: #1f2937;
-    }
-    h1 { margin-bottom: 10px; }
-    #balance {
-      font-size: 28px;
-      font-weight: bold;
-      margin-bottom: 10px;
-    }
-    #balance.up { color: green; }
-    #balance.down { color: darkred; }
-    #history, #stats {
-      background: white;
-      padding: 10px 15px;
-      border-radius: 8px;
-      margin-top: 20px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.05);
-    }
-    canvas {
-      background: white;
-      border-radius: 8px;
-      margin-top: 20px;
-      padding: 15px;
-    }
-    label {
-      margin-top: 20px;
-      display: block;
-    }
-    input, select {
-      font-size: 16px;
-      padding: 5px 10px;
-      margin-top: 5px;
+    .chart-placeholder {
+      background-color: #f3f4f6;
+      border: 1px dashed #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #666;
+      font-size: 0.875rem;
     }
   </style>
 </head>
-<body>
+<body class="bg-gray-100 text-gray-800 p-4">
+  <div class="max-w-full mx-auto bg-white p-6 shadow-lg">
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-xl font-bold">4. YTD Dashboard</h1>
+      <div class="flex items-center space-x-2">
+        <label class="font-semibold">Select YTD Month</label>
+        <button class="bg-gray-300 text-gray-800 px-4 py-1 rounded">JUN</button>
+      </div>
+    </div>
 
-  <h1>📈 Real Vaqt Balans Kuzatuvchi</h1>
+    <div class="grid grid-cols-3 gap-4 text-sm">
+      <div class="bg-gray-100 p-4 rounded shadow">
+        <h2 class="font-bold">Sales</h2>
+        <p class="text-2xl font-semibold">108,325</p>
+        <p>Target Achievement: <span class="font-semibold">101%</span></p>
+        <p>Change Over Last Year: <span class="font-semibold">1%</span></p>
+      </div>
+      <div class="bg-gray-100 p-4 rounded shadow">
+        <h2 class="font-bold">Gross Profit</h2>
+        <p class="text-2xl font-semibold">31,020</p>
+        <p>Target Achievement: <span class="font-semibold">108%</span></p>
+        <p>Change Over Last Year: <span class="font-semibold">6%</span></p>
+      </div>
+      <div class="bg-gray-100 p-4 rounded shadow">
+        <h2 class="font-bold">Operating Profit</h2>
+        <p class="text-2xl font-semibold">17,513</p>
+        <p>Target Achievement: <span class="font-semibold">110%</span></p>
+        <p>Change Over Last Year: <span class="font-semibold">8%</span></p>
+      </div>
 
-  <label for="datePicker">Sana tanlang:</label>
-  <input type="date" id="datePicker">
+      <div class="bg-gray-100 p-4 rounded shadow">
+        <h2 class="font-bold">Net Profit</h2>
+        <p class="text-2xl font-semibold">13,968</p>
+        <p>Target Achievement: <span class="font-semibold">114%</span></p>
+        <p>Change Over Last Year: <span class="font-semibold">9%</span></p>
+      </div>
 
-  <label for="timezone">Vaqt zonasi:</label>
-  <select id="timezone"></select>
+      <div class="col-span-2 bg-gray-100 p-4 rounded shadow">
+        <h2 class="font-bold">Sales (Amount) by Product/Category</h2>
+        <div class="chart-placeholder h-40 mt-2">[Chart Here]</div>
+      </div>
 
-  <div id="balance">Balans: $0</div>
+      <div class="col-span-3 bg-gray-100 p-4 rounded shadow">
+        <h2 class="font-bold">Actual Sales vs Target</h2>
+        <div class="chart-placeholder h-40 mt-2">[Chart Here]</div>
+      </div>
 
-  <canvas id="balanceChart" width="600" height="300"></canvas>
+      <div class="col-span-2 bg-gray-100 p-4 rounded shadow">
+        <h2 class="font-bold">Income Statement</h2>
+        <div class="chart-placeholder h-40 mt-2">[Bar Chart Here]</div>
+      </div>
 
-  <div id="history">
-    <strong>🕓 Oxirgi 10 ta o‘zgarish:</strong>
-    <ul id="changesList"></ul>
+      <div class="bg-gray-100 p-4 rounded shadow">
+        <h2 class="font-bold">Net Operating Cash Flow</h2>
+        <div class="chart-placeholder h-40 mt-2">[Bar Chart Here]</div>
+      </div>
+
+      <div class="bg-gray-100 p-4 rounded shadow">
+        <h2 class="font-bold">Monthly Sales Growth</h2>
+        <div class="chart-placeholder h-40 mt-2">[Bar Chart Here]</div>
+      </div>
+
+      <div class="bg-gray-100 p-4 rounded shadow">
+        <h2 class="font-bold">Employee Cost vs Sales</h2>
+        <div class="chart-placeholder h-40 mt-2">[Line Chart Here]</div>
+      </div>
+
+      <div class="bg-gray-100 p-4 rounded shadow">
+        <h2 class="font-bold">Headcount</h2>
+        <div class="flex items-center justify-center h-40 text-3xl font-bold text-red-600">126</div>
+        <p class="text-center text-xs">Change vs Last Year: 1%</p>
+      </div>
+
+      <div class="bg-gray-100 p-4 rounded shadow">
+        <h2 class="font-bold">Days Receivable Outstanding</h2>
+        <div class="chart-placeholder h-40 mt-2">[Gauge Chart]</div>
+      </div>
+
+      <div class="bg-gray-100 p-4 rounded shadow">
+        <h2 class="font-bold">Days Inventory Outstanding</h2>
+        <div class="chart-placeholder h-40 mt-2">[Gauge Chart]</div>
+      </div>
+    </div>
   </div>
-
-  <div id="stats">
-    <strong>📊 Statistikalar:</strong><br>
-    <div id="monthlyStats"></div>
-    <div id="yearlyStats"></div>
-  </div>
-
-  <script>
-    const startDate = new Date("2023-04-04");
-    const dailyIncrease = 25000 / 761;
-    let changes = [];
-    let chart;
-    let lastBalance = 0;
-
-    const list = document.getElementById("changesList");
-    const timezoneSelect = document.getElementById("timezone");
-
-    // Vaqt zonalarini to‘ldirish
-    const timezones = Intl.supportedValuesOf("timeZone");
-    timezones.forEach(tz => {
-      const opt = document.createElement("option");
-      opt.value = tz;
-      opt.textContent = tz;
-      timezoneSelect.appendChild(opt);
-    });
-    timezoneSelect.value = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-    function getCurrentDateTime() {
-      const tz = timezoneSelect.value;
-      return new Date(new Date().toLocaleString("en-US", { timeZone: tz }));
-    }
-
-    function calculateBalance(dateObj) {
-      const daysPassed = Math.floor((dateObj - startDate) / (1000 * 60 * 60 * 24));
-      const income = dailyIncrease * daysPassed;
-      const expense = (Math.sin(daysPassed / 30) + 1) * 200; // sun'iy chiqim
-      const netBalance = income - expense;
-      return netBalance < 0 ? 0 : netBalance.toFixed(2);
-    }
-
-    function updateStats(balance) {
-      const now = getCurrentDateTime();
-      const month = now.getMonth() + 1;
-      const year = now.getFullYear();
-
-      const monthlyIncome = (Math.random() * 1500 + 3000).toFixed(2);
-      const monthlyExpense = (Math.random() * 800 + 2000).toFixed(2);
-      const yearlyIncome = (month * monthlyIncome).toFixed(2);
-      const yearlyExpense = (month * monthlyExpense).toFixed(2);
-
-      document.getElementById("monthlyStats").textContent = 
-        `Oy: ${month}, Daromad: $${monthlyIncome}, Chiqim: $${monthlyExpense}`;
-      document.getElementById("yearlyStats").textContent = 
-        `Yil: ${year}, Yillik daromad: $${yearlyIncome}, Yillik chiqim: $${yearlyExpense}`;
-    }
-
-    function updateDisplay() {
-      const now = getCurrentDateTime();
-      const dateInput = document.getElementById("datePicker").value;
-      const customDate = dateInput ? new Date(dateInput) : now;
-      const balance = calculateBalance(customDate);
-
-      // Balansni ko‘rsatish
-      const balanceEl = document.getElementById("balance");
-      balanceEl.textContent = `Balans: $${balance}`;
-      balanceEl.className = balance > lastBalance ? 'up' : (balance < lastBalance ? 'down' : '');
-      lastBalance = balance;
-
-      // O‘zgarishlar
-      const timeLabel = now.toLocaleTimeString();
-      changes.push({ time: timeLabel, value: balance });
-      if (changes.length > 10) changes.shift();
-
-      list.innerHTML = '';
-      for (let i = changes.length - 1; i >= 0; i--) {
-        const item = document.createElement("li");
-        item.textContent = `${changes[i].time} - $${changes[i].value}`;
-        list.appendChild(item);
-      }
-
-      // Grafikni yangilash
-      if (chart) {
-        chart.data.labels = changes.map(c => c.time);
-        chart.data.datasets[0].data = changes.map(c => c.value);
-        chart.update();
-      }
-
-      // Statistikalar
-      updateStats(balance);
-
-      // LocalStorage saqlash
-      localStorage.setItem('lastBalance', balance);
-      localStorage.setItem('lastChanges', JSON.stringify(changes));
-    }
-
-    function initChart() {
-      const ctx = document.getElementById("balanceChart").getContext("2d");
-      chart = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: [],
-          datasets: [{
-            label: 'Balans',
-            data: [],
-            borderColor: '#0ea5e9',
-            backgroundColor: 'rgba(14, 165, 233, 0.1)',
-            fill: true,
-            tension: 0.4,
-            pointRadius: 3,
-            borderWidth: 2
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: { display: false }
-          },
-          scales: {
-            y: {
-              beginAtZero: true,
-              ticks: {
-                callback: val => `$${val}`
-              }
-            }
-          }
-        }
-      });
-    }
-
-    // Dastlabki yuklash
-    initChart();
-    setInterval(updateDisplay, 1000);
-  </script>
-
 </body>
 </html>
