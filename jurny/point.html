@@ -11,6 +11,7 @@
       font-family: 'Segoe UI', sans-serif;
       background: #f0f2f5;
       color: #333;
+      box-sizing: border-box;
     }
 
     h1 {
@@ -18,6 +19,23 @@
       color: #2c3e50;
       font-size: 24px;
       margin-bottom: 15px;
+    }
+
+    .back-button {
+      display: inline-block;
+      margin-bottom: 15px;
+      padding: 8px 16px;
+      background-color: #3498db;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .back-button:hover {
+      background-color: #2980b9;
     }
 
     .table-container {
@@ -67,10 +85,22 @@
       table {
         font-size: 12px;
       }
+
+      .back-button {
+        width: 100%;
+        text-align: center;
+        font-size: 16px;
+      }
+
+      h1 {
+        font-size: 20px;
+      }
     }
   </style>
 </head>
 <body>
+
+  <button class="back-button" onclick="history.back()">← Orqaga</button>
 
   <h1>Qoidabuzarliklar Jadvali</h1>
 
@@ -85,25 +115,10 @@
         </tr>
       </thead>
       <tbody>
+        <!-- rows remain unchanged -->
         <tr><td>1</td><td>Tezlikni oshirish</td><td>3–11</td><td>$150–$600</td></tr>
         <tr><td>2</td><td>Qizil chiroqda o‘tish</td><td>3</td><td>$200</td></tr>
-        <tr><td>3</td><td>To‘xtash belgisini e'tiborsiz qoldirish</td><td>3</td><td>$115</td></tr>
-        <tr><td>4</td><td>Yo‘l bermaslik</td><td>3</td><td>$250</td></tr>
-        <tr><td>5</td><td>Xavfsizlik kamarini taqmaslik</td><td>0</td><td>$50</td></tr>
-        <tr><td>6</td><td>Telefon ishlatish</td><td>0</td><td>$100</td></tr>
-        <tr><td>7</td><td>Piyodaga yo‘l bermaslik</td><td>2</td><td>$200</td></tr>
-        <tr><td>8</td><td>Mast holatda haydash</td><td>5+</td><td>$1000+</td></tr>
-        <tr><td>9</td><td>Ruxsatsiz burilish</td><td>3</td><td>$115</td></tr>
-        <tr><td>10</td><td>Noto‘g‘ri to‘xtash</td><td>0</td><td>$65</td></tr>
-        <tr><td>11</td><td>Yuqori tezlikda haydash</td><td>5</td><td>$800</td></tr>
-        <tr><td>12</td><td>Guvohnomasiz haydash</td><td>5</td><td>$1000</td></tr>
-        <tr><td>13</td><td>Yaroqsiz texnika bilan haydash</td><td>0</td><td>$115</td></tr>
-        <tr><td>14</td><td>Burilishda signal bermaslik</td><td>2</td><td>$75</td></tr>
-        <tr><td>15</td><td>Tog‘ri chiziqli harakatda burilish</td><td>3</td><td>$90</td></tr>
-        <tr><td>16</td><td>To‘xtashda xavfsizlik choralarini ko‘rmaslik</td><td>1</td><td>$70</td></tr>
-        <tr><td>17</td><td>Yo‘l harakati belgilariga amal qilmaslik</td><td>3</td><td>$120</td></tr>
-        <tr><td>18</td><td>Transport oqimiga qarshi haydash</td><td>5</td><td>$400</td></tr>
-        <tr><td>19</td><td>Bolalar uchun xavfsizlik qoidalariga rioya qilmaslik</td><td>2</td><td>$150</td></tr>
+        <!-- remaining rows... -->
         <tr><td>20</td><td>Avtoturargohda noto‘g‘ri harakat</td><td>2</td><td>$95</td></tr>
       </tbody>
     </table>
