@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uz">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -41,6 +41,24 @@
       margin-bottom: 0.5rem;
       color: #0072ce;
     }
+    #more-links {
+      display: none;
+    }
+    .more-button {
+      display: block;
+      margin: 2rem auto 0;
+      padding: 0.75rem 1.5rem;
+      background: #0072ce;
+      color: white;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .more-button:hover {
+      background: #005bb5;
+    }
   </style>
   <!-- Icons from Font Awesome -->
   <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
@@ -48,12 +66,17 @@
 <body>
   <h1>NYC TLC Driver Portallar</h1>
   <div class="grid">
+    <!-- First 6 main cards -->
     <div class="card"><a href="https://www.nyc.gov/tlc" target="_blank"><div class="icon"><i class="fas fa-taxi"></i></div>NYC TLC Rasmiy</a></div>
     <div class="card"><a href="https://www.nyc.gov/lup" target="_blank"><div class="icon"><i class="fas fa-user-shield"></i></div>TLC UP Portal</a></div>
     <div class="card"><a href="https://www1.nyc.gov/lup/login.jsp" target="_blank"><div class="icon"><i class="fas fa-id-card"></i></div>Self Service Portal</a></div>
     <div class="card"><a href="https://bookeo.com/tlcdriver" target="_blank"><div class="icon"><i class="fas fa-calendar-alt"></i></div>Randevu olish</a></div>
     <div class="card"><a href="https://www.nyc.gov/site/tlc/vehicles/driver-education.page" target="_blank"><div class="icon"><i class="fas fa-graduation-cap"></i></div>Talim Kurslari</a></div>
     <div class="card"><a href="https://www.uber.com/us/en/drive/new-york/" target="_blank"><div class="icon"><i class="fab fa-uber"></i></div>Uber Portal</a></div>
+  </div>
+
+  <!-- Hidden section -->
+  <div class="grid" id="more-links">
     <div class="card"><a href="https://www.lyft.com/drive-with-lyft/regions/new-york-city" target="_blank"><div class="icon"><i class="fab fa-lyft"></i></div>Lyft Portal</a></div>
     <div class="card"><a href="https://drivewithvia.com/nyc/" target="_blank"><div class="icon"><i class="fas fa-shuttle-van"></i></div>Via Driver Portal</a></div>
     <div class="card"><a href="https://www.juno.com/" target="_blank"><div class="icon"><i class="fas fa-car-crash"></i></div>Juno (Yopilgan)</a></div>
@@ -69,5 +92,10 @@
     <div class="card"><a href="https://www.drivers-united.org/" target="_blank"><div class="icon"><i class="fas fa-hands-helping"></i></div>Drivers United</a></div>
     <div class="card"><a href="https://www.facebook.com/groups/nyctlcdrivers/" target="_blank"><div class="icon"><i class="fab fa-facebook"></i></div>FB: TLC Drivers</a></div>
   </div>
+
+  <!-- More Button -->
+  <button class="more-button" onclick="document.getElementById('more-links').style.display='grid'; this.style.display='none';">
+    Ko‘proq ko‘rsatish
+  </button>
 </body>
 </html>
