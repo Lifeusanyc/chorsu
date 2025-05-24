@@ -29,7 +29,7 @@
       box-shadow: 0 4px 8px rgba(0,0,0,0.1);
       padding: 1rem;
       text-align: center;
-      transition: transform 0.3s, box-shadow 0.3s;
+      transition: 0.3s;
     }
 
     .card:hover {
@@ -51,75 +51,95 @@
 
     #more-links {
       display: none;
-      opacity: 0;
-      transition: opacity 0.5s ease-in-out;
-    }
-
-    #more-links.show {
-      display: grid;
-      opacity: 1;
     }
 
     .button-container {
       text-align: center;
       margin-top: 2rem;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 1rem;
     }
 
     .toggle-button {
-      padding: 0.75rem 1.5rem;
+      width: 60px;
+      height: 60px;
       background: #0072ce;
       color: white;
-      font-size: 1rem;
+      font-size: 1.5rem;
       border: none;
-      border-radius: 8px;
+      border-radius: 12px;
       cursor: pointer;
       transition: background 0.3s;
-      margin: 0 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .toggle-button:hover {
       background: #005bb5;
     }
 
-    @media (max-width: 480px) {
-      body {
-        padding: 1rem;
-      }
+    .toggle-button[title]::after {
+      content: attr(title);
+      position: absolute;
+      font-size: 12px;
+      margin-top: 80px;
+      white-space: nowrap;
+      color: #333;
+      background: #fff;
+      padding: 0.3em 0.6em;
+      border-radius: 6px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.2);
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+    }
+
+    .toggle-button:hover::after {
+      opacity: 1;
     }
   </style>
+
   <!-- Font Awesome -->
   <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </head>
 <body>
+
   <h1>NYC TLC Driver Portallar</h1>
 
   <!-- Asosiy 7 ta link -->
   <div class="grid">
-    <div class="card"><a href="https://www.nyc.gov/site/tlc/about/tlc-payment.page" rel="noopener noreferrer" title="Jarima to‘lash sahifasiga o‘tish" aria-label="Jarima to‘lash"><div class="icon"><i class="fas fa-money-check-alt"></i></div>Jarima to‘lash</a></div>
-    <div class="card"><a href="https://a156-nauf.nyc.gov/tlcup/" rel="noopener noreferrer" title="TLC UP portaliga kirish" aria-label="TLC UP portali"><div class="icon"><i class="fas fa-user-shield"></i></div>TLC UP portali</a></div>
-    <div class="card"><a href="https://www1.nyc.gov/lup/login.jsp" rel="noopener noreferrer" title="Jarimalarni tekshirish sahifasiga kirish" aria-label="Jarimalarni tekshirish"><div class="icon"><i class="fas fa-id-card"></i></div>Jarimalarni tekshirish</a></div>
-    <div class="card"><a href="https://chorsu.vercel.app/jurny/point.html" rel="noopener noreferrer" title="Pointlar va jarimalarni ko‘rish" aria-label="Pointlar Jarimalar"><div class="icon"><i class="fas fa-exclamation-circle"></i></div>Pointlar Jarimalar</a></div>
-    <div class="card"><a href="https://www.google.com/maps/d/edit?mid=1Q73ST68qKcw9DjjOst8Yn5c5EoGcFhQ&usp=sharing" rel="noopener noreferrer" title="Far Rockaway pickup joyi" aria-label="Far Rockaway pickup"><div class="icon"><i class="fas fa-map-marker-alt"></i></div>Far Rockaway pickup</a></div>
-    <div class="card"><a href="https://www.nyc.gov/site/tlc/vehicles/tlc-violation.page" rel="noopener noreferrer" title="Qoidabuzarliklarni ko‘rish" aria-label="Qoidabuzarliklarni ko‘rish"><div class="icon"><i class="fas fa-gavel"></i></div>Qoidabuzarliklarni ko‘rish</a></div>
-    <div class="card"><a href="https://www.e-zpassny.com/ezpass/sign-in" rel="noopener noreferrer" title="E-ZPass tizimiga kirish" aria-label="E-ZPass"><div class="icon"><i class="fas fa-calendar-alt"></i></div>E-ZPass</a></div>
+    <div class="card"><a href="https://www.nyc.gov/site/tlc/about/tlc-payment.page"><div class="icon"><i class="fas fa-money-check-alt"></i></div>Jarima to‘lash</a></div>
+    <div class="card"><a href="https://a156-nauf.nyc.gov/tlcup/"><div class="icon"><i class="fas fa-user-shield"></i></div>TLC UP portali</a></div>
+    <div class="card"><a href="https://www1.nyc.gov/lup/login.jsp"><div class="icon"><i class="fas fa-id-card"></i></div>Jarimalarni tekshirish</a></div>
+    <div class="card"><a href="https://chorsu.vercel.app/jurny/point.html"><div class="icon"><i class="fas fa-exclamation-circle"></i></div>Pointlar Jarimalar</a></div>
+    <div class="card"><a href="https://www.google.com/maps/d/edit?mid=1Q73ST68qKcw9DjjOst8Yn5c5EoGcFhQ&usp=sharing"><div class="icon"><i class="fas fa-map-marker-alt"></i></div>Far Rockaway pickup</a></div>
+    <div class="card"><a href="https://www.nyc.gov/site/tlc/vehicles/tlc-violation.page"><div class="icon"><i class="fas fa-gavel"></i></div>Qoidabuzarliklarni ko‘rish</a></div>
+    <div class="card"><a href="https://www.e-zpassny.com/ezpass/sign-in"><div class="icon"><i class="fas fa-calendar-alt"></i></div>E-ZPass</a></div>
   </div>
 
   <!-- Qo‘shimcha linklar (yashirin) -->
   <div class="grid" id="more-links">
-    <div class="card"><a href="https://www.nyc.gov/tlc" rel="noopener noreferrer" title="NYC TLC Rasmiy sayt" aria-label="NYC TLC Rasmiy"><div class="icon"><i class="fas fa-taxi"></i></div>NYC TLC Rasmiy</a></div>
-    <div class="card"><a href="https://www.uber.com/us/en/drive/new-york/" rel="noopener noreferrer" title="Uber portal" aria-label="Uber Portal"><div class="icon"><i class="fab fa-uber"></i></div>Uber Portal</a></div>
-    <div class="card"><a href="https://www.lyft.com/drive-with-lyft/regions/new-york-city" rel="noopener noreferrer" title="Lyft portal" aria-label="Lyft Portal"><div class="icon"><i class="fab fa-lyft"></i></div>Lyft Portal</a></div>
-    <div class="card"><a href="https://drivewithvia.com/nyc/" rel="noopener noreferrer" title="Via haydovchi portali" aria-label="Via Driver Portal"><div class="icon"><i class="fas fa-shuttle-van"></i></div>Via Driver Portal</a></div>
-    <div class="card"><a href="https://www.nyc.gov/assets/tlc/downloads/pdf/approved_vehicle_list.pdf" rel="noopener noreferrer" title="TLC tomonidan ruxsat etilgan mashinalar" aria-label="Ruxsat etilgan mashinalar"><div class="icon"><i class="fas fa-car"></i></div>Ruxsat etilgan mashinalar</a></div>
-    <div class="card"><a href="https://www.irs.gov/businesses/small-businesses-self-employed/ride-share-drivers" rel="noopener noreferrer" title="IRS soliq qo‘llanmasi" aria-label="IRS Soliq Qo‘llanmasi"><div class="icon"><i class="fas fa-file-invoice-dollar"></i></div>IRS Soliq Qo‘llanmasi</a></div>
-    <div class="card"><a href="https://www.nyc.gov/html/dot/html/motorist/parking-regulations.shtml" rel="noopener noreferrer" title="Parking qoidalari" aria-label="Parking Qoidalari"><div class="icon"><i class="fas fa-parking"></i></div>Parking Qoidalari</a></div>
-    <div class="card"><a href="https://www.facebook.com/groups/nyctlcdrivers/" rel="noopener noreferrer" title="Facebook guruh: NYC TLC Drivers" aria-label="FB: TLC Drivers"><div class="icon"><i class="fab fa-facebook"></i></div>FB: TLC Drivers</a></div>
+    <div class="card"><a href="https://www.nyc.gov/tlc"><div class="icon"><i class="fas fa-taxi"></i></div>NYC TLC Rasmiy</a></div>
+    <div class="card"><a href="https://www.uber.com/us/en/drive/new-york/"><div class="icon"><i class="fab fa-uber"></i></div>Uber Portal</a></div>
+    <div class="card"><a href="https://www.lyft.com/drive-with-lyft/regions/new-york-city"><div class="icon"><i class="fab fa-lyft"></i></div>Lyft Portal</a></div>
+    <div class="card"><a href="https://drivewithvia.com/nyc/"><div class="icon"><i class="fas fa-shuttle-van"></i></div>Via Driver Portal</a></div>
+    <div class="card"><a href="https://www.nyc.gov/assets/tlc/downloads/pdf/approved_vehicle_list.pdf"><div class="icon"><i class="fas fa-car"></i></div>Ruxsat etilgan mashinalar</a></div>
+    <div class="card"><a href="https://www.irs.gov/businesses/small-businesses-self-employed/ride-share-drivers"><div class="icon"><i class="fas fa-file-invoice-dollar"></i></div>IRS Soliq Qo‘llanmasi</a></div>
+    <div class="card"><a href="https://www.nyc.gov/html/dot/html/motorist/parking-regulations.shtml"><div class="icon"><i class="fas fa-parking"></i></div>Parking Qoidalari</a></div>
+    <div class="card"><a href="https://www.facebook.com/groups/nyctlcdrivers/"><div class="icon"><i class="fab fa-facebook"></i></div>FB: TLC Drivers</a></div>
   </div>
 
   <!-- Tugmalar -->
   <div class="button-container">
-    <button id="show-more" class="toggle-button" onclick="toggleMore(true)">Ko‘proq ko‘rsatish</button>
-    <button id="show-less" class="toggle-button" onclick="toggleMore(false)" style="display: none;">Yopish</button>
+    <button id="show-more" class="toggle-button" title="Ko‘proq ko‘rsatish" onclick="toggleMore(true)">
+      <i class="fas fa-folder-open"></i>
+    </button>
+    <button id="show-less" class="toggle-button" title="Yopish" onclick="toggleMore(false)" style="display: none;">
+      <i class="fas fa-times"></i>
+    </button>
   </div>
 
   <script>
@@ -129,18 +149,16 @@
       const showLessBtn = document.getElementById('show-less');
 
       if (show) {
-        moreLinks.classList.add('show');
+        moreLinks.style.display = 'grid';
         showMoreBtn.style.display = 'none';
-        showLessBtn.style.display = 'inline-block';
+        showLessBtn.style.display = 'flex';
       } else {
-        moreLinks.classList.remove('show');
-        setTimeout(() => {
-          moreLinks.style.display = 'none';
-        }, 300);
-        showMoreBtn.style.display = 'inline-block';
+        moreLinks.style.display = 'none';
+        showMoreBtn.style.display = 'flex';
         showLessBtn.style.display = 'none';
       }
     }
   </script>
+
 </body>
 </html>
