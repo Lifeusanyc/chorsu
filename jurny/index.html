@@ -23,14 +23,15 @@
 
     .grid {
       display: grid;
+      /* Mobil uchun qator bo'ylab 3 ta tugma, katta ekran uchun avtomatik moslashadi */
       grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
       gap: 1rem;
     }
 
-    /* Mobil uchun: har qatorda 3 ta tugma */
+    /* Mobil uchun qatorga 3 ta tugma */
     @media (max-width: 600px) {
       .grid {
-        grid-template-columns: repeat(3, 1fr) !important;
+        grid-template-columns: repeat(3, 1fr);
       }
     }
 
@@ -80,6 +81,12 @@
       margin-top: 1.5rem;
       border-top: 2px solid #0072ce;
       padding-top: 1rem;
+    }
+
+    @media (max-width: 600px) {
+      #more-links {
+        grid-template-columns: repeat(3, 1fr);
+      }
     }
 
     /* Tugmalar konteyneri */
@@ -160,7 +167,7 @@
       <div class="icon"><i class="fas fa-map-marker-alt" aria-hidden="true"></i></div>
       Far Rockaway pickup
     </a>
-   <a href="https://www.e-zpassny.com/ezpass/sign-in" class="card" role="listitem" aria-label="E-ZPass">
+    <a href="https://www.e-zpassny.com/ezpass/sign-in" class="card" role="listitem" aria-label="E-ZPass">
       <div class="icon"><i class="fas fa-calendar-alt" aria-hidden="true"></i></div>
       E-ZPass
     </a>
@@ -180,12 +187,10 @@
       <div class="icon"><i class="fab fa-lyft" aria-hidden="true"></i></div>
       Lyft Portal
     </a>
-    
     <a href="https://data.cityofnewyork.us/Transportation/For-Hire-Vehicles-FHV-Active/8wbx-tsch/data_preview" class="card" role="listitem" aria-label="Ruxsat etilgan mashinalar">
       <div class="icon"><i class="fas fa-car" aria-hidden="true"></i></div>
       TLC mashinalar
     </a>
-    
     <a href="https://www.nyc.gov/html/dot/html/motorist/parking-regulations.shtml" class="card" role="listitem" aria-label="Parking Qoidalari">
       <div class="icon"><i class="fas fa-parking" aria-hidden="true"></i></div>
       Parking Qoidalari
