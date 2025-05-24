@@ -6,10 +6,11 @@
   <title>NYC TLC Driver Portallar</title>
   <style>
     body {
-      font-family: sans-serif;
-      background: #f4f4f4;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f4f6fa;
       margin: 0;
       padding: 2rem;
+      color: #003366;
     }
 
     h1 {
@@ -17,6 +18,7 @@
       margin-bottom: 2rem;
       font-weight: 700;
       color: #0072ce;
+      text-shadow: 0 2px 4px rgba(0, 114, 206, 0.3);
     }
 
     .grid {
@@ -26,15 +28,15 @@
     }
 
     .card {
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      padding: 1rem;
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+      padding: 1.3rem 1rem;
       text-align: center;
-      transition: transform 0.3s, box-shadow 0.3s;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
       cursor: pointer;
       user-select: none;
-      aspect-ratio: 1 / 1; /* kvadrat shakl uchun */
+      aspect-ratio: 1 / 1;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -42,82 +44,83 @@
       color: #0072ce;
       font-weight: 600;
       text-decoration: none;
-      border: 2px solid transparent;
+      border: 3px solid transparent;
     }
 
     .card:hover,
     .card:focus-visible {
-      transform: scale(1.05);
-      box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+      transform: scale(1.08);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
       border-color: #005bb5;
       outline: none;
+      color: #004a99;
     }
 
     .card .icon {
-      font-size: 40px;
-      margin-bottom: 0.5rem;
+      font-size: 44px;
+      margin-bottom: 0.6rem;
       line-height: 1;
+      color: #0072ce;
+      transition: color 0.3s ease;
     }
 
-    /* Qo‘shimcha linklar animatsiyali */
+    /* Qo‘shimcha linklar */
     #more-links {
       max-height: 0;
       overflow: hidden;
-      transition: max-height 0.5s ease;
+      transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
       grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      margin-top: 1.5rem;
+      border-top: 2px solid #0072ce;
+      padding-top: 1rem;
     }
 
     /* Tugmalar konteyneri */
     .button-container {
       text-align: center;
-      margin-top: 2rem;
+      margin-top: 2.5rem;
       display: flex;
       justify-content: center;
+      align-items: center;
       gap: 1rem;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
+      user-select: none;
     }
 
     .toggle-button {
-      width: 60px;
-      height: 60px;
-      background: #0072ce;
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, #0072ce, #005bb5);
       color: white;
-      font-size: 1.5rem;
+      font-size: 2rem;
       border: none;
-      border-radius: 12px;
+      border-radius: 50%;
       cursor: pointer;
-      transition: background 0.3s;
+      box-shadow: 0 4px 10px rgba(0,114,206,0.4);
       display: flex;
       align-items: center;
       justify-content: center;
       position: relative;
+      transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
     }
 
     .toggle-button:hover {
-      background: #005bb5;
+      background: linear-gradient(135deg, #005bb5, #003d80);
+      box-shadow: 0 6px 15px rgba(0,91,181,0.6);
+      transform: scale(1.1);
     }
 
-    .toggle-button[title]::after {
-      content: attr(title);
-      position: absolute;
-      bottom: -2.4rem;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 12px;
-      white-space: nowrap;
-      color: #333;
-      background: #fff;
-      padding: 0.3em 0.6em;
-      border-radius: 6px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.2);
-      opacity: 0;
-      transition: opacity 0.3s;
-      pointer-events: none;
-      z-index: 10;
+    .toggle-label {
+      font-weight: 600;
+      color: #005bb5;
+      font-size: 1.1rem;
+      user-select: none;
+      transition: color 0.3s ease;
     }
 
-    .toggle-button:hover::after {
-      opacity: 1;
+    .toggle-button:focus-visible {
+      outline: 3px solid #003d80;
+      outline-offset: 3px;
     }
   </style>
 
@@ -129,7 +132,7 @@
   <h1>NYC TLC Driver Portallar</h1>
 
   <!-- Asosiy 7 ta link -->
-  <div class="grid" role="list">
+  <div class="grid" role="list" aria-label="Asosiy portal linklari">
     <a href="https://a836-citypay.nyc.gov/citypay/Parking#!/by-plate-form" class="card" role="listitem" aria-label="Jarima to‘lash">
       <div class="icon"><i class="fas fa-money-check-alt" aria-hidden="true"></i></div>
       Jarima to‘lash
@@ -157,7 +160,7 @@
   </div>
 
   <!-- Qo‘shimcha linklar (yashirin) -->
-  <div class="grid" id="more-links" role="list" aria-hidden="true" style="max-height: 0; overflow: hidden;">
+  <div class="grid" id="more-links" role="list" aria-hidden="true">
     <a href="https://www.nyc.gov/tlc" class="card" role="listitem" aria-label="NYC TLC Rasmiy">
       <div class="icon"><i class="fas fa-taxi" aria-hidden="true"></i></div>
       NYC TLC Rasmiy
@@ -191,6 +194,39 @@
       FB: TLC Drivers
     </a>
   </div>
+
+  <!-- Toggle tugma -->
+  <div class="button-container">
+    <button id="toggle-more" class="toggle-button" aria-expanded="false" aria-controls="more-links" title="Qo‘shimcha linklarni ko‘rsatish">
+      +
+    </button>
+    <div class="toggle-label" id="toggle-label">Qo‘shimcha linklar</div>
+  </div>
+
+  <script>
+    const toggleBtn = document.getElementById('toggle-more');
+    const moreLinks = document.getElementById('more-links');
+    const toggleLabel = document.getElementById('toggle-label');
+
+    toggleBtn.addEventListener('click', () => {
+      const isExpanded = toggleBtn.getAttribute('aria-expanded') === 'true';
+      if (isExpanded) {
+        moreLinks.style.maxHeight = '0';
+        moreLinks.setAttribute('aria-hidden', 'true');
+        toggleBtn.setAttribute('aria-expanded', 'false');
+        toggleBtn.title = "Qo‘shimcha linklarni ko‘rsatish";
+        toggleBtn.textContent = '+';
+        toggleLabel.textContent = "Qo‘shimcha linklar";
+      } else {
+        moreLinks.style.maxHeight = moreLinks.scrollHeight + 'px';
+        moreLinks.setAttribute('aria-hidden', 'false');
+        toggleBtn.setAttribute('aria-expanded', 'true');
+        toggleBtn.title = "Qo‘shimcha linklarni yashirish";
+        toggleBtn.textContent = '−';
+        toggleLabel.textContent = "Yashirish";
+      }
+    });
+  </script>
 
 </body>
 </html>
