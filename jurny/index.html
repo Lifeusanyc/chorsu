@@ -192,39 +192,5 @@
     </a>
   </div>
 
-  <!-- Tugmalar -->
-  <div class="button-container">
-    <button id="show-more" class="toggle-button" title="Ko‘proq ko‘rsatish" aria-expanded="false" aria-controls="more-links" onclick="toggleMore(true)">
-      <i class="fas fa-folder-open" aria-hidden="true"></i>
-    </button>
-    <button id="show-less" class="toggle-button" title="Yopish" aria-expanded="true" aria-controls="more-links" onclick="toggleMore(false)" style="display: none;">
-      <i class="fas fa-times" aria-hidden="true"></i>
-    </button>
-  </div>
-
-  <script>
-    function toggleMore(show) {
-      const moreLinks = document.getElementById('more-links');
-      const showMoreBtn = document.getElementById('show-more');
-      const showLessBtn = document.getElementById('show-less');
-
-      if (show) {
-        moreLinks.style.maxHeight = moreLinks.scrollHeight + 'px';
-        moreLinks.setAttribute('aria-hidden', 'false');
-        showMoreBtn.style.display = 'none';
-        showLessBtn.style.display = 'flex';
-        showMoreBtn.setAttribute('aria-expanded', 'true');
-        showLessBtn.setAttribute('aria-expanded', 'false');
-      } else {
-        moreLinks.style.maxHeight = '0';
-        moreLinks.setAttribute('aria-hidden', 'true');
-        showMoreBtn.style.display = 'flex';
-        showLessBtn.style.display = 'none';
-        showMoreBtn.setAttribute('aria-expanded', 'false');
-        showLessBtn.setAttribute('aria-expanded', 'true');
-      }
-    }
-  </script>
-
 </body>
 </html>
