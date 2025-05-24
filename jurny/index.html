@@ -27,6 +27,13 @@
       gap: 1rem;
     }
 
+    /* Mobil uchun: har qatorda 3 ta tugma */
+    @media (max-width: 600px) {
+      .grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+      }
+    }
+
     .card {
       background: #fff;
       border-radius: 14px;
