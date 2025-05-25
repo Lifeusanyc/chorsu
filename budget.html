@@ -70,9 +70,9 @@
         <p>🎯 114% | 🔼 9%</p>
       </div>
 
-      <!-- Sales by Product/Category -->
+      <!-- Expenses by Category -->
       <div class="bg-gray-100 p-2 rounded shadow col-span-2">
-        <h2 class="font-bold text-xs">Sales by Product/Category</h2>
+        <h2 class="font-bold text-xs">Expenses by Category</h2>
         <canvas id="categoryChart"></canvas>
       </div>
 
@@ -128,27 +128,45 @@
   </div>
 
   <script>
-    function randomData(length = 6, max = 10000) {
-      return Array.from({ length }, () => Math.floor(Math.random() * max));
-    }
-
+    // Expenses by Category Chart
     new Chart(document.getElementById('categoryChart'), {
       type: 'bar',
       data: {
-        labels: ['Product A', 'Product B', 'Product C'],
+        labels: ['Rent', 'Uber', 'Food', 'Home', 'Private', 'Doc', 'Tel', 'Car', 'Metro'],
         datasets: [{
-          label: 'Sales',
-          data: randomData(3, 120000),
-          backgroundColor: '#60a5fa',
+          label: 'Expenses',
+          data: [56872, 142, 25804, 6852, 14251, 10445, 2179, 33145, 376],
+          backgroundColor: [
+            '#f87171', '#60a5fa', '#34d399', '#facc15', '#a78bfa',
+            '#fb923c', '#f472b6', '#818cf8', '#4ade80'
+          ],
           borderRadius: 4
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        scales: { y: { beginAtZero: true } }
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: value => `$${value.toLocaleString()}`
+            }
+          }
+        },
+        plugins: {
+          tooltip: {
+            callbacks: {
+              label: ctx => `${ctx.label}: $${ctx.formattedValue}`
+            }
+          }
+        }
       }
     });
+
+    function randomData(length = 6, max = 10000) {
+      return Array.from({ length }, () => Math.floor(Math.random() * max));
+    }
 
     new Chart(document.getElementById('targetChart'), {
       type: 'line',
