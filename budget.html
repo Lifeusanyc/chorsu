@@ -199,21 +199,39 @@
       }
     });
 
+    // Income Statement chart with your real data
     new Chart(document.getElementById('incomeChart'), {
       type: 'bar',
       data: {
-        labels: ['Revenue', 'COGS', 'OpEx', 'Net Income'],
+        labels: ['SALARY', 'CASHBACK', 'BONUS', 'INSTACART', 'JURNY', 'LYFT', 'UBER', 'CURB', 'ABIX'],
         datasets: [{
-          label: 'Amount',
-          data: randomData(4, 40000),
-          backgroundColor: ['#4ade80', '#f87171', '#facc15', '#60a5fa'],
+          label: 'Amount ($)',
+          data: [67748, 779, 4960, 292, 47109, 0, 1553, 831, 3412],
+          backgroundColor: [
+            '#4ade80', '#60a5fa', '#facc15', '#fb923c', '#a78bfa',
+            '#818cf8', '#f87171', '#fbbf24', '#34d399'
+          ],
           borderRadius: 4
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        scales: { y: { beginAtZero: true } }
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: value => `$${value.toLocaleString()}`
+            }
+          }
+        },
+        plugins: {
+          tooltip: {
+            callbacks: {
+              label: ctx => `${ctx.label}: $${ctx.formattedValue}`
+            }
+          }
+        }
       }
     });
 
@@ -309,21 +327,21 @@
         plugins: [{
           id: 'centerText',
           afterDraw(chart) {
-            const {ctx, chartArea: {top, width, height, left}} = chart;
+            const {ctx, chartArea: {width, height}} = chart;
             ctx.save();
-            ctx.font = 'bold 18px Arial';
-            ctx.fillStyle = '#111827';
+            ctx.font = 'bold 16px Arial';
+            ctx.fillStyle = color;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText(value + '%', left + width / 2, top + height / 2);
+            ctx.fillText(value + '%', width / 2, height / 2);
             ctx.restore();
           }
         }]
       });
     }
 
-    createGauge(document.getElementById('receivableChart').getContext('2d'), 'DRO', 61, '#2563eb');
-    createGauge(document.getElementById('inventoryChart').getContext('2d'), 'DIO', 43, '#f97316');
+    createGauge(document.getElementById('receivableChart'), 'DRO', 48, '#f87171');
+    createGauge(document.getElementById('inventoryChart'), 'DIO', 32, '#3b82f6');
   </script>
 </body>
 </html>
