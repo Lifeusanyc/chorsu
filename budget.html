@@ -2,145 +2,37 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>YTD Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Income Statement Chart</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
-  <style>
-    canvas {
-      max-height: 150px !important;
-      width: 100% !important;
-    }
-    .grid-dashboard {
-      display: grid;
-      gap: 12px;
-    }
-    @media (min-width: 1024px) {
-      .grid-dashboard {
-        grid-template-columns: repeat(4, 1fr);
-      }
-      .col-span-2 { grid-column: span 2 / span 2; }
-      .col-span-3 { grid-column: span 3 / span 3; }
-      .col-span-4 { grid-column: span 4 / span 4; }
-    }
-    @media (max-width: 1023px) {
-      .grid-dashboard {
-        grid-template-columns: repeat(2, 1fr);
-      }
-      .col-span-2, .col-span-3, .col-span-4 { grid-column: span 2 / span 2; }
-    }
-    @media (max-width: 639px) {
-      .grid-dashboard {
-        grid-template-columns: 1fr;
-      }
-      .col-span-2, .col-span-3, .col-span-4 { grid-column: span 1 / span 1; }
-    }
-  </style>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 text-gray-800 p-3">
-  <div class="max-w-full mx-auto bg-white p-4 shadow rounded">
-    <div class="flex flex-col sm:flex-row justify-between items-center mb-4">
-      <h1 class="text-lg font-bold">📊 YTD Dashboard</h1>
-      <div class="flex items-center space-x-2 mt-2 sm:mt-0">
-        <label class="font-semibold">Month:</label>
-        <button class="bg-gray-200 text-gray-700 px-3 py-1 rounded">JUN</button>
-      </div>
-    </div>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-6">
 
-    <div class="grid-dashboard">
-      <!-- KPIs -->
-      <div class="bg-gray-100 p-2 rounded shadow">
-        <h2 class="font-bold text-xs">Sales</h2>
-        <p class="text-lg font-semibold">108,325</p>
-        <p>🎯 101% | 🔼 1%</p>
-      </div>
-      <div class="bg-gray-100 p-2 rounded shadow">
-        <h2 class="font-bold text-xs">Gross Profit</h2>
-        <p class="text-lg font-semibold">31,020</p>
-        <p>🎯 108% | 🔼 6%</p>
-      </div>
-      <div class="bg-gray-100 p-2 rounded shadow">
-        <h2 class="font-bold text-xs">Operating Profit</h2>
-        <p class="text-lg font-semibold">17,513</p>
-        <p>🎯 110% | 🔼 8%</p>
-      </div>
-      <div class="bg-gray-100 p-2 rounded shadow">
-        <h2 class="font-bold text-xs">Net Profit</h2>
-        <p class="text-lg font-semibold">13,968</p>
-        <p>🎯 114% | 🔼 9%</p>
-      </div>
-
-      <!-- Expenses by Category -->
-      <div class="bg-gray-100 p-2 rounded shadow col-span-2">
-        <h2 class="font-bold text-xs">Expenses by Category</h2>
-        <canvas id="categoryChart"></canvas>
-      </div>
-
-      <!-- Actual Sales vs Target -->
-      <div class="bg-gray-100 p-2 rounded shadow col-span-2">
-        <h2 class="font-bold text-xs">Actual Sales vs Target</h2>
-        <canvas id="targetChart"></canvas>
-      </div>
-
-      <!-- Income Statement -->
-      <div class="bg-gray-100 p-2 rounded shadow col-span-2">
-        <h2 class="font-bold text-xs">Income Statement</h2>
-        <canvas id="incomeChart"></canvas>
-      </div>
-
-      <!-- Net Operating Cash Flow -->
-      <div class="bg-gray-100 p-2 rounded shadow">
-        <h2 class="font-bold text-xs">Net Operating Cash Flow</h2>
-        <canvas id="cashFlowChart"></canvas>
-      </div>
-
-      <!-- Monthly Sales Growth -->
-      <div class="bg-gray-100 p-2 rounded shadow">
-        <h2 class="font-bold text-xs">Monthly Sales Growth</h2>
-        <canvas id="growthChart"></canvas>
-      </div>
-
-      <!-- Employee Cost vs Sales -->
-      <div class="bg-gray-100 p-2 rounded shadow">
-        <h2 class="font-bold text-xs">Employee Cost vs Sales</h2>
-        <canvas id="costChart"></canvas>
-      </div>
-
-      <!-- Headcount -->
-      <div class="bg-gray-100 p-2 rounded shadow flex flex-col justify-center items-center">
-        <h2 class="font-bold text-xs">Headcount</h2>
-        <p class="text-2xl font-bold text-red-600">126</p>
-        <p class="text-xs">Change: +1%</p>
-      </div>
-
-      <!-- Days Receivable Outstanding -->
-      <div class="bg-gray-100 p-2 rounded shadow">
-        <h2 class="font-bold text-xs">Days Receivable Outstanding</h2>
-        <canvas id="receivableChart"></canvas>
-      </div>
-
-      <!-- Days Inventory Outstanding -->
-      <div class="bg-gray-100 p-2 rounded shadow">
-        <h2 class="font-bold text-xs">Days Inventory Outstanding</h2>
-        <canvas id="inventoryChart"></canvas>
-      </div>
+  <div class="bg-white shadow-lg rounded-2xl p-6 w-full max-w-4xl">
+    <h2 class="text-2xl font-semibold text-gray-800 mb-4">📊 Income Statement</h2>
+    <div class="relative h-96">
+      <canvas id="incomeChart"></canvas>
     </div>
   </div>
 
   <script>
-    // Expenses by Category Chart
-    new Chart(document.getElementById('categoryChart'), {
+    new Chart(document.getElementById('incomeChart'), {
       type: 'bar',
       data: {
-        labels: ['Rent', 'Uber', 'Food', 'Home', 'Private', 'Doc', 'Tel', 'Car', 'Metro'],
+        labels: [
+          'SALARY', 'CASHBACK', 'BONUS', 'INSTACART',
+          'JURNY', 'LYFT', 'UBER', 'CURB', 'ABIX'
+        ],
         datasets: [{
-          label: 'Expenses',
-          data: [56872, 142, 25804, 6852, 14251, 10445, 2179, 33145, 376],
+          label: 'Amount ($)',
+          data: [67748, 779, 4960, 292, 47109, 0, 1553, 831, 3412],
           backgroundColor: [
-            '#f87171', '#60a5fa', '#34d399', '#facc15', '#a78bfa',
-            '#fb923c', '#f472b6', '#818cf8', '#4ade80'
+            '#4ade80', '#60a5fa', '#facc15', '#fb923c',
+            '#a78bfa', '#f87171', '#34d399', '#f472b6', '#818cf8'
           ],
-          borderRadius: 4
+          borderRadius: 6,
+          borderSkipped: false,
         }]
       },
       options: {
@@ -151,6 +43,22 @@
             beginAtZero: true,
             ticks: {
               callback: value => `$${value.toLocaleString()}`
+            },
+            title: {
+              display: true,
+              text: 'Amount in USD',
+              font: {
+                weight: 'bold'
+              }
+            }
+          },
+          x: {
+            title: {
+              display: true,
+              text: 'Income Sources',
+              font: {
+                weight: 'bold'
+              }
             }
           }
         },
@@ -159,171 +67,25 @@
             callbacks: {
               label: ctx => `${ctx.label}: $${ctx.formattedValue}`
             }
+          },
+          legend: {
+            display: false
+          },
+          title: {
+            display: true,
+            text: 'Income Sources Breakdown',
+            font: {
+              size: 18
+            },
+            padding: {
+              top: 10,
+              bottom: 20
+            }
           }
         }
       }
     });
-
-    function randomData(length = 6, max = 10000) {
-      return Array.from({ length }, () => Math.floor(Math.random() * max));
-    }
-
-    new Chart(document.getElementById('targetChart'), {
-      type: 'line',
-      data: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-        datasets: [
-          {
-            label: 'Actual',
-            data: randomData(6, 120000),
-            borderColor: '#10b981',
-            fill: false,
-            tension: 0.3,
-            pointRadius: 4
-          },
-          {
-            label: 'Target',
-            data: randomData(6, 120000),
-            borderColor: '#ef4444',
-            borderDash: [5, 5],
-            fill: false,
-            tension: 0.3,
-            pointRadius: 4
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: { y: { beginAtZero: true } }
-      }
-    });
-
-    new Chart(document.getElementById('incomeChart'), {
-      type: 'bar',
-      data: {
-        labels: ['Revenue', 'COGS', 'OpEx', 'Net Income'],
-        datasets: [{
-          label: 'Amount',
-          data: randomData(4, 40000),
-          backgroundColor: ['#4ade80', '#f87171', '#facc15', '#60a5fa'],
-          borderRadius: 4
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: { y: { beginAtZero: true } }
-      }
-    });
-
-    new Chart(document.getElementById('cashFlowChart'), {
-      type: 'bar',
-      data: {
-        labels: ['Q1', 'Q2', 'Q3', 'Q4'],
-        datasets: [{
-          label: 'Cash Flow',
-          data: randomData(4, 30000),
-          backgroundColor: '#34d399',
-          borderRadius: 4
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: { y: { beginAtZero: true } }
-      }
-    });
-
-    new Chart(document.getElementById('growthChart'), {
-      type: 'bar',
-      data: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
-        datasets: [{
-          label: 'Growth %',
-          data: [5, 8, -2, 11, 4],
-          backgroundColor: '#818cf8',
-          borderRadius: 4
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          y: { beginAtZero: true, ticks: { callback: v => v + '%' } }
-        }
-      }
-    });
-
-    new Chart(document.getElementById('costChart'), {
-      type: 'line',
-      data: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
-        datasets: [
-          {
-            label: 'Employee Cost',
-            data: [2000, 2100, 2200, 2300, 2400],
-            borderColor: '#fbbf24',
-            fill: false,
-            tension: 0.3,
-            pointRadius: 3
-          },
-          {
-            label: 'Sales',
-            data: [6000, 6200, 6100, 6300, 6500],
-            borderColor: '#3b82f6',
-            fill: false,
-            tension: 0.3,
-            pointRadius: 3
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: { y: { beginAtZero: true } }
-      }
-    });
-
-    function createGauge(ctx, label, value, color) {
-      return new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-          labels: [label, 'Remaining'],
-          datasets: [{
-            data: [value, 100 - value],
-            backgroundColor: [color, '#e5e7eb'],
-            borderWidth: 0
-          }]
-        },
-        options: {
-          cutout: '75%',
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { display: false },
-            tooltip: { enabled: false }
-          },
-          animation: { duration: 1000 }
-        },
-        plugins: [{
-          id: 'centerText',
-          afterDraw(chart) {
-            const {ctx, chartArea: {top, width, height, left}} = chart;
-            ctx.save();
-            ctx.font = 'bold 18px Arial';
-            ctx.fillStyle = '#111827';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText(value + '%', left + width / 2, top + height / 2);
-            ctx.restore();
-          }
-        }]
-      });
-    }
-
-    createGauge(document.getElementById('receivableChart').getContext('2d'), 'DRO', 61, '#2563eb');
-    createGauge(document.getElementById('inventoryChart').getContext('2d'), 'DIO', 43, '#f97316');
   </script>
+
 </body>
 </html>
