@@ -3,96 +3,125 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Seyf soat kabi buriluvchi</title>
+<title>Ruletka Seyf</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
 
   body, html {
     margin: 0; padding: 0; height: 100%;
-    overflow: hidden;
     background: black;
     font-family: 'Share Tech Mono', monospace;
-    color: #00ff99;
     display: flex;
     justify-content: center;
     align-items: center;
-  }
-
-  #matrixCanvas {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: 0;
-    background: black;
-  }
-
-  .safe-container {
-    position: relative;
-    width: 360px;
-    height: 360px;
-    perspective: 1400px;
-    z-index: 10;
-  }
-
-  .safe {
-    width: 300px;
-    height: 300px;
-    background: linear-gradient(145deg, #0a2f0a, #004d00);
-    border-radius: 50%; /* soat shakli uchun aylana */
-    box-shadow:
-      inset 0 0 30px #00ff99,
-      0 0 60px #00ff99;
-    transform-style: preserve-3d;
-    animation: rotateClock 10s linear infinite;
-    position: relative;
-    padding: 30px;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
-
-  /* Soat kabi aylanish (burilish) */
-  @keyframes rotateClock {
-    from {
-      transform: rotateX(60deg) rotateZ(0deg);
-    }
-    to {
-      transform: rotateX(60deg) rotateZ(360deg);
-    }
-  }
-
-  /* Noto'g'ri parolda tebranish effekti */
-  .shake {
-    animation: shakeAnim 0.6s;
-  }
-  @keyframes shakeAnim {
-    0%, 100% { transform: translateX(0) rotateZ(0);}
-    20%, 60% { transform: translateX(-10px) rotateZ(-10deg);}
-    40%, 80% { transform: translateX(10px) rotateZ(10deg);}
-  }
-
-  .safe h2 {
     color: #00ff99;
+    user-select: none;
+    overflow: hidden;
+  }
+
+  .container {
+    position: relative;
+    width: 400px;
+    height: 400px;
+    perspective: 1000px;
+  }
+
+  .roulette {
+    position: relative;
+    width: 350px;
+    height: 350px;
+    border-radius: 50%;
+    background: radial-gradient(circle at center, #003300, #001100);
+    box-shadow: 0 0 50px #00ff99 inset;
+    border: 4px solid #00ff99;
+    transform-style: preserve-3d;
+    transition: transform 5s cubic-bezier(0.25, 0.1, 0.25, 1);
+  }
+
+  /* Nomerlar uchun joy */
+  .number {
+    --angle: 0deg;
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    left: 50%;
+    top: 50%;
+    margin-left: -25px;
+    margin-top: -140px;
+    border-radius: 50%;
+    background: #004d00;
+    color: #00ff99;
+    font-weight: bold;
+    font-size: 22px;
     text-align: center;
-    margin-bottom: 30px;
-    text-shadow: 0 0 8px #00ff99;
+    line-height: 50px;
+    box-shadow:
+      0 0 15px #00ff99,
+      inset 0 0 10px #00ff99;
+    transform: rotate(var(--angle)) translateY(-140px) rotate(calc(-1 * var(--angle)));
     user-select: none;
   }
 
-  input[type="password"] {
+  /* Ko‘rsatkich (indikator) */
+  .indicator {
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    margin-left: -10px;
+    width: 0; height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 30px solid #00ff99;
+    filter: drop-shadow(0 0 8px #00ff99);
+    z-index: 20;
+  }
+
+  /* Seyf qopqogi */
+  .safe-door {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    margin-left: -150px;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background: radial-gradient(circle at center, #002200, #000d00);
+    box-shadow: inset 0 0 80px #006600;
+    z-index: 5;
+  }
+
+  /* Matn natija */
+  #resultMessage {
+    position: absolute;
+    bottom: -70px;
     width: 100%;
-    padding: 15px;
-    font-size: 20px;
+    text-align: center;
+    font-size: 22px;
+    font-weight: bold;
+    color: #00ff99;
+    text-shadow: 0 0 10px #00ff99;
+    min-height: 28px;
+  }
+
+  /* Parol input va button container */
+  .input-container {
+    position: absolute;
+    bottom: -140px;
+    width: 100%;
+    text-align: center;
+  }
+  input[type="password"] {
+    width: 200px;
+    padding: 12px;
+    font-size: 18px;
     border-radius: 10px;
     border: none;
     outline: none;
     background: rgba(0, 255, 153, 0.1);
     color: #00ff99;
     box-shadow: inset 0 0 10px #00ff99;
-    margin-bottom: 25px;
     font-family: 'Share Tech Mono', monospace;
+    margin-right: 10px;
     transition: background 0.3s;
   }
   input[type="password"]::placeholder {
@@ -101,145 +130,163 @@
   input[type="password"]:focus {
     background: rgba(0, 255, 153, 0.3);
   }
-
   button {
-    width: 100%;
-    padding: 15px;
-    font-size: 20px;
-    color: #004d00;
+    padding: 12px 20px;
+    font-size: 18px;
     background: #00ff99;
+    color: #004400;
     border: none;
     border-radius: 30px;
     font-weight: bold;
     cursor: pointer;
-    box-shadow: 0 0 20px #00ff99;
+    box-shadow: 0 0 15px #00ff99;
     transition: background 0.3s, color 0.3s;
   }
   button:hover {
     background: #00cc77;
-    color: #001f00;
+    color: #002200;
   }
 
-  .error {
-    height: 28px;
-    margin-top: 10px;
-    color: #ff3300;
-    font-weight: bold;
-    text-align: center;
-    text-shadow: 0 0 8px #ff3300;
-    user-select: none;
+  /* Ochilish animatsiyasi */
+  .open {
+    animation: doorOpen 2s forwards;
   }
+  @keyframes doorOpen {
+    0% {
+      transform: translateY(0) scale(1);
+      box-shadow: inset 0 0 80px #006600;
+    }
+    100% {
+      transform: translateY(100%) scale(1.1);
+      opacity: 0;
+      box-shadow: none;
+    }
+  }
+
 </style>
 </head>
 <body>
 
-<canvas id="matrixCanvas"></canvas>
+<div class="container">
+  <div class="safe-door" id="safeDoor"></div>
+  <div class="roulette" id="roulette">
+    <div class="number" style="--angle: 0deg">1</div>
+    <div class="number" style="--angle: 40deg">2</div>
+    <div class="number" style="--angle: 80deg">3</div>
+    <div class="number" style="--angle: 120deg">4</div>
+    <div class="number" style="--angle: 160deg">5</div>
+    <div class="number" style="--angle: 200deg">6</div>
+    <div class="number" style="--angle: 240deg">7</div>
+    <div class="number" style="--angle: 280deg">8</div>
+    <div class="number" style="--angle: 320deg">9</div>
+  </div>
+  <div class="indicator"></div>
+  <div id="resultMessage"></div>
 
-<div class="safe-container">
-  <div class="safe" id="safe">
-    <h2>🔐 Parolni kiriting</h2>
-    <input type="password" id="password" placeholder="Parol..." onkeydown="if(event.key==='Enter') checkPassword()" autocomplete="off" />
-    <button onclick="checkPassword()">Kirish</button>
-    <div class="error" id="error"></div>
+  <div class="input-container">
+    <input type="password" id="password" placeholder="Parolni kiriting" autocomplete="off" />
+    <button onclick="startSpin()">Aylantirish</button>
   </div>
 </div>
 
 <script>
-  const correctPassword = "1";
+  const roulette = document.getElementById('roulette');
+  const safeDoor = document.getElementById('safeDoor');
+  const resultMessage = document.getElementById('resultMessage');
+  const passwordInput = document.getElementById('password');
+  const targetNumber = 7;  // 7-raqam bo'lishi kerak
 
-  // Ovoz fayllari (oddiy ok va error tovushlari)
+  // Tovushlar
+  const audioSpin = new Audio('https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg');
   const audioSuccess = new Audio('https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg');
   const audioError = new Audio('https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg');
 
-  function checkPassword() {
-    const input = document.getElementById("password").value.trim();
-    const errorDiv = document.getElementById("error");
-    const safe = document.getElementById("safe");
+  let spinning = false;
 
-    if (!input) {
-      errorDiv.textContent = "Parolni kiriting!";
-      playError();
-      triggerShake();
+  // Funksiya: ruletka aylantirish
+  function startSpin() {
+    if (spinning) return; // bir vaqtning o'zida faqat bitta aylanish bo'lsin
+    resultMessage.textContent = '';
+    const password = passwordInput.value.trim();
+
+    if (!password) {
+      showError("Iltimos, parolni kiriting!");
       return;
     }
 
-    if (input === correctPassword) {
-      errorDiv.style.color = "#00ff99";
-      errorDiv.textContent = "Kirish muvaffaqiyatli...";
-      playSuccess();
-      setTimeout(() => {
-        window.location.href = "https://chorsu.vercel.app/jurny/index1.html";
-      }, 1000);
+    spinning = true;
+    audioSpin.currentTime = 0;
+    audioSpin.loop = true;
+    audioSpin.play();
+
+    // Random boshlang'ich burchak
+    let startRotation = Math.random() * 360;
+    // Ruletka 5 dan 8 gacha to'liq aylanishlar + start burchak
+    let spins = Math.floor(Math.random() * 3) + 5;
+
+    // 9 raqam bor, har raqam 40 gradus (360/9)
+    // To'xtash uchun raqamni aniqlash uchun random raqam
+    // Ammo agar password uzunligi >= 7 bo'lsa, targetNumber raqamiga to'g'ri kelishini simulyatsiya qilamiz
+
+    // Parol uzunligi 7 yoki undan ko'p bo'lsa, targetNumber ga to'xtash ehtimoli 50%
+    // Aks holda random
+
+    let finalNumber;
+    if (password.length >= 7 && Math.random() < 0.5) {
+      finalNumber = targetNumber;
     } else {
-      errorDiv.style.color = "#ff3300";
-      errorDiv.textContent = "Noto‘g‘ri parol!";
-      playError();
-      triggerShake();
+      // targetNumber dan boshqa random raqam (1-9)
+      const otherNumbers = [1,2,3,4,5,6,8,9];
+      finalNumber = otherNumbers[Math.floor(Math.random() * otherNumbers.length)];
     }
 
-    function triggerShake() {
-      safe.classList.add("shake");
-      setTimeout(() => safe.classList.remove("shake"), 600);
-    }
+    // Oxirgi burchak: raqam uchun joylashgan burchaklar 0deg=1, 40deg=2, ..., 240deg=7 raqam, ...
+    // Raqam 1 joylashgan 0 deg, shuning uchun finalAngle = (finalNumber-1)*40
 
-    function playSuccess() {
-      audioSuccess.currentTime = 0;
-      audioSuccess.play();
-    }
-    function playError() {
-      audioError.currentTime = 0;
-      audioError.play();
-    }
-  }
+    let finalAngle = (finalNumber - 1) * 40;
 
-  // MATRIX EFFECT CODE
-  const canvas = document.getElementById('matrixCanvas');
-  const ctx = canvas.getContext('2d');
+    // To‘xtash burchagi: 360 * spins + (360 - finalAngle) — chunki biz ruletkani soat yo'nalishida aylantiramiz,
+    // va indikator yuqorida turgan joy (0 deg) shuning uchun raqam indikator ostida qoladi, shuning uchun 360-finalAngle.
 
-  let width, height;
-  let columns;
-  const fontSize = 16;
-  let drops = [];
+    let totalRotation = 360 * spins + (360 - finalAngle);
 
-  function init() {
-    width = window.innerWidth;
-    height = window.innerHeight;
-    canvas.width = width;
-    canvas.height = height;
+    // CSS transform bilan aylantirish
+    roulette.style.transition = 'transform 6s cubic-bezier(0.33, 1, 0.68, 1)';
+    roulette.style.transform = `rotate(${totalRotation}deg)`;
 
-    columns = Math.floor(width / fontSize);
-    drops = [];
-    for(let x = 0; x < columns; x++) {
-      drops[x] = Math.random() * -1000;
-    }
-  }
+    // 6 soniyadan keyin to‘xtash, natijani tekshirish
+    setTimeout(() => {
+      audioSpin.pause();
+      audioSpin.currentTime = 0;
 
-  function draw() {
-    ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
-    ctx.fillRect(0, 0, width, height);
+      if (finalNumber === targetNumber) {
+        showSuccess("Tug‘ri raqam! Seyf ochildi 🔓");
+        safeDoor.classList.add('open');
+        audioSuccess.play();
 
-    ctx.fillStyle = "#00ff99";
-    ctx.font = fontSize + "px 'Share Tech Mono'";
-
-    for(let i = 0; i < drops.length; i++) {
-      const text = String.fromCharCode(48 + Math.floor(Math.random() * 10));
-      ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-
-      if (drops[i] * fontSize > height && Math.random() > 0.975) {
-        drops[i] = 0;
+        // 1.5 soniyadan keyin sahifa ochish (yoki boshqa harakat)
+        setTimeout(() => {
+          // misol uchun sahifani ochish
+          window.location.href = "https://chorsu.vercel.app/jurny/index1.html";
+        }, 2000);
+      } else {
+        showError("Noto‘g‘ri raqam! Qayta urinib ko‘ring.");
+        audioError.play();
       }
-      drops[i] += 1;
-    }
 
-    requestAnimationFrame(draw);
+      spinning = false;
+    }, 6000);
   }
 
-  window.addEventListener('resize', () => {
-    init();
-  });
+  function showSuccess(msg) {
+    resultMessage.style.color = "#00ff99";
+    resultMessage.textContent = msg;
+  }
 
-  init();
-  draw();
+  function showError(msg) {
+    resultMessage.style.color = "#ff3300";
+    resultMessage.textContent = msg;
+  }
 </script>
 
 </body>
