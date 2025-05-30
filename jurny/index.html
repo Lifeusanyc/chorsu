@@ -2,244 +2,159 @@
 <html lang="uz">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>NYC TLC Driver</title>
   <style>
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #f4f6fa;
       margin: 0;
-      padding: 2rem;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f6fa;
       color: #003366;
-      display: none; /* Avval sahifani yashirib turamiz */
+      overflow: hidden;
+    }
+
+    /* Modal parol oynasi */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      width: 300px;
+      animation: zoomIn 0.5s ease;
+      position: relative;
+    }
+
+    .modal-content h2 {
+      margin-bottom: 1rem;
+      font-size: 1.3rem;
+      color: #0072ce;
+    }
+
+    .modal-content input {
+      padding: 0.6rem;
+      width: 100%;
+      border-radius: 8px;
+      border: 2px solid #ccc;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      transition: border-color 0.3s;
+    }
+
+    .modal-content input:focus {
+      border-color: #0072ce;
+      outline: none;
+    }
+
+    .modal-content button {
+      padding: 0.6rem 1.2rem;
+      background: #0072ce;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+
+    .modal-content button:hover {
+      background: #005bb5;
+    }
+
+    .shake {
+      animation: shake 0.4s;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0 }
+      to { opacity: 1 }
+    }
+
+    @keyframes zoomIn {
+      from { transform: scale(0.6); opacity: 0 }
+      to { transform: scale(1); opacity: 1 }
+    }
+
+    @keyframes shake {
+      0% { transform: translateX(0px); }
+      20% { transform: translateX(-10px); }
+      40% { transform: translateX(10px); }
+      60% { transform: translateX(-10px); }
+      80% { transform: translateX(10px); }
+      100% { transform: translateX(0px); }
+    }
+
+    #main-content {
+      display: none;
+      padding: 2rem;
+      animation: fadeIn 0.5s ease;
     }
 
     h1 {
       text-align: center;
-      margin-bottom: 2rem;
-      font-weight: 700;
       color: #0072ce;
-      text-shadow: 0 2px 4px rgba(0, 114, 206, 0.3);
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-      gap: 1rem;
-    }
-
-    .card {
-      background: #fff;
-      border-radius: 14px;
-      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-      padding: 1.3rem 1rem;
-      text-align: center;
-      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-      cursor: pointer;
-      user-select: none;
-      aspect-ratio: 1 / 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      color: #0072ce;
-      font-weight: 600;
-      text-decoration: none;
-      border: 3px solid transparent;
-    }
-
-    .card:hover,
-    .card:focus-visible {
-      transform: scale(1.08);
-      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-      border-color: #005bb5;
-      outline: none;
-      color: #004a99;
-    }
-
-    .card .icon {
-      font-size: 44px;
-      margin-bottom: 0.6rem;
-      line-height: 1;
-      color: #0072ce;
-      transition: color 0.3s ease;
-    }
-
-    #more-links {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-      margin-top: 1.5rem;
-      border-top: 2px solid #0072ce;
-      padding-top: 1rem;
-    }
-
-    .button-container {
-      text-align: center;
-      margin-top: 2.5rem;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 1rem;
-      flex-wrap: nowrap;
-      user-select: none;
-    }
-
-    .toggle-button {
-      width: 56px;
-      height: 56px;
-      background: linear-gradient(135deg, #0072ce, #005bb5);
-      color: white;
       font-size: 2rem;
-      border: none;
-      border-radius: 50%;
-      cursor: pointer;
-      box-shadow: 0 4px 10px rgba(0,114,206,0.4);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
-    }
-
-    .toggle-button:hover {
-      background: linear-gradient(135deg, #005bb5, #003d80);
-      box-shadow: 0 6px 15px rgba(0,91,181,0.6);
-      transform: scale(1.1);
-    }
-
-    .toggle-label {
-      font-weight: 600;
-      color: #005bb5;
-      font-size: 1.1rem;
-      user-select: none;
-      transition: color 0.3s ease;
-    }
-
-    .toggle-button:focus-visible {
-      outline: 3px solid #003d80;
-      outline-offset: 3px;
     }
   </style>
-
-  <!-- Font Awesome -->
-  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </head>
 <body>
 
-  <h1>NYC TLC Driver</h1>
-
-  <div class="grid" role="list" aria-label="Asosiy portal linklari">
-    <a href="https://a836-citypay.nyc.gov/citypay/Parking#!/by-plate-form" class="card" role="listitem" aria-label="Jarima to‘lash">
-      <div class="icon"><i class="fas fa-money-check-alt" aria-hidden="true"></i></div>
-      Jarima to‘lash
-    </a>
-    <a href="https://a156-nauf.nyc.gov/tlcup/" class="card" role="listitem" aria-label="TLC UP portali">
-      <div class="icon"><i class="fas fa-user-shield" aria-hidden="true"></i></div>
-      TLC UP portali
-    </a>
-    <a href="https://www.howsmydrivingny.nyc/" class="card" role="listitem" aria-label="Jarimalarni tekshirish">
-      <div class="icon"><i class="fas fa-id-card" aria-hidden="true"></i></div>
-      Jarimalarni tekshirish
-    </a>
-    <a href="https://chorsu.vercel.app/jurny/point.html" class="card" role="listitem" aria-label="Pointlar Jarimalar">
-      <div class="icon"><i class="fas fa-exclamation-circle" aria-hidden="true"></i></div>
-      Pointlar Jarimalar
-    </a>
-    <a href="https://www.google.com/maps/d/edit?mid=1Q73ST68qKcw9DjjOst8Yn5c5EoGcFhQ&usp" class="card" role="listitem" aria-label="Far Rockaway pickup">
-      <div class="icon"><i class="fas fa-map-marker-alt" aria-hidden="true"></i></div>
-      Far Rockaway pickup
-    </a>
-    <a href="https://www.e-zpassny.com/ezpass/sign-in" class="card" role="listitem" aria-label="E-ZPass">
-      <div class="icon"><i class="fas fa-calendar-alt" aria-hidden="true"></i></div>
-      E-ZPass
-    </a>
+<!-- Parol oynasi -->
+<div class="modal" id="passwordModal">
+  <div class="modal-content" id="modalBox">
+    <h2>Sahifaga kirish uchun parolni kiriting</h2>
+    <input type="password" id="passwordInput" placeholder="Parol..." />
+    <button id="submitPassword">Kirish</button>
   </div>
+</div>
 
-  <div class="grid" id="more-links" role="list" aria-hidden="true">
-    <a href="https://www.nyc.gov/tlc" class="card" role="listitem" aria-label="NYC TLC Rasmiy">
-      <div class="icon"><i class="fas fa-taxi" aria-hidden="true"></i></div>
-      NYC TLC Rasmiy
-    </a>
-    <a href="https://docs.google.com/spreadsheets/d/1CPoJT6Ewvxmis1z171COYTlAbZxTL3vPeSoNB-PXOM0/edit?usp" class="card" role="listitem" aria-label="Uber Portal">
-      <div class="icon"><i class="fab fa-uber" aria-hidden="true"></i></div>
-      Jurny Rockaway base
-    </a>
-    <a href="https://www.lyft.com/drive-with-lyft/regions/new-york-city" class="card" role="listitem" aria-label="Lyft Portal">
-      <div class="icon"><i class="fab fa-lyft" aria-hidden="true"></i></div>
-      Lyft Portal
-    </a>
-    <a href="https://data.cityofnewyork.us/Transportation/For-Hire-Vehicles-FHV-Active/8wbx-tsch/data_preview" class="card" role="listitem" aria-label="Ruxsat etilgan mashinalar">
-      <div class="icon"><i class="fas fa-car" aria-hidden="true"></i></div>
-      TLC mashinalar
-    </a>
-    <a href="https://www.nyc.gov/html/dot/html/motorist/parking-regulations.shtml" class="card" role="listitem" aria-label="Parking Qoidalari">
-      <div class="icon"><i class="fas fa-parking" aria-hidden="true"></i></div>
-      Parking Qoidalari
-    </a>
-    <a href="https://www.facebook.com/groups/nyctlcdrivers/" class="card" role="listitem" aria-label="FB: TLC Drivers">
-      <div class="icon"><i class="fab fa-facebook" aria-hidden="true"></i></div>
-      FB: TLC Drivers
-    </a>
-  </div>
+<!-- Asosiy kontent -->
+<div id="main-content">
+  <h1>NYC TLC DRIVER PANEL</h1>
+  <p style="text-align:center;">👋 Parol to‘g‘ri! Endi siz sahifani ko‘rishingiz mumkin.</p>
+  <!-- Bu yerga butun kontentni joylashtirishingiz mumkin -->
+</div>
 
-  <div class="button-container">
-    <button id="toggle-more" class="toggle-button" aria-expanded="false" aria-controls="more-links" title="Qo‘shimcha linklarni ko‘rsatish">
-      +
-    </button>
-    <div class="toggle-label" id="toggle-label">Qo‘shimcha linklar</div>
-  </div>
+<script>
+  const correctPassword = "1";
+  const submitBtn = document.getElementById("submitPassword");
+  const passwordInput = document.getElementById("passwordInput");
+  const modal = document.getElementById("passwordModal");
+  const modalBox = document.getElementById("modalBox");
+  const mainContent = document.getElementById("main-content");
 
-  <!-- Toggle va Parol uchun JavaScript -->
-  <script>
-    // Qo‘shimcha linklar toggle qilish
-    const toggleBtn = document.getElementById('toggle-more');
-    const moreLinks = document.getElementById('more-links');
-    const toggleLabel = document.getElementById('toggle-label');
+  submitBtn.addEventListener("click", () => {
+    const entered = passwordInput.value.trim();
+    if (entered === correctPassword) {
+      modal.style.display = "none";
+      document.body.style.overflow = "auto";
+      mainContent.style.display = "block";
+    } else {
+      modalBox.classList.remove("shake"); // reset
+      void modalBox.offsetWidth; // reflow
+      modalBox.classList.add("shake");
+      passwordInput.value = "";
+    }
+  });
 
-    toggleBtn.addEventListener('click', () => {
-      const isExpanded = toggleBtn.getAttribute('aria-expanded') === 'true';
-      if (isExpanded) {
-        moreLinks.style.maxHeight = '0';
-        moreLinks.setAttribute('aria-hidden', 'true');
-        toggleBtn.setAttribute('aria-expanded', 'false');
-        toggleBtn.title = "Qo‘shimcha linklarni ko‘rsatish";
-        toggleBtn.textContent = '+';
-        toggleLabel.textContent = "Qo‘shimcha linklar";
-      } else {
-        moreLinks.style.maxHeight = moreLinks.scrollHeight + 'px';
-        moreLinks.setAttribute('aria-hidden', 'false');
-        toggleBtn.setAttribute('aria-expanded', 'true');
-        toggleBtn.title = "Qo‘shimcha linklarni yashirish";
-        toggleBtn.textContent = '−';
-        toggleLabel.textContent = "Yashirish";
-      }
-    });
+  // Enter tugmasi bosilganda ham ishlasin
+  passwordInput.addEventListener("keypress", e => {
+    if (e.key === "Enter") {
+      submitBtn.click();
+    }
+  });
+</script>
 
-    // Parol so‘rash
-    window.addEventListener('DOMContentLoaded', () => {
-      let correctPassword = '1';
-      let attempts = 0;
-
-      function askPassword() {
-        let userPassword = prompt("Iltimos, parolni kiriting:");
-        if (userPassword === correctPassword) {
-          document.body.style.display = "block";
-        } else {
-          attempts++;
-          if (attempts < 3) {
-            alert("Parol noto‘g‘ri. Qayta urinib ko‘ring.");
-            askPassword();
-          } else {
-            alert("3 marta noto‘g‘ri parol kiritildi. Sahifa bloklandi.");
-            document.body.innerHTML = "<h2 style='text-align:center; color:red; margin-top: 20vh;'>Parol noto‘g‘ri kiritildi. Sahifa bloklandi.</h2>";
-          }
-        }
-      }
-
-      askPassword();
-    });
-  </script>
 </body>
 </html>
