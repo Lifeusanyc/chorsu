@@ -12,7 +12,7 @@
 <body>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/controls/OrbitControls.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/controls/OrbitControls.js"></script>
 
 <script>
 // Sahna va kamera
@@ -24,40 +24,37 @@ const renderer = new THREE.WebGLRenderer({antialias: true});
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-// Orbit Controls (Foydalanuvchi o‘ziga moslab burishi uchun)
+// Orbit Controls
 const controls = new THREE.OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.1;
 
 // Yorug'liklar
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
 scene.add(ambientLight);
 const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
 directionalLight.position.set(5,5,5);
 scene.add(directionalLight);
 
-// Kalla suyagi modeli (hozir oddiy geometrik o'rinbosar)
-// Haqiqiy model uchun siz .glb/.gltf yuklab olishingiz mumkin va THREE.GLTFLoader bilan yuklashingiz kerak
-// Bu yerda biz o‘rniga "torus knot" geometrik shakl ishlatamiz
-const geometry = new THREE.TorusKnotGeometry(1, 0.3, 150, 20);
+// Kalla modeli o'rniga Torus Knot geometriyasi
+const geometry = new THREE.TorusKnotGeometry(1, 0.3, 100, 16);
 const material = new THREE.MeshStandardMaterial({
   color: 0x00ff00,
   metalness: 0.7,
   roughness: 0.2,
-  wireframe: false,
   transparent: true,
   opacity: 0.9
 });
 const skull = new THREE.Mesh(geometry, material);
 scene.add(skull);
 
-// Yuzni skaner effekti uchun chiziqlar yaratamiz
+// Skaner chiziqlari uchun guruh yaratamiz
 const scanLines = new THREE.Group();
 const lineMaterial = new THREE.LineBasicMaterial({color: 0x00ff00, opacity: 0.3, transparent: true});
-for(let i = -1; i <= 1; i += 0.1) {
+for(let i = -1.5; i <= 1.5; i += 0.15) {
   const points = [];
-  points.push(new THREE.Vector3(-1.5, i, 1.5));
-  points.push(new THREE.Vector3(1.5, i, -1.5));
+  points.push(new THREE.Vector3(-1.7, i, 1.7));
+  points.push(new THREE.Vector3(1.7, i, -1.7));
   const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
   const line = new THREE.Line(lineGeometry, lineMaterial);
   scanLines.add(line);
@@ -72,10 +69,9 @@ function animate() {
   skull.rotation.y += 0.01;
   skull.rotation.x = Math.sin(Date.now()*0.001)*0.1;
 
-  // Skaner chiziqlarining pozitsiyasini harakatlantiramiz
+  // Skaner chiziqlarining harakatini boshqaramiz
   scanOffset += 0.02;
-  if (scanOffset > 2) scanOffset = -2;
-
+  if (scanOffset > 3) scanOffset = -3;
   scanLines.position.y = scanOffset;
 
   controls.update();
@@ -84,7 +80,6 @@ function animate() {
 
 animate();
 
-// Oyna o'lchamini sozlash
 window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth/window.innerHeight;
   camera.updateProjectionMatrix();
