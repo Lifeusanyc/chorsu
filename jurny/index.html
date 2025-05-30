@@ -1,91 +1,226 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Kalla suyagi 3D modeli</title>
-<style>
-  body { margin: 0; background: black; overflow: hidden; }
-  canvas { display: block; }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NYC TLC Driver</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f4f6fa;
+      margin: 0;
+      padding: 2rem;
+      color: #003366;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 2rem;
+      font-weight: 700;
+      color: #0072ce;
+      text-shadow: 0 2px 4px rgba(0, 114, 206, 0.3);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 1rem;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+      padding: 1.3rem 1rem;
+      text-align: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+      cursor: pointer;
+      user-select: none;
+      aspect-ratio: 1 / 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #0072ce;
+      font-weight: 600;
+      text-decoration: none;
+      border: 3px solid transparent;
+    }
+
+    .card:hover,
+    .card:focus-visible {
+      transform: scale(1.08);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      border-color: #005bb5;
+      outline: none;
+      color: #004a99;
+    }
+
+    .card .icon {
+      font-size: 44px;
+      margin-bottom: 0.6rem;
+      line-height: 1;
+      color: #0072ce;
+      transition: color 0.3s ease;
+    }
+
+    /* Qo‘shimcha linklar */
+    #more-links {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      margin-top: 1.5rem;
+      border-top: 2px solid #0072ce;
+      padding-top: 1rem;
+    }
+
+    /* Tugmalar konteyneri */
+    .button-container {
+      text-align: center;
+      margin-top: 2.5rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: nowrap;
+      user-select: none;
+    }
+
+    .toggle-button {
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, #0072ce, #005bb5);
+      color: white;
+      font-size: 2rem;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,114,206,0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+    }
+
+    .toggle-button:hover {
+      background: linear-gradient(135deg, #005bb5, #003d80);
+      box-shadow: 0 6px 15px rgba(0,91,181,0.6);
+      transform: scale(1.1);
+    }
+
+    .toggle-label {
+      font-weight: 600;
+      color: #005bb5;
+      font-size: 1.1rem;
+      user-select: none;
+      transition: color 0.3s ease;
+    }
+
+    .toggle-button:focus-visible {
+      outline: 3px solid #003d80;
+      outline-offset: 3px;
+    }
+  </style>
+
+  <!-- Font Awesome -->
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </head>
 <body>
 
-<script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/controls/OrbitControls.js"></script>
+  <h1>NYC TLC Driver</h1>
 
-<script>
-// Sahna va kamera
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 0.1, 1000);
-camera.position.set(0, 0, 5);
+  <!-- Asosiy 7 ta link -->
+  <div class="grid" role="list" aria-label="Asosiy portal linklari">
+    <a href="https://a836-citypay.nyc.gov/citypay/Parking#!/by-plate-form" class="card" role="listitem" aria-label="Jarima to‘lash">
+      <div class="icon"><i class="fas fa-money-check-alt" aria-hidden="true"></i></div>
+      Jarima to‘lash
+    </a>
+    <a href="https://a156-nauf.nyc.gov/tlcup/" class="card" role="listitem" aria-label="TLC UP portali">
+      <div class="icon"><i class="fas fa-user-shield" aria-hidden="true"></i></div>
+      TLC UP portali
+    </a>
+    <a href="https://www.howsmydrivingny.nyc/" class="card" role="listitem" aria-label="Jarimalarni tekshirish">
+      <div class="icon"><i class="fas fa-id-card" aria-hidden="true"></i></div>
+      Jarimalarni tekshirish
+    </a>
+    <a href="https://chorsu.vercel.app/jurny/point.html" class="card" role="listitem" aria-label="Pointlar Jarimalar">
+      <div class="icon"><i class="fas fa-exclamation-circle" aria-hidden="true"></i></div>
+      Pointlar Jarimalar
+    </a>
+    <a href="https://www.google.com/maps/d/edit?mid=1Q73ST68qKcw9DjjOst8Yn5c5EoGcFhQ&usp" class="card" role="listitem" aria-label="Far Rockaway pickup">
+      <div class="icon"><i class="fas fa-map-marker-alt" aria-hidden="true"></i></div>
+      Far Rockaway pickup
+    </a>
+   <a href="https://www.e-zpassny.com/ezpass/sign-in" class="card" role="listitem" aria-label="E-ZPass">
+      <div class="icon"><i class="fas fa-calendar-alt" aria-hidden="true"></i></div>
+      E-ZPass
+    </a>
+  </div>
 
-const renderer = new THREE.WebGLRenderer({antialias: true});
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
+  <!-- Qo‘shimcha linklar (yashirin) -->
+  <div class="grid" id="more-links" role="list" aria-hidden="true">
+    <a href="https://www.nyc.gov/tlc" class="card" role="listitem" aria-label="NYC TLC Rasmiy">
+      <div class="icon"><i class="fas fa-taxi" aria-hidden="true"></i></div>
+      NYC TLC Rasmiy
+    </a>
+    <a href="https://docs.google.com/spreadsheets/d/1CPoJT6Ewvxmis1z171COYTlAbZxTL3vPeSoNB-PXOM0/edit?usp" class="card" role="listitem" aria-label="Uber Portal">
+      <div class="icon"><i class="fab fa-uber" aria-hidden="true"></i></div>
+      Jurny Rockaway base
+    </a>
+    <a href="https://www.lyft.com/drive-with-lyft/regions/new-york-city" class="card" role="listitem" aria-label="Lyft Portal">
+      <div class="icon"><i class="fab fa-lyft" aria-hidden="true"></i></div>
+      Lyft Portal
+    </a>
+    
+    <a href="https://data.cityofnewyork.us/Transportation/For-Hire-Vehicles-FHV-Active/8wbx-tsch/data_preview" class="card" role="listitem" aria-label="Ruxsat etilgan mashinalar">
+      <div class="icon"><i class="fas fa-car" aria-hidden="true"></i></div>
+      TLC mashinalar
+    </a>
+    
+    <a href="https://www.nyc.gov/html/dot/html/motorist/parking-regulations.shtml" class="card" role="listitem" aria-label="Parking Qoidalari">
+      <div class="icon"><i class="fas fa-parking" aria-hidden="true"></i></div>
+      Parking Qoidalari
+    </a>
+    <a href="https://www.facebook.com/groups/nyctlcdrivers/" class="card" role="listitem" aria-label="FB: TLC Drivers">
+      <div class="icon"><i class="fab fa-facebook" aria-hidden="true"></i></div>
+      FB: TLC Drivers
+    </a>
+  </div>
 
-// Orbit Controls
-const controls = new THREE.OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;
-controls.dampingFactor = 0.1;
+  <!-- Toggle tugma -->
+  <div class="button-container">
+    <button id="toggle-more" class="toggle-button" aria-expanded="false" aria-controls="more-links" title="Qo‘shimcha linklarni ko‘rsatish">
+      +
+    </button>
+    <div class="toggle-label" id="toggle-label">Qo‘shimcha linklar</div>
+  </div>
 
-// Yorug'liklar
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
-scene.add(ambientLight);
-const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-directionalLight.position.set(5,5,5);
-scene.add(directionalLight);
+  <script>
+    const toggleBtn = document.getElementById('toggle-more');
+    const moreLinks = document.getElementById('more-links');
+    const toggleLabel = document.getElementById('toggle-label');
 
-// Kalla modeli o'rniga Torus Knot geometriyasi
-const geometry = new THREE.TorusKnotGeometry(1, 0.3, 100, 16);
-const material = new THREE.MeshStandardMaterial({
-  color: 0x00ff00,
-  metalness: 0.7,
-  roughness: 0.2,
-  transparent: true,
-  opacity: 0.9
-});
-const skull = new THREE.Mesh(geometry, material);
-scene.add(skull);
-
-// Skaner chiziqlari uchun guruh yaratamiz
-const scanLines = new THREE.Group();
-const lineMaterial = new THREE.LineBasicMaterial({color: 0x00ff00, opacity: 0.3, transparent: true});
-for(let i = -1.5; i <= 1.5; i += 0.15) {
-  const points = [];
-  points.push(new THREE.Vector3(-1.7, i, 1.7));
-  points.push(new THREE.Vector3(1.7, i, -1.7));
-  const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
-  const line = new THREE.Line(lineGeometry, lineMaterial);
-  scanLines.add(line);
-}
-scene.add(scanLines);
-
-let scanOffset = 0;
-
-function animate() {
-  requestAnimationFrame(animate);
-
-  skull.rotation.y += 0.01;
-  skull.rotation.x = Math.sin(Date.now()*0.001)*0.1;
-
-  // Skaner chiziqlarining harakatini boshqaramiz
-  scanOffset += 0.02;
-  if (scanOffset > 3) scanOffset = -3;
-  scanLines.position.y = scanOffset;
-
-  controls.update();
-  renderer.render(scene, camera);
-}
-
-animate();
-
-window.addEventListener('resize', () => {
-  camera.aspect = window.innerWidth/window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
-});
-</script>
+    toggleBtn.addEventListener('click', () => {
+      const isExpanded = toggleBtn.getAttribute('aria-expanded') === 'true';
+      if (isExpanded) {
+        moreLinks.style.maxHeight = '0';
+        moreLinks.setAttribute('aria-hidden', 'true');
+        toggleBtn.setAttribute('aria-expanded', 'false');
+        toggleBtn.title = "Qo‘shimcha linklarni ko‘rsatish";
+        toggleBtn.textContent = '+';
+        toggleLabel.textContent = "Qo‘shimcha linklar";
+      } else {
+        moreLinks.style.maxHeight = moreLinks.scrollHeight + 'px';
+        moreLinks.setAttribute('aria-hidden', 'false');
+        toggleBtn.setAttribute('aria-expanded', 'true');
+        toggleBtn.title = "Qo‘shimcha linklarni yashirish";
+        toggleBtn.textContent = '−';
+        toggleLabel.textContent = "Yashirish";
+      }
+    });
+  </script>
 
 </body>
 </html>
