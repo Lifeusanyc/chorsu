@@ -3,113 +3,94 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Hacker tizimga kirish</title>
+<title>Kalla suyagi 3D modeli</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
-
-  body {
-    margin: 0;
-    background-color: #000000;
-    color: #00ff00;
-    font-family: 'Share Tech Mono', monospace;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-  }
-
-  .terminal {
-    background-color: #010101;
-    border: 2px solid #00ff00;
-    padding: 20px;
-    width: 400px;
-    box-shadow: 0 0 20px #00ff00;
-    border-radius: 5px;
-  }
-
-  h1 {
-    margin-top: 0;
-    font-size: 24px;
-    letter-spacing: 2px;
-  }
-
-  label {
-    display: block;
-    margin-top: 20px;
-    margin-bottom: 5px;
-    font-size: 14px;
-  }
-
-  input[type="text"],
-  input[type="password"] {
-    width: 100%;
-    background: #000;
-    border: 1px solid #00ff00;
-    color: #00ff00;
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 16px;
-    padding: 8px;
-    outline: none;
-  }
-
-  input[type="text"]:focus,
-  input[type="password"]:focus {
-    border-color: #00cc00;
-  }
-
-  button {
-    margin-top: 20px;
-    width: 100%;
-    padding: 10px;
-    background: #00ff00;
-    color: #000;
-    font-weight: bold;
-    border: none;
-    cursor: pointer;
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 16px;
-    transition: background 0.3s ease;
-  }
-
-  button:hover {
-    background: #00cc00;
-  }
-
-  .status {
-    margin-top: 20px;
-    font-size: 14px;
-    height: 20px;
-    min-height: 20px;
-  }
-
+  body { margin: 0; background: black; overflow: hidden; }
+  canvas { display: block; }
 </style>
 </head>
 <body>
-  <div class="terminal">
-    <h1>ACCESS TERMINAL</h1>
-    <form id="loginForm" autocomplete="off">
-      <label for="username">LOGIN:</label>
-      <input type="text" id="username" name="username" required autofocus />
 
-      <label for="password">PASSWORD:</label>
-      <input type="password" id="password" name="password" required />
-
-      <button type="submit">CONNECT</button>
-    </form>
-    <div class="status" id="status"></div>
-  </div>
+<script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/controls/OrbitControls.min.js"></script>
 
 <script>
-  const form = document.getElementById('loginForm');
-  const statusDiv = document.getElementById('status');
+// Sahna va kamera
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 0.1, 1000);
+camera.position.set(0, 0, 5);
 
-  form.addEventListener('submit', e => {
-    e.preventDefault();
-    statusDiv.textContent = 'ACCESSING SYSTEM...';
-    setTimeout(() => {
-      statusDiv.textContent = 'ACCESS GRANTED. WELCOME.';
-    }, 2000);
-  });
+const renderer = new THREE.WebGLRenderer({antialias: true});
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
+// Orbit Controls (Foydalanuvchi o‘ziga moslab burishi uchun)
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.1;
+
+// Yorug'liklar
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+scene.add(ambientLight);
+const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+directionalLight.position.set(5,5,5);
+scene.add(directionalLight);
+
+// Kalla suyagi modeli (hozir oddiy geometrik o'rinbosar)
+// Haqiqiy model uchun siz .glb/.gltf yuklab olishingiz mumkin va THREE.GLTFLoader bilan yuklashingiz kerak
+// Bu yerda biz o‘rniga "torus knot" geometrik shakl ishlatamiz
+const geometry = new THREE.TorusKnotGeometry(1, 0.3, 150, 20);
+const material = new THREE.MeshStandardMaterial({
+  color: 0x00ff00,
+  metalness: 0.7,
+  roughness: 0.2,
+  wireframe: false,
+  transparent: true,
+  opacity: 0.9
+});
+const skull = new THREE.Mesh(geometry, material);
+scene.add(skull);
+
+// Yuzni skaner effekti uchun chiziqlar yaratamiz
+const scanLines = new THREE.Group();
+const lineMaterial = new THREE.LineBasicMaterial({color: 0x00ff00, opacity: 0.3, transparent: true});
+for(let i = -1; i <= 1; i += 0.1) {
+  const points = [];
+  points.push(new THREE.Vector3(-1.5, i, 1.5));
+  points.push(new THREE.Vector3(1.5, i, -1.5));
+  const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
+  const line = new THREE.Line(lineGeometry, lineMaterial);
+  scanLines.add(line);
+}
+scene.add(scanLines);
+
+let scanOffset = 0;
+
+function animate() {
+  requestAnimationFrame(animate);
+
+  skull.rotation.y += 0.01;
+  skull.rotation.x = Math.sin(Date.now()*0.001)*0.1;
+
+  // Skaner chiziqlarining pozitsiyasini harakatlantiramiz
+  scanOffset += 0.02;
+  if (scanOffset > 2) scanOffset = -2;
+
+  scanLines.position.y = scanOffset;
+
+  controls.update();
+  renderer.render(scene, camera);
+}
+
+animate();
+
+// Oyna o'lchamini sozlash
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth/window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
 </script>
+
 </body>
 </html>
