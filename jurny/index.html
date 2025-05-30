@@ -3,147 +3,120 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Kripto Usul Tizimga Kirish</title>
+<title>Seyf Kodini Kiriting</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap');
 
-  /* Tana va fon */
-  body, html {
-    height: 100%;
+  body {
     margin: 0;
-    background-color: #000;
-    overflow: hidden;
+    height: 100vh;
+    background: #000;
     font-family: 'Orbitron', monospace;
     color: #00ff99;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    user-select: none;
   }
 
-  /* Binar oqimi fon */
-  #matrix {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 0;
+  .safe-container {
+    display: flex;
+    gap: 20px;
   }
 
-  /* Login quti */
-  .login-container {
-    position: relative;
-    z-index: 1;
-    width: 320px;
-    margin: 100px auto;
+  .digit {
     background: rgba(0, 255, 153, 0.1);
     border: 2px solid #00ff99;
-    border-radius: 10px;
-    padding: 30px;
-    box-shadow: 0 0 20px #00ff99;
+    width: 60px;
+    height: 100px;
+    font-size: 60px;
+    line-height: 100px;
     text-align: center;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.3s, border-color 0.3s;
   }
 
-  .login-container h1 {
-    margin-bottom: 30px;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-  }
-
-  .login-container input[type="text"],
-  .login-container input[type="password"] {
-    width: 90%;
-    padding: 12px;
-    margin: 10px 0;
-    border: none;
-    background: rgba(0, 255, 153, 0.1);
-    border-bottom: 2px solid #00ff99;
-    color: #00ff99;
-    font-size: 18px;
-    outline: none;
-    transition: border-color 0.3s;
-  }
-
-  .login-container input[type="text"]:focus,
-  .login-container input[type="password"]:focus {
+  .digit:hover {
+    background: #00ff99;
+    color: #000;
     border-color: #00ffaa;
   }
 
-  .login-container button {
-    margin-top: 20px;
-    padding: 12px 40px;
-    background: #00ff99;
-    border: none;
+  .digit.correct {
+    background: #00ffaa;
     color: #000;
-    font-weight: bold;
-    font-size: 18px;
-    cursor: pointer;
-    border-radius: 5px;
-    transition: background 0.3s;
+    border-color: #00ffaa;
+    cursor: default;
   }
 
-  .login-container button:hover {
-    background: #00cc77;
+  .message {
+    margin-top: 40px;
+    font-size: 30px;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
   }
 
-  /* Kursor effekti */
-  .login-container input::selection {
-    background: #00ff99;
-    color: #000;
+  .message.show {
+    opacity: 1;
   }
 </style>
 </head>
 <body>
 
-<canvas id="matrix"></canvas>
-
-<div class="login-container">
-  <h1>Kirish</h1>
-  <input type="text" placeholder="Foydalanuvchi nomi" />
-  <input type="password" placeholder="Parol" />
-  <button type="button">Kirish</button>
+<div class="safe-container">
+  <div class="digit" data-index="0">0</div>
+  <div class="digit" data-index="1">0</div>
+  <div class="digit" data-index="2">0</div>
+  <div class="digit" data-index="3">0</div>
 </div>
 
+<div class="message" id="message">Seyf ochildi! 🎉</div>
+
 <script>
-  // MATRIX BACKGROUND ANIMATION
-  const canvas = document.getElementById('matrix');
-  const ctx = canvas.getContext('2d');
+  const code = ['4','8','2','6']; // to'g'ri kod
+  const digits = document.querySelectorAll('.digit');
+  const message = document.getElementById('message');
 
-  // Canvas o'lchamini oynaga moslashtirish
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+  // Har bir katakchani bosganda raqam oshadi 0-9 oralig'ida
+  digits.forEach(digit => {
+    digit.addEventListener('click', () => {
+      if (digit.classList.contains('correct')) return; // to'g'ri bo'lsa o'zgartirmaslik
+      let current = Number(digit.textContent);
+      current = (current + 1) % 10;
+      digit.textContent = current;
 
-  const letters = '01'; // faqat 0 va 1 lar
-  const fontSize = 16;
-  const columns = canvas.width / fontSize;
+      checkCode();
+    });
+  });
 
-  // Har bir ustun uchun y pozitsiyasi
-  const drops = [];
-  for (let i = 0; i < columns; i++) drops[i] = Math.random() * canvas.height;
-
-  function draw() {
-    // Yarim shaffof qora fon (bu harakat effektini beradi)
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    ctx.fillStyle = '#00ff99';
-    ctx.font = fontSize + 'px monospace';
-
-    for (let i = 0; i < drops.length; i++) {
-      const text = letters.charAt(Math.floor(Math.random() * letters.length));
-      ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-
-      if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-        drops[i] = 0;
+  function checkCode() {
+    let allCorrect = true;
+    digits.forEach((digit, i) => {
+      if (digit.textContent === code[i]) {
+        digit.classList.add('correct');
+      } else {
+        digit.classList.remove('correct');
+        allCorrect = false;
       }
-      drops[i]++;
+    });
+
+    if (allCorrect) {
+      showOpenMessage();
     }
   }
 
-  setInterval(draw, 50);
-
-  // Oyna o'lchami o'zgarganda canvas o'lchamini yangilash
-  window.addEventListener('resize', () => {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-  });
+  function showOpenMessage() {
+    message.classList.add('show');
+    // qo'shimcha animatsiya uchun rang o'zgarishi
+    digits.forEach(digit => {
+      digit.style.transition = 'all 0.8s ease-in-out';
+      digit.style.backgroundColor = '#00ffaa';
+      digit.style.color = '#000';
+      digit.style.transform = 'scale(1.1)';
+    });
+  }
 </script>
 
 </body>
