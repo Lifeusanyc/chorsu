@@ -3,264 +3,113 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Qo‘lda burab ochiladigan seyf</title>
+<title>Hacker tizimga kirish</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
-  body, html {
-    margin: 0; padding: 0; height: 100%;
-    background: #111;
+
+  body {
+    margin: 0;
+    background-color: #000000;
+    color: #00ff00;
     font-family: 'Share Tech Mono', monospace;
     display: flex;
     justify-content: center;
     align-items: center;
-    color: #00ff99;
-    user-select: none;
-    overflow: hidden;
+    height: 100vh;
   }
-  .container {
-    position: relative;
+
+  .terminal {
+    background-color: #010101;
+    border: 2px solid #00ff00;
+    padding: 20px;
     width: 400px;
-    height: 400px;
-    perspective: 1000px;
+    box-shadow: 0 0 20px #00ff00;
+    border-radius: 5px;
   }
-  .roulette {
-    position: relative;
-    width: 350px;
-    height: 350px;
-    border-radius: 50%;
-    background: radial-gradient(circle at center, #003300, #001100);
-    box-shadow: 0 0 50px #00ff99 inset;
-    border: 4px solid #00ff99;
-    transform-style: preserve-3d;
-    cursor: grab;
-    transition: box-shadow 0.3s;
+
+  h1 {
+    margin-top: 0;
+    font-size: 24px;
+    letter-spacing: 2px;
   }
-  .roulette:active {
-    cursor: grabbing;
-  }
-  .number {
-    --angle: 0deg;
-    position: absolute;
-    width: 50px;
-    height: 50px;
-    left: 50%;
-    top: 50%;
-    margin-left: -25px;
-    margin-top: -140px;
-    border-radius: 50%;
-    background: #004d00;
-    color: #00ff99;
-    font-weight: bold;
-    font-size: 22px;
-    text-align: center;
-    line-height: 50px;
-    box-shadow:
-      0 0 15px #00ff99,
-      inset 0 0 10px #00ff99;
-    transform: rotate(var(--angle)) translateY(-140px) rotate(calc(-1 * var(--angle)));
-    user-select: none;
-  }
-  .indicator {
-    position: absolute;
-    top: -30px;
-    left: 50%;
-    margin-left: -10px;
-    width: 0; height: 0;
-    border-left: 10px solid transparent;
-    border-right: 10px solid transparent;
-    border-bottom: 30px solid #00ff99;
-    filter: drop-shadow(0 0 8px #00ff99);
-    z-index: 20;
-  }
-  .safe-door {
-    position: absolute;
-    top: 10px;
-    left: 50%;
-    margin-left: -150px;
-    width: 300px;
-    height: 300px;
-    border-radius: 50%;
-    background: radial-gradient(circle at center, #002200, #000d00);
-    box-shadow: inset 0 0 80px #006600;
-    z-index: 5;
-    transition: transform 2s ease, opacity 2s ease;
-  }
-  .safe-door.open {
-    transform: translateY(120%);
-    opacity: 0;
-  }
-  #resultMessage {
+
+  label {
+    display: block;
     margin-top: 20px;
-    text-align: center;
-    font-size: 22px;
-    font-weight: bold;
-    color: #00ff99;
-    text-shadow: 0 0 10px #00ff99;
-    min-height: 28px;
+    margin-bottom: 5px;
+    font-size: 14px;
   }
-  .input-container {
-    margin-top: 20px;
-    text-align: center;
-  }
+
+  input[type="text"],
   input[type="password"] {
-    width: 200px;
-    padding: 12px;
-    font-size: 18px;
-    border-radius: 10px;
-    border: none;
-    outline: none;
-    background: rgba(0, 255, 153, 0.1);
-    color: #00ff99;
-    box-shadow: inset 0 0 10px #00ff99;
+    width: 100%;
+    background: #000;
+    border: 1px solid #00ff00;
+    color: #00ff00;
     font-family: 'Share Tech Mono', monospace;
-    margin-right: 10px;
-    transition: background 0.3s;
+    font-size: 16px;
+    padding: 8px;
+    outline: none;
   }
-  input[type="password"]::placeholder {
-    color: #007744;
-  }
+
+  input[type="text"]:focus,
   input[type="password"]:focus {
-    background: rgba(0, 255, 153, 0.3);
+    border-color: #00cc00;
   }
+
   button {
-    padding: 12px 20px;
-    font-size: 18px;
-    background: #00ff99;
-    color: #004400;
-    border: none;
-    border-radius: 30px;
+    margin-top: 20px;
+    width: 100%;
+    padding: 10px;
+    background: #00ff00;
+    color: #000;
     font-weight: bold;
+    border: none;
     cursor: pointer;
-    box-shadow: 0 0 15px #00ff99;
-    transition: background 0.3s, color 0.3s;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 16px;
+    transition: background 0.3s ease;
   }
+
   button:hover {
-    background: #00cc77;
-    color: #002200;
+    background: #00cc00;
   }
+
+  .status {
+    margin-top: 20px;
+    font-size: 14px;
+    height: 20px;
+    min-height: 20px;
+  }
+
 </style>
 </head>
 <body>
+  <div class="terminal">
+    <h1>ACCESS TERMINAL</h1>
+    <form id="loginForm" autocomplete="off">
+      <label for="username">LOGIN:</label>
+      <input type="text" id="username" name="username" required autofocus />
 
-<div class="container">
-  <div class="safe-door" id="safeDoor"></div>
-  <div class="roulette" id="roulette">
-    <div class="number" style="--angle: 0deg">1</div>
-    <div class="number" style="--angle: 40deg">2</div>
-    <div class="number" style="--angle: 80deg">3</div>
-    <div class="number" style="--angle: 120deg">4</div>
-    <div class="number" style="--angle: 160deg">5</div>
-    <div class="number" style="--angle: 200deg">6</div>
-    <div class="number" style="--angle: 240deg">7</div>
-    <div class="number" style="--angle: 280deg">8</div>
-    <div class="number" style="--angle: 320deg">9</div>
+      <label for="password">PASSWORD:</label>
+      <input type="password" id="password" name="password" required />
+
+      <button type="submit">CONNECT</button>
+    </form>
+    <div class="status" id="status"></div>
   </div>
-  <div class="indicator"></div>
-
-  <div id="resultMessage"></div>
-
-  <div class="input-container">
-    <input type="password" id="password" placeholder="Parolni kiriting" autocomplete="off" />
-    <button onclick="checkLock()">Seyfni ochish</button>
-  </div>
-</div>
 
 <script>
-  const roulette = document.getElementById('roulette');
-  const safeDoor = document.getElementById('safeDoor');
-  const resultMessage = document.getElementById('resultMessage');
-  const passwordInput = document.getElementById('password');
+  const form = document.getElementById('loginForm');
+  const statusDiv = document.getElementById('status');
 
-  const targetNumber = 7; // Ochilishi kerak bo‘lgan raqam
-
-  // Aylantirish uchun kerak bo‘lgan o‘zgaruvchilar
-  let isDragging = false;
-  let startX = 0;
-  let currentRotation = 0;
-
-  // Sichqoncha yoki touch boshlanishida
-  roulette.addEventListener('mousedown', (e) => {
-    isDragging = true;
-    startX = e.clientX;
-    roulette.style.transition = 'none';
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    statusDiv.textContent = 'ACCESSING SYSTEM...';
+    setTimeout(() => {
+      statusDiv.textContent = 'ACCESS GRANTED. WELCOME.';
+    }, 2000);
   });
-  roulette.addEventListener('touchstart', (e) => {
-    isDragging = true;
-    startX = e.touches[0].clientX;
-    roulette.style.transition = 'none';
-  });
-
-  // Harakatlanayotganda
-  roulette.addEventListener('mousemove', (e) => {
-    if (!isDragging) return;
-    const deltaX = e.clientX - startX;
-    startX = e.clientX;
-    currentRotation += deltaX;
-    roulette.style.transform = `rotate(${currentRotation}deg)`;
-  });
-  roulette.addEventListener('touchmove', (e) => {
-    if (!isDragging) return;
-    const deltaX = e.touches[0].clientX - startX;
-    startX = e.touches[0].clientX;
-    currentRotation += deltaX;
-    roulette.style.transform = `rotate(${currentRotation}deg)`;
-  });
-
-  // Tugaganda
-  roulette.addEventListener('mouseup', () => {
-    isDragging = false;
-  });
-  roulette.addEventListener('mouseleave', () => {
-    isDragging = false;
-  });
-  roulette.addEventListener('touchend', () => {
-    isDragging = false;
-  });
-  roulette.addEventListener('touchcancel', () => {
-    isDragging = false;
-  });
-
-  // Parolni va burilish burchagini tekshirish
-  function checkLock() {
-    const password = passwordInput.value.trim();
-    if (!password) {
-      showMessage("Iltimos, parolni kiriting!", "error");
-      return;
-    }
-    // Burilish burchagi 0 dan 360 gacha normalizatsiya qilamiz
-    let normalizedRotation = currentRotation % 360;
-    if (normalizedRotation < 0) normalizedRotation += 360;
-
-    // Har bir raqam 40 gradusni egallaydi: 0-40 (1), 40-80 (2), ..., 240-280 (7), ...
-    // Ko‘rsatkich 0 gradusda turadi (yuqorida) shuning uchun 360-normalizedRotation raqamni ko‘rsatadi
-    let indicatorAngle = (360 - normalizedRotation) % 360;
-
-    // Qaysi raqam ko‘rsatilganini topamiz
-    // raqam = floor(indicatorAngle / 40) + 1
-    let selectedNumber = Math.floor(indicatorAngle / 40) + 1;
-
-    if (selectedNumber === targetNumber) {
-      showMessage("Seyf ochildi! 🔓", "success");
-      safeDoor.classList.add('open');
-      setTimeout(() => {
-        window.location.href = "https://chorsu.vercel.app/jurny/index1.html";
-      }, 2000);
-    } else {
-      showMessage(`Noto‘g‘ri raqam: ${selectedNumber}. Qayta urinib ko‘ring.`, "error");
-    }
-  }
-
-  function showMessage(text, type) {
-    resultMessage.textContent = text;
-    if (type === "error") {
-      resultMessage.style.color = "#ff4444";
-      resultMessage.style.textShadow = "0 0 8px #ff4444";
-    } else {
-      resultMessage.style.color = "#00ff99";
-      resultMessage.style.textShadow = "0 0 10px #00ff99";
-    }
-  }
 </script>
-
 </body>
 </html>
