@@ -248,3 +248,19 @@
     } else {
       showMessage(`Noto‘g‘ri raqam: ${selectedNumber}. Qayta urinib ko‘ring.`, "error");
     }
+  }
+
+  function showMessage(text, type) {
+    resultMessage.textContent = text;
+    if (type === "error") {
+      resultMessage.style.color = "#ff4444";
+      resultMessage.style.textShadow = "0 0 8px #ff4444";
+    } else {
+      resultMessage.style.color = "#00ff99";
+      resultMessage.style.textShadow = "0 0 10px #00ff99";
+    }
+  }
+</script>
+
+</body>
+</html>
