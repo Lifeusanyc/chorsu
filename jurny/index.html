@@ -13,10 +13,6 @@
       color: #003366;
     }
 
-    #content {
-      display: none;
-    }
-
     h1 {
       text-align: center;
       margin-bottom: 2rem;
@@ -68,6 +64,7 @@
       transition: color 0.3s ease;
     }
 
+    /* Qo‘shimcha linklar */
     #more-links {
       max-height: 0;
       overflow: hidden;
@@ -78,6 +75,7 @@
       padding-top: 1rem;
     }
 
+    /* Tugmalar konteyneri */
     .button-container {
       text-align: center;
       margin-top: 2.5rem;
@@ -126,102 +124,103 @@
     }
   </style>
 
+  <!-- Font Awesome -->
   <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </head>
 <body>
 
-<script>
-  const password = prompt("Parolni kiriting:");
-  if (password === "1234") {
-    document.getElementById("content").style.display = "block";
-  } else {
-    document.body.innerHTML = "<h2 style='text-align:center;color:red;'>Noto‘g‘ri parol! Kirish taqiqlangan.</h2>";
-  }
-</script>
-
-<div id="content">
   <h1>NYC TLC Driver</h1>
 
-  <div class="grid">
-    <a href="https://a836-citypay.nyc.gov/citypay/Parking#!/by-plate-form" class="card">
-      <div class="icon"><i class="fas fa-money-check-alt"></i></div>
+  <!-- Asosiy 7 ta link -->
+  <div class="grid" role="list" aria-label="Asosiy portal linklari">
+    <a href="https://a836-citypay.nyc.gov/citypay/Parking#!/by-plate-form" class="card" role="listitem" aria-label="Jarima to‘lash">
+      <div class="icon"><i class="fas fa-money-check-alt" aria-hidden="true"></i></div>
       Jarima to‘lash
     </a>
-    <a href="https://a156-nauf.nyc.gov/tlcup/" class="card">
-      <div class="icon"><i class="fas fa-user-shield"></i></div>
+    <a href="https://a156-nauf.nyc.gov/tlcup/" class="card" role="listitem" aria-label="TLC UP portali">
+      <div class="icon"><i class="fas fa-user-shield" aria-hidden="true"></i></div>
       TLC UP portali
     </a>
-    <a href="https://www.howsmydrivingny.nyc/" class="card">
-      <div class="icon"><i class="fas fa-id-card"></i></div>
+    <a href="https://www.howsmydrivingny.nyc/" class="card" role="listitem" aria-label="Jarimalarni tekshirish">
+      <div class="icon"><i class="fas fa-id-card" aria-hidden="true"></i></div>
       Jarimalarni tekshirish
     </a>
-    <a href="https://chorsu.vercel.app/jurny/point.html" class="card">
-      <div class="icon"><i class="fas fa-exclamation-circle"></i></div>
+    <a href="https://chorsu.vercel.app/jurny/point.html" class="card" role="listitem" aria-label="Pointlar Jarimalar">
+      <div class="icon"><i class="fas fa-exclamation-circle" aria-hidden="true"></i></div>
       Pointlar Jarimalar
     </a>
-    <a href="https://www.google.com/maps/d/edit?mid=1Q73ST68qKcw9DjjOst8Yn5c5EoGcFhQ&usp" class="card">
-      <div class="icon"><i class="fas fa-map-marker-alt"></i></div>
+    <a href="https://www.google.com/maps/d/edit?mid=1Q73ST68qKcw9DjjOst8Yn5c5EoGcFhQ&usp" class="card" role="listitem" aria-label="Far Rockaway pickup">
+      <div class="icon"><i class="fas fa-map-marker-alt" aria-hidden="true"></i></div>
       Far Rockaway pickup
     </a>
-    <a href="https://www.e-zpassny.com/ezpass/sign-in" class="card">
-      <div class="icon"><i class="fas fa-calendar-alt"></i></div>
+   <a href="https://www.e-zpassny.com/ezpass/sign-in" class="card" role="listitem" aria-label="E-ZPass">
+      <div class="icon"><i class="fas fa-calendar-alt" aria-hidden="true"></i></div>
       E-ZPass
     </a>
   </div>
 
-  <div class="grid" id="more-links">
-    <a href="https://www.nyc.gov/tlc" class="card">
-      <div class="icon"><i class="fas fa-taxi"></i></div>
+  <!-- Qo‘shimcha linklar (yashirin) -->
+  <div class="grid" id="more-links" role="list" aria-hidden="true">
+    <a href="https://www.nyc.gov/tlc" class="card" role="listitem" aria-label="NYC TLC Rasmiy">
+      <div class="icon"><i class="fas fa-taxi" aria-hidden="true"></i></div>
       NYC TLC Rasmiy
     </a>
-    <a href="https://docs.google.com/spreadsheets/d/1CPoJT6Ewvxmis1z171COYTlAbZxTL3vPeSoNB-PXOM0/edit?usp" class="card">
-      <div class="icon"><i class="fab fa-uber"></i></div>
+    <a href="https://docs.google.com/spreadsheets/d/1CPoJT6Ewvxmis1z171COYTlAbZxTL3vPeSoNB-PXOM0/edit?usp" class="card" role="listitem" aria-label="Uber Portal">
+      <div class="icon"><i class="fab fa-uber" aria-hidden="true"></i></div>
       Jurny Rockaway base
     </a>
-    <a href="https://www.lyft.com/drive-with-lyft/regions/new-york-city" class="card">
-      <div class="icon"><i class="fab fa-lyft"></i></div>
+    <a href="https://www.lyft.com/drive-with-lyft/regions/new-york-city" class="card" role="listitem" aria-label="Lyft Portal">
+      <div class="icon"><i class="fab fa-lyft" aria-hidden="true"></i></div>
       Lyft Portal
     </a>
-    <a href="https://data.cityofnewyork.us/Transportation/For-Hire-Vehicles-FHV-Active/8wbx-tsch/data_preview" class="card">
-      <div class="icon"><i class="fas fa-car"></i></div>
+    
+    <a href="https://data.cityofnewyork.us/Transportation/For-Hire-Vehicles-FHV-Active/8wbx-tsch/data_preview" class="card" role="listitem" aria-label="Ruxsat etilgan mashinalar">
+      <div class="icon"><i class="fas fa-car" aria-hidden="true"></i></div>
       TLC mashinalar
     </a>
-    <a href="https://www.nyc.gov/html/dot/html/motorist/parking-regulations.shtml" class="card">
-      <div class="icon"><i class="fas fa-parking"></i></div>
+    
+    <a href="https://www.nyc.gov/html/dot/html/motorist/parking-regulations.shtml" class="card" role="listitem" aria-label="Parking Qoidalari">
+      <div class="icon"><i class="fas fa-parking" aria-hidden="true"></i></div>
       Parking Qoidalari
     </a>
-    <a href="https://www.facebook.com/groups/nyctlcdrivers/" class="card">
-      <div class="icon"><i class="fab fa-facebook"></i></div>
+    <a href="https://www.facebook.com/groups/nyctlcdrivers/" class="card" role="listitem" aria-label="FB: TLC Drivers">
+      <div class="icon"><i class="fab fa-facebook" aria-hidden="true"></i></div>
       FB: TLC Drivers
     </a>
   </div>
 
+  <!-- Toggle tugma -->
   <div class="button-container">
-    <button id="toggle-more" class="toggle-button" aria-expanded="false" aria-controls="more-links">+</button>
+    <button id="toggle-more" class="toggle-button" aria-expanded="false" aria-controls="more-links" title="Qo‘shimcha linklarni ko‘rsatish">
+      +
+    </button>
     <div class="toggle-label" id="toggle-label">Qo‘shimcha linklar</div>
   </div>
-</div>
 
-<script>
-  const toggleBtn = document.getElementById('toggle-more');
-  const moreLinks = document.getElementById('more-links');
-  const toggleLabel = document.getElementById('toggle-label');
+  <script>
+    const toggleBtn = document.getElementById('toggle-more');
+    const moreLinks = document.getElementById('more-links');
+    const toggleLabel = document.getElementById('toggle-label');
 
-  toggleBtn.addEventListener('click', () => {
-    const isExpanded = toggleBtn.getAttribute('aria-expanded') === 'true';
-    if (isExpanded) {
-      moreLinks.style.maxHeight = '0';
-      toggleBtn.setAttribute('aria-expanded', 'false');
-      toggleBtn.textContent = '+';
-      toggleLabel.textContent = "Qo‘shimcha linklar";
-    } else {
-      moreLinks.style.maxHeight = moreLinks.scrollHeight + 'px';
-      toggleBtn.setAttribute('aria-expanded', 'true');
-      toggleBtn.textContent = '−';
-      toggleLabel.textContent = "Yashirish";
-    }
-  });
-</script>
+    toggleBtn.addEventListener('click', () => {
+      const isExpanded = toggleBtn.getAttribute('aria-expanded') === 'true';
+      if (isExpanded) {
+        moreLinks.style.maxHeight = '0';
+        moreLinks.setAttribute('aria-hidden', 'true');
+        toggleBtn.setAttribute('aria-expanded', 'false');
+        toggleBtn.title = "Qo‘shimcha linklarni ko‘rsatish";
+        toggleBtn.textContent = '+';
+        toggleLabel.textContent = "Qo‘shimcha linklar";
+      } else {
+        moreLinks.style.maxHeight = moreLinks.scrollHeight + 'px';
+        moreLinks.setAttribute('aria-hidden', 'false');
+        toggleBtn.setAttribute('aria-expanded', 'true');
+        toggleBtn.title = "Qo‘shimcha linklarni yashirish";
+        toggleBtn.textContent = '−';
+        toggleLabel.textContent = "Yashirish";
+      }
+    });
+  </script>
 
 </body>
 </html>
