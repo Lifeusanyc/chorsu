@@ -3,158 +3,106 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>NYC TLC Driver</title>
+  <title>Parolni kiriting</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #f4f6fa;
-      color: #003366;
-      overflow: hidden;
-    }
-
-    /* Modal parol oynasi */
-    .modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.7);
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #1f1c2c, #928dab);
       display: flex;
-      align-items: center;
       justify-content: center;
-      z-index: 1000;
-      animation: fadeIn 0.5s ease;
+      align-items: center;
+      height: 100vh;
     }
 
-    .modal-content {
+    .modal {
       background: white;
-      padding: 2rem;
+      padding: 30px;
       border-radius: 16px;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-      text-align: center;
-      width: 300px;
-      animation: zoomIn 0.5s ease;
-      position: relative;
-    }
-
-    .modal-content h2 {
-      margin-bottom: 1rem;
-      font-size: 1.3rem;
-      color: #0072ce;
-    }
-
-    .modal-content input {
-      padding: 0.6rem;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
       width: 100%;
-      border-radius: 8px;
-      border: 2px solid #ccc;
-      font-size: 1rem;
-      margin-bottom: 1rem;
-      transition: border-color 0.3s;
-    }
-
-    .modal-content input:focus {
-      border-color: #0072ce;
-      outline: none;
-    }
-
-    .modal-content button {
-      padding: 0.6rem 1.2rem;
-      background: #0072ce;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: background 0.3s;
-    }
-
-    .modal-content button:hover {
-      background: #005bb5;
-    }
-
-    .shake {
-      animation: shake 0.4s;
+      max-width: 400px;
+      text-align: center;
+      transform: scale(0.8);
+      opacity: 0;
+      animation: fadeIn 0.6s ease-out forwards;
     }
 
     @keyframes fadeIn {
-      from { opacity: 0 }
-      to { opacity: 1 }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
     }
 
-    @keyframes zoomIn {
-      from { transform: scale(0.6); opacity: 0 }
-      to { transform: scale(1); opacity: 1 }
+    .modal h2 {
+      margin-bottom: 20px;
+      color: #333;
     }
 
-    @keyframes shake {
-      0% { transform: translateX(0px); }
-      20% { transform: translateX(-10px); }
-      40% { transform: translateX(10px); }
-      60% { transform: translateX(-10px); }
-      80% { transform: translateX(10px); }
-      100% { transform: translateX(0px); }
+    input[type="password"] {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      margin-bottom: 20px;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      outline: none;
+      transition: border-color 0.3s;
     }
 
-    #main-content {
-      display: none;
-      padding: 2rem;
-      animation: fadeIn 0.5s ease;
+    input[type="password"]:focus {
+      border-color: #4a90e2;
     }
 
-    h1 {
-      text-align: center;
-      color: #0072ce;
-      font-size: 2rem;
+    button {
+      background: #4a90e2;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #357ab8;
+    }
+
+    .error {
+      color: red;
+      margin-top: 10px;
+      height: 20px;
     }
   </style>
 </head>
 <body>
 
-<!-- Parol oynasi -->
-<div class="modal" id="passwordModal">
-  <div class="modal-content" id="modalBox">
-    <h2>Sahifaga kirish uchun parolni kiriting</h2>
-    <input type="password" id="passwordInput" placeholder="Parol..." />
-    <button id="submitPassword">Kirish</button>
+  <div class="modal">
+    <h2>Parolni kiriting</h2>
+    <input type="password" id="password" placeholder="Parol..." />
+    <button onclick="checkPassword()">Kirish</button>
+    <div class="error" id="error"></div>
   </div>
-</div>
 
-<!-- Asosiy kontent -->
-<div id="main-content">
-  <h1>NYC TLC DRIVER PANEL</h1>
-  <p style="text-align:center;">👋 Parol to‘g‘ri! Endi siz sahifani ko‘rishingiz mumkin.</p>
-  <!-- Bu yerga butun kontentni joylashtirishingiz mumkin -->
-</div>
+  <script>
+    const correctPassword = "1234"; // Parol shu yerda o'rnatiladi
 
-<script>
-  const correctPassword = "1";
-  const submitBtn = document.getElementById("submitPassword");
-  const passwordInput = document.getElementById("passwordInput");
-  const modal = document.getElementById("passwordModal");
-  const modalBox = document.getElementById("modalBox");
-  const mainContent = document.getElementById("main-content");
+    function checkPassword() {
+      const input = document.getElementById("password").value;
+      const errorDiv = document.getElementById("error");
 
-  submitBtn.addEventListener("click", () => {
-    const entered = passwordInput.value.trim();
-    if (entered === correctPassword) {
-      modal.style.display = "none";
-      document.body.style.overflow = "auto";
-      mainContent.style.display = "block";
-    } else {
-      modalBox.classList.remove("shake"); // reset
-      void modalBox.offsetWidth; // reflow
-      modalBox.classList.add("shake");
-      passwordInput.value = "";
+      if (input === correctPassword) {
+        window.location.href = "https://chorsu.vercel.app/jurny/point.html";
+      } else {
+        errorDiv.textContent = "Noto‘g‘ri parol. Qayta urinib ko‘ring.";
+      }
     }
-  });
-
-  // Enter tugmasi bosilganda ham ishlasin
-  passwordInput.addEventListener("keypress", e => {
-    if (e.key === "Enter") {
-      submitBtn.click();
-    }
-  });
-</script>
-
+  </script>
 </body>
 </html>
