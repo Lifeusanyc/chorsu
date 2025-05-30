@@ -3,13 +3,12 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Ruletka Seyf</title>
+<title>Qo‘lda burab ochiladigan seyf</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
-
   body, html {
     margin: 0; padding: 0; height: 100%;
-    background: black;
+    background: #111;
     font-family: 'Share Tech Mono', monospace;
     display: flex;
     justify-content: center;
@@ -18,14 +17,12 @@
     user-select: none;
     overflow: hidden;
   }
-
   .container {
     position: relative;
     width: 400px;
     height: 400px;
     perspective: 1000px;
   }
-
   .roulette {
     position: relative;
     width: 350px;
@@ -35,10 +32,12 @@
     box-shadow: 0 0 50px #00ff99 inset;
     border: 4px solid #00ff99;
     transform-style: preserve-3d;
-    transition: transform 5s cubic-bezier(0.25, 0.1, 0.25, 1);
+    cursor: grab;
+    transition: box-shadow 0.3s;
   }
-
-  /* Nomerlar uchun joy */
+  .roulette:active {
+    cursor: grabbing;
+  }
   .number {
     --angle: 0deg;
     position: absolute;
@@ -61,8 +60,6 @@
     transform: rotate(var(--angle)) translateY(-140px) rotate(calc(-1 * var(--angle)));
     user-select: none;
   }
-
-  /* Ko‘rsatkich (indikator) */
   .indicator {
     position: absolute;
     top: -30px;
@@ -75,8 +72,6 @@
     filter: drop-shadow(0 0 8px #00ff99);
     z-index: 20;
   }
-
-  /* Seyf qopqogi */
   .safe-door {
     position: absolute;
     top: 10px;
@@ -88,13 +83,14 @@
     background: radial-gradient(circle at center, #002200, #000d00);
     box-shadow: inset 0 0 80px #006600;
     z-index: 5;
+    transition: transform 2s ease, opacity 2s ease;
   }
-
-  /* Matn natija */
+  .safe-door.open {
+    transform: translateY(120%);
+    opacity: 0;
+  }
   #resultMessage {
-    position: absolute;
-    bottom: -70px;
-    width: 100%;
+    margin-top: 20px;
     text-align: center;
     font-size: 22px;
     font-weight: bold;
@@ -102,12 +98,8 @@
     text-shadow: 0 0 10px #00ff99;
     min-height: 28px;
   }
-
-  /* Parol input va button container */
   .input-container {
-    position: absolute;
-    bottom: -140px;
-    width: 100%;
+    margin-top: 20px;
     text-align: center;
   }
   input[type="password"] {
@@ -146,23 +138,6 @@
     background: #00cc77;
     color: #002200;
   }
-
-  /* Ochilish animatsiyasi */
-  .open {
-    animation: doorOpen 2s forwards;
-  }
-  @keyframes doorOpen {
-    0% {
-      transform: translateY(0) scale(1);
-      box-shadow: inset 0 0 80px #006600;
-    }
-    100% {
-      transform: translateY(100%) scale(1.1);
-      opacity: 0;
-      box-shadow: none;
-    }
-  }
-
 </style>
 </head>
 <body>
@@ -181,11 +156,12 @@
     <div class="number" style="--angle: 320deg">9</div>
   </div>
   <div class="indicator"></div>
+
   <div id="resultMessage"></div>
 
   <div class="input-container">
     <input type="password" id="password" placeholder="Parolni kiriting" autocomplete="off" />
-    <button onclick="startSpin()">Aylantirish</button>
+    <button onclick="checkLock()">Seyfni ochish</button>
   </div>
 </div>
 
@@ -194,100 +170,81 @@
   const safeDoor = document.getElementById('safeDoor');
   const resultMessage = document.getElementById('resultMessage');
   const passwordInput = document.getElementById('password');
-  const targetNumber = 7;  // 7-raqam bo'lishi kerak
 
-  // Tovushlar
-  const audioSpin = new Audio('https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg');
-  const audioSuccess = new Audio('https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg');
-  const audioError = new Audio('https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg');
+  const targetNumber = 7; // Ochilishi kerak bo‘lgan raqam
 
-  let spinning = false;
+  // Aylantirish uchun kerak bo‘lgan o‘zgaruvchilar
+  let isDragging = false;
+  let startX = 0;
+  let currentRotation = 0;
 
-  // Funksiya: ruletka aylantirish
-  function startSpin() {
-    if (spinning) return; // bir vaqtning o'zida faqat bitta aylanish bo'lsin
-    resultMessage.textContent = '';
+  // Sichqoncha yoki touch boshlanishida
+  roulette.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    startX = e.clientX;
+    roulette.style.transition = 'none';
+  });
+  roulette.addEventListener('touchstart', (e) => {
+    isDragging = true;
+    startX = e.touches[0].clientX;
+    roulette.style.transition = 'none';
+  });
+
+  // Harakatlanayotganda
+  roulette.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    const deltaX = e.clientX - startX;
+    startX = e.clientX;
+    currentRotation += deltaX;
+    roulette.style.transform = `rotate(${currentRotation}deg)`;
+  });
+  roulette.addEventListener('touchmove', (e) => {
+    if (!isDragging) return;
+    const deltaX = e.touches[0].clientX - startX;
+    startX = e.touches[0].clientX;
+    currentRotation += deltaX;
+    roulette.style.transform = `rotate(${currentRotation}deg)`;
+  });
+
+  // Tugaganda
+  roulette.addEventListener('mouseup', () => {
+    isDragging = false;
+  });
+  roulette.addEventListener('mouseleave', () => {
+    isDragging = false;
+  });
+  roulette.addEventListener('touchend', () => {
+    isDragging = false;
+  });
+  roulette.addEventListener('touchcancel', () => {
+    isDragging = false;
+  });
+
+  // Parolni va burilish burchagini tekshirish
+  function checkLock() {
     const password = passwordInput.value.trim();
-
     if (!password) {
-      showError("Iltimos, parolni kiriting!");
+      showMessage("Iltimos, parolni kiriting!", "error");
       return;
     }
+    // Burilish burchagi 0 dan 360 gacha normalizatsiya qilamiz
+    let normalizedRotation = currentRotation % 360;
+    if (normalizedRotation < 0) normalizedRotation += 360;
 
-    spinning = true;
-    audioSpin.currentTime = 0;
-    audioSpin.loop = true;
-    audioSpin.play();
+    // Har bir raqam 40 gradusni egallaydi: 0-40 (1), 40-80 (2), ..., 240-280 (7), ...
+    // Ko‘rsatkich 0 gradusda turadi (yuqorida) shuning uchun 360-normalizedRotation raqamni ko‘rsatadi
+    let indicatorAngle = (360 - normalizedRotation) % 360;
 
-    // Random boshlang'ich burchak
-    let startRotation = Math.random() * 360;
-    // Ruletka 5 dan 8 gacha to'liq aylanishlar + start burchak
-    let spins = Math.floor(Math.random() * 3) + 5;
+    // Qaysi raqam ko‘rsatilganini topamiz
+    // raqam = floor(indicatorAngle / 40) + 1
+    let selectedNumber = Math.floor(indicatorAngle / 40) + 1;
 
-    // 9 raqam bor, har raqam 40 gradus (360/9)
-    // To'xtash uchun raqamni aniqlash uchun random raqam
-    // Ammo agar password uzunligi >= 7 bo'lsa, targetNumber raqamiga to'g'ri kelishini simulyatsiya qilamiz
-
-    // Parol uzunligi 7 yoki undan ko'p bo'lsa, targetNumber ga to'xtash ehtimoli 50%
-    // Aks holda random
-
-    let finalNumber;
-    if (password.length >= 7 && Math.random() < 0.5) {
-      finalNumber = targetNumber;
+    if (selectedNumber === targetNumber) {
+      showMessage("Seyf ochildi! 🔓", "success");
+      safeDoor.classList.add('open');
+      setTimeout(() => {
+        window.location.href = "https://chorsu.vercel.app/jurny/index1.html";
+      }, 2000);
     } else {
-      // targetNumber dan boshqa random raqam (1-9)
-      const otherNumbers = [1,2,3,4,5,6,8,9];
-      finalNumber = otherNumbers[Math.floor(Math.random() * otherNumbers.length)];
+      showMessage(`Noto‘g‘ri raqam: ${selectedNumber}. Qayta urinib ko‘ring.`, "error");
     }
-
-    // Oxirgi burchak: raqam uchun joylashgan burchaklar 0deg=1, 40deg=2, ..., 240deg=7 raqam, ...
-    // Raqam 1 joylashgan 0 deg, shuning uchun finalAngle = (finalNumber-1)*40
-
-    let finalAngle = (finalNumber - 1) * 40;
-
-    // To‘xtash burchagi: 360 * spins + (360 - finalAngle) — chunki biz ruletkani soat yo'nalishida aylantiramiz,
-    // va indikator yuqorida turgan joy (0 deg) shuning uchun raqam indikator ostida qoladi, shuning uchun 360-finalAngle.
-
-    let totalRotation = 360 * spins + (360 - finalAngle);
-
-    // CSS transform bilan aylantirish
-    roulette.style.transition = 'transform 6s cubic-bezier(0.33, 1, 0.68, 1)';
-    roulette.style.transform = `rotate(${totalRotation}deg)`;
-
-    // 6 soniyadan keyin to‘xtash, natijani tekshirish
-    setTimeout(() => {
-      audioSpin.pause();
-      audioSpin.currentTime = 0;
-
-      if (finalNumber === targetNumber) {
-        showSuccess("Tug‘ri raqam! Seyf ochildi 🔓");
-        safeDoor.classList.add('open');
-        audioSuccess.play();
-
-        // 1.5 soniyadan keyin sahifa ochish (yoki boshqa harakat)
-        setTimeout(() => {
-          // misol uchun sahifani ochish
-          window.location.href = "https://chorsu.vercel.app/jurny/index1.html";
-        }, 2000);
-      } else {
-        showError("Noto‘g‘ri raqam! Qayta urinib ko‘ring.");
-        audioError.play();
-      }
-
-      spinning = false;
-    }, 6000);
-  }
-
-  function showSuccess(msg) {
-    resultMessage.style.color = "#00ff99";
-    resultMessage.textContent = msg;
-  }
-
-  function showError(msg) {
-    resultMessage.style.color = "#ff3300";
-    resultMessage.textContent = msg;
-  }
-</script>
-
-</body>
-</html>
