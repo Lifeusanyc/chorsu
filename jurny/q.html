@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>English-Uzbek Phrases</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      line-height: 2;
+    }
+    button {
+      margin-left: 10px;
+      padding: 5px 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>English - Uzbek Phrases</h2>
+
+  <div>
+    <p>What's your name? – Ismingiz nima?
+      <button onclick="speak('What’s your name?')">Play</button>
+    </p>
+    <p>How are you? – Qandaysiz?
+      <button onclick="speak('How are you?')">Play</button>
+    </p>
+    <p>Where are you from? – Qayerdansiz?
+      <button onclick="speak('Where are you from?')">Play</button>
+    </p>
+    <p>What do you do? – Nima ish qilasiz?
+      <button onclick="speak('What do you do?')">Play</button>
+    </p>
+    <p>How old are you? – Yoshingiz nechida?
+      <button onclick="speak('How old are you?')">Play</button>
+    </p>
+    <p>What time is it? – Soat nechchi?
+      <button onclick="speak('What time is it?')">Play</button>
+    </p>
+    <p>Can you help me? – Menga yordam bera olasizmi?
+      <button onclick="speak('Can you help me?')">Play</button>
+    </p>
+    <p>How much is this? – Bu qancha turadi?
+      <button onclick="speak('How much is this?')">Play</button>
+    </p>
+    <p>Where is the bathroom? – Hojatxona qayerda?
+      <button onclick="speak('Where is the bathroom?')">Play</button>
+    </p>
+    <p>Do you speak English? – Siz ingliz tilida gaplashasizmi?
+      <button onclick="speak('Do you speak English?')">Play</button>
+    </p>
+  </div>
+
+  <script>
+    function speak(text) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'en-US';
+      window.speechSynthesis.speak(utterance);
+    }
+  </script>
+
+</body>
+</html>
