@@ -133,16 +133,18 @@
 
     function loadVoices() {
       const voices = window.speechSynthesis.getVoices();
+      // Tanlash: Google US English yoki boshqa en-US
       selectedVoice = voices.find(voice =>
         voice.lang === 'en-US' && voice.name.toLowerCase().includes('google')
       ) || voices.find(voice => voice.lang === 'en-US');
 
-      // Fallback if no en-US voice found
+      // Fallback
       if (!selectedVoice && voices.length > 0) {
         selectedVoice = voices[0];
       }
     }
 
+    // Ovozni yangilash
     window.speechSynthesis.onvoiceschanged = loadVoices;
     loadVoices();
 
