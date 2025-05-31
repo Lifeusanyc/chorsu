@@ -3,62 +3,136 @@
 <head>
   <meta charset="UTF-8">
   <title>Inglizcha gaplar – Audio bilan</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
+    :root {
+      --primary: #4F46E5;
+      --primary-light: #EEF2FF;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      padding: 30px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f9fafb;
+      margin: 0;
+      padding: 20px;
+      color: #111827;
+    }
+
+    .container {
       max-width: 600px;
       margin: auto;
+      background: white;
+      padding: 25px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
     }
+
+    h2 {
+      text-align: center;
+      font-size: 1.5rem;
+      margin-bottom: 25px;
+      color: var(--primary);
+    }
+
     .phrase {
-      margin-bottom: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--primary-light);
+      padding: 12px 16px;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      transition: background 0.3s;
     }
+
+    .phrase:hover {
+      background: #e0e7ff;
+    }
+
+    .text {
+      font-size: 1rem;
+      flex: 1;
+    }
+
     button {
-      margin-left: 10px;
-      padding: 5px 10px;
+      background: var(--primary);
+      border: none;
+      color: white;
+      font-size: 1rem;
+      padding: 8px 12px;
+      border-radius: 8px;
       cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #4338ca;
+    }
+
+    @media (max-width: 480px) {
+      .text {
+        font-size: 0.95rem;
+      }
+
+      button {
+        padding: 6px 10px;
+        font-size: 0.9rem;
+      }
     }
   </style>
 </head>
 <body>
 
-  <h2>Inglizcha gaplar – Ovozli eshittirish</h2>
+  <div class="container">
+    <h2>Inglizcha gaplar – Ovozli eshittirish</h2>
 
-  <div class="phrase">What's your name? – Ismingiz nima?
-    <button onclick="speak('What is your name?')">🔊 Play</button>
-  </div>
-  <div class="phrase">How are you? – Qandaysiz?
-    <button onclick="speak('How are you?')">🔊 Play</button>
-  </div>
-  <div class="phrase">Where are you from? – Qayerdansiz?
-    <button onclick="speak('Where are you from?')">🔊 Play</button>
-  </div>
-  <div class="phrase">What do you do? – Nima ish qilasiz?
-    <button onclick="speak('What do you do?')">🔊 Play</button>
-  </div>
-  <div class="phrase">How old are you? – Yoshingiz nechida?
-    <button onclick="speak('How old are you?')">🔊 Play</button>
-  </div>
-  <div class="phrase">What time is it? – Soat nechchi?
-    <button onclick="speak('What time is it?')">🔊 Play</button>
-  </div>
-  <div class="phrase">Can you help me? – Menga yordam bera olasizmi?
-    <button onclick="speak('Can you help me?')">🔊 Play</button>
-  </div>
-  <div class="phrase">How much is this? – Bu qancha turadi?
-    <button onclick="speak('How much is this?')">🔊 Play</button>
-  </div>
-  <div class="phrase">Where is the bathroom? – Hojatxona qayerda?
-    <button onclick="speak('Where is the bathroom?')">🔊 Play</button>
-  </div>
-  <div class="phrase">Do you speak English? – Siz ingliz tilida gaplashasizmi?
-    <button onclick="speak('Do you speak English?')">🔊 Play</button>
+    <div class="phrase">
+      <div class="text">What's your name? – Ismingiz nima?</div>
+      <button onclick="speak('What is your name?')">🔊</button>
+    </div>
+    <div class="phrase">
+      <div class="text">How are you? – Qandaysiz?</div>
+      <button onclick="speak('How are you?')">🔊</button>
+    </div>
+    <div class="phrase">
+      <div class="text">Where are you from? – Qayerdansiz?</div>
+      <button onclick="speak('Where are you from?')">🔊</button>
+    </div>
+    <div class="phrase">
+      <div class="text">What do you do? – Nima ish qilasiz?</div>
+      <button onclick="speak('What do you do?')">🔊</button>
+    </div>
+    <div class="phrase">
+      <div class="text">How old are you? – Yoshingiz nechida?</div>
+      <button onclick="speak('How old are you?')">🔊</button>
+    </div>
+    <div class="phrase">
+      <div class="text">What time is it? – Soat nechchi?</div>
+      <button onclick="speak('What time is it?')">🔊</button>
+    </div>
+    <div class="phrase">
+      <div class="text">Can you help me? – Menga yordam bera olasizmi?</div>
+      <button onclick="speak('Can you help me?')">🔊</button>
+    </div>
+    <div class="phrase">
+      <div class="text">How much is this? – Bu qancha turadi?</div>
+      <button onclick="speak('How much is this?')">🔊</button>
+    </div>
+    <div class="phrase">
+      <div class="text">Where is the bathroom? – Hojatxona qayerda?</div>
+      <button onclick="speak('Where is the bathroom?')">🔊</button>
+    </div>
+    <div class="phrase">
+      <div class="text">Do you speak English? – Siz ingliz tilida gaplashasizmi?</div>
+      <button onclick="speak('Do you speak English?')">🔊</button>
+    </div>
   </div>
 
   <script>
     function speak(text) {
+      window.speechSynthesis.cancel(); // oldingi ovozni to'xtatish
       const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'en-US'; // Inglizcha aksent
+      utterance.lang = 'en-US';
       window.speechSynthesis.speak(utterance);
     }
   </script>
