@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Меню Бургеров</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-white text-gray-800 font-sans">
+  <!-- Header -->
+  <div class="flex items-center justify-between p-4 border-b">
+    <button class="text-gray-500 text-lg">✕ Закрыть</button>
+    <div class="font-bold">Самара</div>
+    <button class="text-gray-500">⋮</button>
+  </div>
+
+  <!-- Доставка / Самовывоз -->
+  <div class="flex justify-center space-x-2 mt-2">
+    <button class="bg-white border rounded-full px-4 py-1">Доставка</button>
+    <button class="bg-blue-500 text-white rounded-full px-4 py-1">Самовывоз</button>
+  </div>
+
+  <!-- Адрес -->
+  <div class="flex items-center justify-center mt-1 text-sm text-gray-500">📍 Самара, ул. Партизанская 88</div>
+
+  <!-- Horizontal Scroll Promotions -->
+  <div class="flex overflow-x-auto space-x-2 p-3">
+    <img src="https://via.placeholder.com/80x80" class="rounded-xl border" alt="promo1" />
+    <img src="https://via.placeholder.com/80x80" class="rounded-xl border" alt="promo2" />
+    <img src="https://via.placeholder.com/80x80" class="rounded-xl border" alt="promo3" />
+    <img src="https://via.placeholder.com/80x80" class="rounded-xl border" alt="promo4" />
+  </div>
+
+  <!-- Категории -->
+  <div class="flex justify-around mt-2 px-4">
+    <button class="bg-blue-500 text-white px-4 py-1 rounded-full">🍔 Бургеры</button>
+    <button class="bg-gray-200 text-gray-700 px-4 py-1 rounded-full">🍱 Собери сам</button>
+    <button class="bg-gray-200 text-gray-700 px-4 py-1 rounded-full">🥗 Салаты</button>
+  </div>
+
+  <!-- Бургеры -->
+  <div class="p-4">
+    <h2 class="text-xl font-bold mb-2">🍔 Бургеры</h2>
+
+    <div class="grid grid-cols-2 gap-4">
+      <!-- Биф Бургер -->
+      <div class="border rounded-xl p-2">
+        <img src="https://via.placeholder.com/150" alt="Биф Бургер" class="rounded-xl mb-2">
+        <div class="flex space-x-1 mb-1">
+          <span class="text-xs bg-green-200 text-green-700 px-2 rounded-full">Новинка</span>
+          <span class="text-xs bg-yellow-200 text-yellow-700 px-2 rounded-full">Скидка</span>
+        </div>
+        <div class="font-semibold">Биф Бургер</div>
+        <div class="text-sm text-gray-500">Сочный бургер с говяжьей котлетой</div>
+        <div class="mt-1">
+          <span class="text-lg font-bold">450,00 ₽</span>
+          <span class="text-sm line-through text-gray-400">500,00 ₽</span>
+        </div>
+      </div>
+
+      <!-- Чили Бургер -->
+      <div class="border rounded-xl p-2">
+        <img src="https://via.placeholder.com/150" alt="Чили Бургер" class="rounded-xl mb-2">
+        <div class="flex space-x-1 mb-1">
+          <span class="text-xs bg-red-200 text-red-700 px-2 rounded-full">🌶 Острый</span>
+        </div>
+        <div class="font-semibold">Чили Бургер</div>
+        <div class="text-sm text-gray-500">Пожалуй, самый острый бургер</div>
+        <div class="mt-1">
+          <span class="text-lg font-bold">400,00 ₽</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Корзина -->
+  <div class="fixed bottom-0 left-0 right-0 bg-blue-500 text-white text-center py-3 font-bold text-lg">
+    Корзина 0,00 ₽
+  </div>
+</body>
+</html>
