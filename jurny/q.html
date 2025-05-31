@@ -129,10 +129,30 @@
   </div>
 
   <script>
+    let selectedVoice = null;
+
+    function loadVoices() {
+      const voices = window.speechSynthesis.getVoices();
+      selectedVoice = voices.find(voice =>
+        voice.lang === 'en-US' && voice.name.toLowerCase().includes('google')
+      ) || voices.find(voice => voice.lang === 'en-US');
+
+      // Fallback if no en-US voice found
+      if (!selectedVoice && voices.length > 0) {
+        selectedVoice = voices[0];
+      }
+    }
+
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+    loadVoices();
+
     function speak(text) {
-      window.speechSynthesis.cancel(); // oldingi ovozni to'xtatish
+      window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'en-US';
+      if (selectedVoice) {
+        utterance.voice = selectedVoice;
+      }
       window.speechSynthesis.speak(utterance);
     }
   </script>
