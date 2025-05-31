@@ -4,54 +4,39 @@
   <meta charset="UTF-8">
   <title>Menu</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: 'Poppins', sans-serif;
+      font-family: 'Segoe UI', sans-serif;
       padding: 20px;
-      background: #f1f1f1;
-      margin: 0;
+      background: #f9f9f9;
     }
 
     h2 {
       text-align: center;
-      font-weight: 600;
+      font-size: 24px;
     }
 
     #menu {
       display: grid;
-      grid-template-columns: 1fr;
+      grid-template-columns: repeat(2, 1fr);
       gap: 15px;
       margin-top: 20px;
-    }
-
-    @media (min-width: 600px) {
-      #menu {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    @media (min-width: 900px) {
-      #menu {
-        grid-template-columns: repeat(3, 1fr);
-      }
     }
 
     .item {
       background-color: white;
       border-radius: 16px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-      padding: 10px;
+      padding: 12px;
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      transition: transform 0.2s ease;
     }
 
     .item:hover {
       transform: translateY(-4px);
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
     }
 
     .item img {
@@ -64,43 +49,60 @@
 
     .item-name {
       font-weight: 600;
-      margin: 5px 0;
+      font-size: 18px;
+      margin-bottom: 6px;
     }
 
     .item-price {
-      color: #4CAF50;
-      margin-bottom: 12px;
-      font-weight: 500;
+      color: #2ecc71;
+      font-size: 16px;
+      margin-bottom: 10px;
     }
 
     .quantity-control {
       display: flex;
       align-items: center;
       justify-content: center;
+      gap: 10px;
     }
 
     .quantity-control button {
-      padding: 10px 14px;
-      font-size: 18px;
-      background: linear-gradient(135deg, #f0f0f0, #e0e0e0);
+      background-color: #f0f0f0;
       border: none;
-      border-radius: 50%;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+      border-radius: 8px;
+      font-size: 18px;
+      padding: 6px 14px;
       cursor: pointer;
-      transition: transform 0.2s ease, background 0.3s ease;
+      transition: background-color 0.2s;
     }
 
     .quantity-control button:hover {
-      background: linear-gradient(135deg, #dcdcdc, #c8c8c8);
-      transform: scale(1.1);
+      background-color: #ddd;
     }
 
-    .quantity-control span {
+    .total {
+      font-size: 20px;
+      text-align: center;
+      margin-top: 24px;
+      font-weight: bold;
+    }
+
+    .submit-btn {
+      display: block;
+      width: 100%;
+      padding: 14px;
       font-size: 18px;
-      min-width: 24px;
-      display: inline-block;
-      margin: 0 8px;
-      font-weight: 500;
+      margin-top: 14px;
+      background-color: #2ecc71;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .submit-btn:hover {
+      background-color: #27ae60;
     }
 
     .input-group {
@@ -113,43 +115,14 @@
       font-weight: 500;
     }
 
-    .input-group input,
-    .input-group select,
-    .input-group textarea {
+    .input-group input, .input-group select, .input-group textarea {
       width: 100%;
-      padding: 10px;
+      padding: 12px;
       font-size: 16px;
-      border-radius: 8px;
+      border-radius: 10px;
       border: 1px solid #ccc;
       resize: vertical;
-      box-sizing: border-box;
-    }
-
-    .total {
-      font-size: 20px;
-      text-align: center;
-      margin-top: 20px;
-      font-weight: 600;
-    }
-
-    .submit-btn {
-      display: block;
-      width: 100%;
-      padding: 14px;
-      font-size: 18px;
-      margin-top: 20px;
-      background: linear-gradient(to right, #4CAF50, #43a047);
-      color: white;
-      border: none;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
-      cursor: pointer;
-      transition: background 0.3s ease, transform 0.2s ease;
-    }
-
-    .submit-btn:hover {
-      background: linear-gradient(to right, #43a047, #388e3c);
-      transform: scale(1.02);
+      background-color: #fff;
     }
   </style>
 </head>
@@ -192,7 +165,7 @@
       "Non Kabob": { price: 15, img: "img/non_kabob.jpg" },
       "Yupqa": { price: 4, img: "img/yupqa.jpg" },
       "Tabaka": { price: 15, img: "img/tabaka.jpg" },
-      "Kuksi": { price: 15, img: "img/kuksi.jpg" },
+      "Kuksi": { price: 15, img: "img/kuksi.jpg" }
     };
 
     const order = {};
@@ -257,7 +230,7 @@
     }
 
     function isValidPhone(phone) {
-      return /^\+?\d{10,15}$/.test(phone);
+      return /^\+?\d{9,15}$/.test(phone);
     }
 
     async function submitOrder() {
@@ -337,6 +310,7 @@
     document.addEventListener("DOMContentLoaded", function () {
       const today = new Date().toISOString().split("T")[0];
       document.getElementById("delivery-date").setAttribute("min", today);
+
       loadOrderFromStorage();
 
       if (window.Telegram && Telegram.WebApp) {
