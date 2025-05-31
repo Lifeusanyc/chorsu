@@ -7,41 +7,43 @@
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
+      margin: 0;
       padding: 20px;
-      background: #f9f9f9;
+      background: #f4f7fa;
+      color: #333;
     }
 
     h2 {
       text-align: center;
-      font-size: 24px;
+      font-size: 28px;
+      margin-bottom: 20px;
     }
 
     #menu {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 15px;
-      margin-top: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 20px;
     }
 
     .item {
-      background-color: white;
+      background-color: #fff;
       border-radius: 16px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
       padding: 12px;
+      transition: transform 0.2s;
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
-      transition: transform 0.2s ease;
     }
 
     .item:hover {
-      transform: translateY(-4px);
+      transform: translateY(-5px);
     }
 
     .item img {
       width: 100%;
-      height: 140px;
+      height: 130px;
       object-fit: cover;
       border-radius: 12px;
       margin-bottom: 10px;
@@ -49,14 +51,14 @@
 
     .item-name {
       font-weight: 600;
-      font-size: 18px;
-      margin-bottom: 6px;
+      font-size: 17px;
+      margin-bottom: 4px;
     }
 
     .item-price {
-      color: #2ecc71;
-      font-size: 16px;
-      margin-bottom: 10px;
+      color: #16a085;
+      font-size: 15px;
+      margin-bottom: 8px;
     }
 
     .quantity-control {
@@ -67,42 +69,16 @@
     }
 
     .quantity-control button {
-      background-color: #f0f0f0;
+      background-color: #e9ecef;
       border: none;
       border-radius: 8px;
+      padding: 6px 12px;
       font-size: 18px;
-      padding: 6px 14px;
       cursor: pointer;
-      transition: background-color 0.2s;
     }
 
     .quantity-control button:hover {
-      background-color: #ddd;
-    }
-
-    .total {
-      font-size: 20px;
-      text-align: center;
-      margin-top: 24px;
-      font-weight: bold;
-    }
-
-    .submit-btn {
-      display: block;
-      width: 100%;
-      padding: 14px;
-      font-size: 18px;
-      margin-top: 14px;
-      background-color: #2ecc71;
-      color: white;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
-
-    .submit-btn:hover {
-      background-color: #27ae60;
+      background-color: #d0d6db;
     }
 
     .input-group {
@@ -111,23 +87,69 @@
 
     .input-group label {
       display: block;
-      margin-bottom: 5px;
+      margin-bottom: 6px;
       font-weight: 500;
     }
 
-    .input-group input, .input-group select, .input-group textarea {
+    .input-group input,
+    .input-group select,
+    .input-group textarea {
       width: 100%;
       padding: 12px;
       font-size: 16px;
-      border-radius: 10px;
+      border-radius: 12px;
       border: 1px solid #ccc;
-      resize: vertical;
       background-color: #fff;
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.04);
+    }
+
+    .total {
+      margin-top: 25px;
+      font-size: 22px;
+      font-weight: bold;
+      text-align: center;
+      color: #2c3e50;
+    }
+
+    .submit-btn {
+      width: 100%;
+      margin-top: 20px;
+      padding: 14px;
+      background-color: #27ae60;
+      color: white;
+      font-size: 18px;
+      font-weight: 600;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .submit-btn:hover {
+      background-color: #219150;
+    }
+
+    @media (max-width: 480px) {
+      h2 {
+        font-size: 22px;
+      }
+
+      .item img {
+        height: 110px;
+      }
+
+      .total {
+        font-size: 18px;
+      }
+
+      .submit-btn {
+        font-size: 16px;
+      }
     }
   </style>
 </head>
 <body>
-  <h2>🍽 Taomni tanlang:</h2>
+  <h2>🍽 Taomni tanlang</h2>
   <div id="menu"></div>
 
   <div class="input-group">
@@ -147,7 +169,7 @@
 
   <div class="input-group">
     <label for="special-note">📝 Maxsus izoh:</label>
-    <textarea id="special-note" rows="4" placeholder="Buyurtmangizga maxsus izohlar yoki talablar kiritish..."></textarea>
+    <textarea id="special-note" rows="3" placeholder="Buyurtmangizga maxsus izoh kiriting..."></textarea>
   </div>
 
   <div class="total" id="total">💰 Umumiy summa: $0</div>
@@ -179,9 +201,7 @@
       if (saved) {
         const parsed = JSON.parse(saved);
         for (let item in parsed) {
-          if (menu.hasOwnProperty(item)) {
-            order[item] = parsed[item];
-          }
+          if (menu[item]) order[item] = parsed[item];
         }
       }
     }
@@ -194,22 +214,22 @@
       for (let item in menu) {
         if (!(item in order)) order[item] = 0;
         const { price, img } = menu[item];
-        const quantity = order[item];
-        total += price * quantity;
+        const qty = order[item];
+        total += price * qty;
 
-        const itemDiv = document.createElement("div");
-        itemDiv.className = "item";
-        itemDiv.innerHTML = `
+        const div = document.createElement("div");
+        div.className = "item";
+        div.innerHTML = `
           <img src="${img}" alt="${item}">
           <div class="item-name">${item}</div>
           <div class="item-price">$${price}</div>
           <div class="quantity-control">
             <button onclick="changeQty('${item}', -1)">➖</button>
-            <span>${quantity}</span>
+            <span>${qty}</span>
             <button onclick="changeQty('${item}', 1)">➕</button>
           </div>
         `;
-        container.appendChild(itemDiv);
+        container.appendChild(div);
       }
 
       document.getElementById("total").innerText = `💰 Umumiy summa: $${total}`;
@@ -223,9 +243,7 @@
 
     function formatPhone(phone) {
       phone = phone.replace(/[^\d]/g, '');
-      if (!phone.startsWith("998")) {
-        phone = "998" + phone;
-      }
+      if (!phone.startsWith("998")) phone = "998" + phone;
       return `+${phone}`;
     }
 
@@ -241,59 +259,40 @@
       const specialNote = document.getElementById("special-note").value.trim();
       const selected = Object.entries(order).filter(([_, qty]) => qty > 0);
 
-      if (!isValidPhone(phone)) {
-        alert("📵 Iltimos, to'g'ri telefon raqamini kiriting.");
-        return;
-      }
+      if (!isValidPhone(phone)) return alert("📵 To‘g‘ri telefon raqamini kiriting.");
+      if (!deliveryDate) return alert("📅 Yetkazib berish sanasini tanlang.");
+      if (!deliveryTime) return alert("⏰ Yetkazib berish vaqtini tanlang.");
+      if (selected.length === 0) return alert("❗ Hech qanday taom tanlanmadi.");
 
-      if (!deliveryDate) {
-        alert("📅 Iltimos, yetkazib berish kunini tanlang.");
-        return;
-      }
+      const orderText = selected.map(([item, qty]) =>
+        `${item} x${qty} - $${menu[item].price * qty}`
+      ).join("\n");
+      const total = selected.reduce((sum, [item, qty]) =>
+        sum + menu[item].price * qty, 0);
 
-      if (!deliveryTime) {
-        alert("⏰ Iltimos, yetkazib berish vaqtini tanlang.");
-        return;
-      }
-
-      if (selected.length === 0) {
-        alert("❗ Hech qanday taom tanlamadingiz.");
-        return;
-      }
-
-      const orderText = selected.map(([item, qty]) => `${item} x${qty} - $${menu[item].price * qty}`).join("\n");
-      const total = selected.reduce((sum, [item, qty]) => sum + menu[item].price * qty, 0);
-
-      let message = `📥 Yangi buyurtma:\n${orderText}\n💰 Umumiy summa: $${total}\n📞 Tel: ${phone}\n⏰ Vaqt: ${deliveryTime}\n📅 Kun: ${deliveryDate}`;
-      if (specialNote) {
-        message += `\n📝 Maxsus izoh: ${specialNote}`;
-      }
-
-      const botToken = config.botToken;
-      const adminId = config.adminId;
+      let message = `📥 Yangi buyurtma:\n${orderText}\n💰 Umumiy: $${total}\n📞 ${phone}\n📅 ${deliveryDate}\n⏰ ${deliveryTime}`;
+      if (specialNote) message += `\n📝 ${specialNote}`;
 
       const btn = document.querySelector(".submit-btn");
       btn.disabled = true;
       btn.innerText = "⏳ Yuborilmoqda...";
 
       await Promise.all([
-        fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+        fetch(`https://api.telegram.org/bot${config.botToken}/sendMessage`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ chat_id: adminId, text: message })
+          body: JSON.stringify({ chat_id: config.adminId, text: message })
         }),
-        fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+        fetch(`https://api.telegram.org/bot${config.botToken}/sendMessage`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ chat_id: "@chorsuorder", text: message })
         })
       ]);
 
-      alert(`✅ Buyurtmangiz yuborildi!\n\n📋 Buyurtma:\n${orderText}\n💰 $${total}\n📞 Tel: ${phone}\n⏰ ${deliveryTime}\n📅 ${deliveryDate}\n📝 ${specialNote}`);
+      alert("✅ Buyurtmangiz yuborildi!");
 
-      for (let item in order) {
-        order[item] = 0;
-      }
+      Object.keys(order).forEach(item => order[item] = 0);
       localStorage.removeItem('order');
       document.getElementById("phone").value = "";
       document.getElementById("delivery-time").value = "";
@@ -307,16 +306,10 @@
       Telegram.WebApp.close();
     }
 
-    document.addEventListener("DOMContentLoaded", function () {
-      const today = new Date().toISOString().split("T")[0];
-      document.getElementById("delivery-date").setAttribute("min", today);
-
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("delivery-date").min = new Date().toISOString().split("T")[0];
       loadOrderFromStorage();
-
-      if (window.Telegram && Telegram.WebApp) {
-        Telegram.WebApp.ready();
-      }
-
+      Telegram.WebApp?.ready();
       renderMenu();
     });
   </script>
