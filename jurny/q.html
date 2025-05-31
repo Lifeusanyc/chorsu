@@ -79,9 +79,32 @@
         font-size: 0.9rem;
       }
     }
+
+    /* Orqaga tugma uslubi */
+    #back-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 12px;
+      font-size: 1rem;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      transition: background 0.3s;
+      z-index: 1000;
+    }
+
+    #back-button:hover {
+      background: #4338ca;
+    }
   </style>
 </head>
 <body>
+
+  <button id="back-button" onclick="history.back()">← Orqaga</button>
 
   <div class="container">
     <h2>Inglizcha gaplar – Ovozli eshittirish</h2>
