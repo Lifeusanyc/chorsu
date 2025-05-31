@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Inglizcha gaplar – Audio bilan</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     :root {
       --primary: #4F46E5;
@@ -87,44 +87,64 @@
     <h2>Inglizcha gaplar – Ovozli eshittirish</h2>
 
     <div class="phrase">
-      <div class="text">What's your name? – Ismingiz nima?</div>
-      <button onclick="speak('What is your name?')">🔊</button>
+      <div class="text">Where are you going? – Qayerga ketayapsiz?</div>
+      <button onclick="speak('Where are you going?')">🔊</button>
     </div>
     <div class="phrase">
-      <div class="text">How are you? – Qandaysiz?</div>
-      <button onclick="speak('How are you?')">🔊</button>
+      <div class="text">Can you give me the address? – Manzilni bera olasizmi?</div>
+      <button onclick="speak('Can you give me the address?')">🔊</button>
     </div>
     <div class="phrase">
-      <div class="text">Where are you from? – Qayerdansiz?</div>
-      <button onclick="speak('Where are you from?')">🔊</button>
+      <div class="text">How long will it take to get there? – U yerga yetib borish qancha vaqt oladi?</div>
+      <button onclick="speak('How long will it take to get there?')">🔊</button>
     </div>
     <div class="phrase">
-      <div class="text">What do you do? – Nima ish qilasiz?</div>
-      <button onclick="speak('What do you do?')">🔊</button>
+      <div class="text">Do you want the fastest route or the cheapest one? – Siz eng tez yo‘lni xohlaysizmi yoki eng arzonini?</div>
+      <button onclick="speak('Do you want the fastest route or the cheapest one?')">🔊</button>
     </div>
     <div class="phrase">
-      <div class="text">How old are you? – Yoshingiz nechida?</div>
-      <button onclick="speak('How old are you?')">🔊</button>
+      <div class="text">Would you like to use the air conditioner? – Konditsionerni yoqaymi?</div>
+      <button onclick="speak('Would you like to use the air conditioner?')">🔊</button>
     </div>
     <div class="phrase">
-      <div class="text">What time is it? – Soat nechchi?</div>
-      <button onclick="speak('What time is it?')">🔊</button>
+      <div class="text">Please fasten your seatbelt. – Iltimos, xavfsizlik kamarini taqing.</div>
+      <button onclick="speak('Please fasten your seatbelt.')">🔊</button>
     </div>
     <div class="phrase">
-      <div class="text">Can you help me? – Menga yordam bera olasizmi?</div>
-      <button onclick="speak('Can you help me?')">🔊</button>
+      <div class="text">We are almost there. – Deyarli yetib keldik.</div>
+      <button onclick="speak('We are almost there.')">🔊</button>
     </div>
     <div class="phrase">
-      <div class="text">How much is this? – Bu qancha turadi?</div>
-      <button onclick="speak('How much is this?')">🔊</button>
+      <div class="text">Can you pay by cash or card? – Naqd pul bilan to'laysizmi yoki karta bilan?</div>
+      <button onclick="speak('Can you pay by cash or card?')">🔊</button>
     </div>
     <div class="phrase">
-      <div class="text">Where is the bathroom? – Hojatxona qayerda?</div>
-      <button onclick="speak('Where is the bathroom?')">🔊</button>
+      <div class="text">Sorry, I don’t have change. – Kechirasiz, qaytim yo‘q.</div>
+      <button onclick="speak('Sorry, I don’t have change.')">🔊</button>
     </div>
     <div class="phrase">
-      <div class="text">Do you speak English? – Siz ingliz tilida gaplashasizmi?</div>
-      <button onclick="speak('Do you speak English?')">🔊</button>
+      <div class="text">The fare is $10. – Yo‘l haqi 10 dollar bo‘ladi.</div>
+      <button onclick="speak('The fare is ten dollars.')">🔊</button>
+    </div>
+    <div class="phrase">
+      <div class="text">Please wait here. – Iltimos, shu yerda kuting.</div>
+      <button onclick="speak('Please wait here.')">🔊</button>
+    </div>
+    <div class="phrase">
+      <div class="text">I’ll be there in 5 minutes. – 5 daqiqada yetib boraman.</div>
+      <button onclick="speak('I will be there in five minutes.')">🔊</button>
+    </div>
+    <div class="phrase">
+      <div class="text">Do you want to stop anywhere on the way? – Yo‘l-yo‘lakay biror joyda to‘xtaysizmi?</div>
+      <button onclick="speak('Do you want to stop anywhere on the way?')">🔊</button>
+    </div>
+    <div class="phrase">
+      <div class="text">It’s a bit of traffic ahead. – Oldinda biroz tirbandlik bor.</div>
+      <button onclick="speak('It’s a bit of traffic ahead.')">🔊</button>
+    </div>
+    <div class="phrase">
+      <div class="text">Thank you! Have a nice day! – Rahmat! Yaxshi kun tilayman!</div>
+      <button onclick="speak('Thank you! Have a nice day!')">🔊</button>
     </div>
   </div>
 
@@ -133,18 +153,15 @@
 
     function loadVoices() {
       const voices = window.speechSynthesis.getVoices();
-      // Tanlash: Google US English yoki boshqa en-US
       selectedVoice = voices.find(voice =>
         voice.lang === 'en-US' && voice.name.toLowerCase().includes('google')
       ) || voices.find(voice => voice.lang === 'en-US');
 
-      // Fallback
       if (!selectedVoice && voices.length > 0) {
         selectedVoice = voices[0];
       }
     }
 
-    // Ovozni yangilash
     window.speechSynthesis.onvoiceschanged = loadVoices;
     loadVoices();
 
