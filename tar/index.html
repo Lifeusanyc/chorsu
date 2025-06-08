@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Tarjimon - Ingliz Tiliga Tarjima</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.2em;
+        }
+
+        .translation-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .input-section, .output-section {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .text-area {
+            width: 100%;
+            height: 200px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            resize: vertical;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .text-area:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .output-area {
+            background-color: #f8f9fa;
+            color: #333;
+            border: 2px solid #e9ecef;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #666;
+            border: 2px solid #e9ecef;
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+            transform: translateY(-1px);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .footer {
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 20px;
+        }
+
+        .api-note {
+            background: #fff3cd;
+            color: #856404;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 4px solid #ffc107;
+        }
+
+        @media (max-width: 768px) {
+            .translation-area {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 AI Tarjimon</h1>
+            <p>Istalgan matnni ingliz tiliga tarjima qiling</p>
+        </div>
+
+        <div class="translation-area">
+            <div class="input-section">
+                <div class="section-title">📝 Kirish matni (Istalgan til)</div>
+                <textarea 
+                    id="inputText" 
+                    class="text-area" 
+                    placeholder="Bu yerga tarjima qilmoqchi bo'lgan matningizni yozing..."
+                ></textarea>
+            </div>
+
+            <div class="output-section">
+                <div class="section-title">🇺🇸 Ingliz tiliga tarjima</div>
+                <textarea 
+                    id="outputText" 
+                    class="text-area output-area" 
+                    placeholder="Tarjima bu yerda ko'rinadi..."
+                    readonly
+                ></textarea>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button id="translateBtn" class="btn btn-primary">
+                🚀 Tarjima Qilish
+            </button>
+            <button id="clearBtn" class="btn btn-secondary">
+                🗑️ Tozalash
+            </button>
+        </div>
+
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>AI tarjima qilmoqda...</p>
+        </div>
+
+        <div class="api-note">
+            <strong>🔧 Texnik ma'lumot:</strong> Bu dastur haqiqiy AI API lardan foydalanish uchun mo'ljallangan. 
+            Ishlatish uchun Google Translate API, OpenAI API, yoki boshqa tarjima xizmatlarini ulash kerak.
+        </div>
+
+        <div class="footer">
+            <p>© 2025 AI Tarjimon | Powered by AI Technology</p>
+        </div>
+    </div>
+
+    <script>
+        // DOM elementlarini olish
+        const inputText = document.getElementById('inputText');
+        const outputText = document.getElementById('outputText');
+        const translateBtn = document.getElementById('translateBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const loading = document.getElementById('loading');
+
+        // Demo tarjima funksiyasi (haqiqiy API o'rniga)
+        async function translateText(text) {
+            // Bu yerda haqiqiy API chaqiruvi bo'lishi kerak
+            // Masalan: Google Translate API, OpenAI API, va h.k.
+            
+            // Demo uchun oddiy tarjima
+            const demoTranslations = {
+                'salom': 'hello',
+                'rahmat': 'thank you',
+                'xayr': 'goodbye',
+                'yaxshi': 'good',
+                'yomon': 'bad',
+                'katta': 'big',
+                'kichik': 'small',
+                'oq': 'white',
+                'qora': 'black',
+                'qizil': 'red',
+                'yashil': 'green',
+                'ko\'k': 'blue',
+                'sariq': 'yellow',
+                'men': 'I',
+                'siz': 'you',
+                'u': 'he/she',
+                'biz': 'we',
+                'ular': 'they',
+                'bu': 'this',
+                'sha': 'that',
+                'ha': 'yes',
+                'yo\'q': 'no',
+                'iltimos': 'please',
+                'kechirasiz': 'excuse me',
+                'salom dunyo': 'hello world',
+                'qanday ishlar': 'how are things',
+                'yaxshi ko\'rishguncha': 'see you later'
+            };
+
+            const lowerText = text.toLowerCase();
+            
+            // Oddiy demo tarjima
+            if (demoTranslations[lowerText]) {
+                return demoTranslations[lowerText];
+            }
+            
+            // Agar aniq tarjima topilmasa, haqiqiy API simulatsiyasi
+            return await simulateAITranslation(text);
+        }
+
+        // AI tarjima simulatsiyasi
+        async function simulateAITranslation(text) {
+            // Haqiqiy API chaqiruvi simulatsiyasi
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            
+            // Demo maqsadida oddiy tarjima
+            const words = text.split(' ');
+            const translatedWords = words.map(word => {
+                // Ba'zi oddiy qoidalar
+                if (word.endsWith('man')) return word.replace('man', 'men');
+                if (word.endsWith('lar')) return word.replace('lar', 's');
+                if (word.endsWith('da')) return 'in ' + word.replace('da', '');
+                return word; // Boshqa so'zlar o'zgarishsiz
+            });
+            
+            return `[AI Translation] ${translatedWords.join(' ')}`;
+        }
+
+        // Haqiqiy API integratsiyasi uchun funksiya
+        async function translateWithAPI(text) {
+            try {
+                // Google Translate API misoli
+                const response = await fetch('https://translation.googleapis.com/language/translate/v2', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer YOUR_API_KEY' // Bu yerga haqiqiy API kalitini qo'ying
+                    },
+                    body: JSON.stringify({
+                        q: text,
+                        target: 'en',
+                        source: 'auto'
+                    })
+                });
+
+                const data = await response.json();
+                return data.data.translations[0].translatedText;
+            } catch (error) {
+                console.error('API xatosi:', error);
+                // API ishlamasa, demo tarjimaga qaytish
+                return await translateText(text);
+            }
+        }
+
+        // Tarjima tugmasi bosilganda
+        translateBtn.addEventListener('click', async () => {
+            const text = inputText.value.trim();
+            
+            if (!text) {
+                alert('Iltimos, tarjima qilish uchun matn kiriting!');
+                return;
+            }
+
+            // Loading ko'rsatish
+            loading.style.display = 'block';
+            translateBtn.disabled = true;
+            translateBtn.textContent = 'Tarjima qilinyapti...';
+
+            try {
+                // Tarjima qilish
+                const translatedText = await translateText(text);
+                outputText.value = translatedText;
+                
+                // Animatsiya bilan ko'rsatish
+                outputText.style.opacity = '0';
+                setTimeout(() => {
+                    outputText.style.opacity = '1';
+                    outputText.style.transition = 'opacity 0.5s ease';
+                }, 100);
+                
+            } catch (error) {
+                console.error('Tarjima xatosi:', error);
+                outputText.value = 'Tarjima qilishda xatolik yuz berdi. Qaytadan urinib ko\'ring.';
+            } finally {
+                // Loading yashirish
+                loading.style.display = 'none';
+                translateBtn.disabled = false;
+                translateBtn.textContent = '🚀 Tarjima Qilish';
+            }
+        });
+
+        // Tozalash tugmasi
+        clearBtn.addEventListener('click', () => {
+            inputText.value = '';
+            outputText.value = '';
+            inputText.focus();
+        });
+
+        // Enter tugmasi bilan tarjima qilish
+        inputText.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'Enter') {
+                translateBtn.click();
+            }
+        });
+
+        // Sahifa yuklanganda fokus berish
+        window.addEventListener('load', () => {
+            inputText.focus();
+        });
+
+        // Matn o'zgarishini kuzatish
+        inputText.addEventListener('input', () => {
+            if (inputText.value.length > 5000) {
+                inputText.value = inputText.value.substring(0, 5000);
+                alert('Maksimal 5000 ta belgi kiritish mumkin!');
+            }
+        });
+    </script>
+</body>
+</html>
