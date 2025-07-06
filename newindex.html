@@ -2,7 +2,7 @@
 <html lang="uz">
 <head>
   <meta charset="UTF-8">
-  <title>Menu </title>
+  <title>Menu</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body {
@@ -13,6 +13,32 @@
 
     h2 {
       text-align: center;
+    }
+
+    .top-buttons, .category-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .top-buttons button, .category-buttons button {
+      padding: 10px 15px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .active {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    .inactive {
+      background-color: #ccc;
+      color: black;
     }
 
     #menu {
@@ -27,9 +53,6 @@
       border-radius: 12px;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
       padding: 10px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
       text-align: center;
     }
 
@@ -43,18 +66,17 @@
 
     .item-name {
       font-weight: bold;
-      margin: 5px 0;
     }
 
     .item-price {
       color: #4CAF50;
-      margin-bottom: 10px;
     }
 
     .quantity-control {
       display: flex;
       align-items: center;
       justify-content: center;
+      margin-top: 8px;
     }
 
     .quantity-control button {
@@ -70,7 +92,6 @@
     }
 
     .submit-btn {
-      display: block;
       width: 100%;
       padding: 12px;
       font-size: 18px;
@@ -82,10 +103,6 @@
       cursor: pointer;
     }
 
-    .submit-btn:hover {
-      background-color: #45a049;
-    }
-
     .input-group {
       margin-top: 20px;
     }
@@ -95,26 +112,35 @@
       margin-bottom: 5px;
     }
 
-    .input-group input, .input-group select, .input-group textarea {
+    .input-group input, .input-group textarea {
       width: 100%;
       padding: 10px;
       font-size: 16px;
       border-radius: 8px;
       border: 1px solid #ccc;
-      resize: vertical;
     }
   </style>
 </head>
 <body>
 
-  <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 10px;">
-    <button id="deliveryTypeDelivery" onclick="selectDeliveryType('delivery')" style="padding: 10px 15px; border-radius: 8px; border: none; background-color: #4CAF50; color: white;">🚚 Yetkazib berish</button>
-    <button id="deliveryTypePickup" onclick="selectDeliveryType('pickup')" style="padding: 10px 15px; border-radius: 8px; border: none; background-color: #ccc; color: black;">🏃‍♂️ Samovivoz</button>
+  <!-- Delivery Type Buttons -->
+  <div class="top-buttons">
+    <button id="deliveryTypeDelivery" onclick="selectDeliveryType('delivery')">🚚 Yetkazib berish</button>
+    <button id="deliveryTypePickup" onclick="selectDeliveryType('pickup')">🏃‍♂️ Samovivoz</button>
+  </div>
+
+  <!-- Category Buttons -->
+  <div class="category-buttons">
+    <button onclick="setCategory('issiq')">🔥 Issiq taomlar</button>
+    <button onclick="setCategory('sovuq')">❄️ Sovuq taomlar</button>
+    <button onclick="setCategory('salat')">🥗 Salatlar</button>
+    <button onclick="setCategory('pishiriq')">🍰 Pishiriqlar</button>
   </div>
 
   <h2>🍽 Taomni tanlang:</h2>
   <div id="menu"></div>
 
+  <!-- Form -->
   <div class="input-group">
     <label for="phone">📞 Telefon raqamingiz:</label>
     <input type="tel" id="phone" placeholder="+1234567890">
@@ -138,51 +164,43 @@
   <div class="total" id="total">💰 Umumiy summa: $0</div>
   <button class="submit-btn" onclick="submitOrder()">📥 Buyurtmani yuborish</button>
 
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <!-- JS -->
   <script src="config.js"></script>
-
   <script>
     const menu = {
-      "Norin-pound": { price: 23, img: "img/norin.jpg" },
-      "Xasip-pound": { price: 14, img: "img/xasip.jpg" },
-      "Gumma": { price: 3, img: "img/gumma.jpg" },
-      "Bozor Xonim": { price: 3, img: "img/xonim.jpg" },
-      "Non Kabob": { price: 15, img: "img/non_kabob.jpg" },
-      "Yupqa": { price: 4, img: "img/yupqa.jpg" },
-      "Tabaka": { price: 15, img: "img/tabaka.jpg" },
-      "Kuksi": { price: 15, img: "img/kuksi.jpg" },
+      "Norin-pound": { price: 23, img: "img/norin.jpg", category: "sovuq" },
+      "Xasip-pound": { price: 14, img: "img/xasip.jpg", category: "issiq" },
+      "Gumma": { price: 3, img: "img/gumma.jpg", category: "issiq" },
+      "Bozor Xonim": { price: 3, img: "img/xonim.jpg", category: "issiq" },
+      "Non Kabob": { price: 15, img: "img/non_kabob.jpg", category: "issiq" },
+      "Yupqa": { price: 4, img: "img/yupqa.jpg", category: "sovuq" },
+      "Tabaka": { price: 15, img: "img/tabaka.jpg", category: "issiq" },
+      "Kuksi": { price: 15, img: "img/kuksi.jpg", category: "sovuq" },
+      // salat and pishiriq categories can be added later
     };
 
     const order = {};
     let deliveryType = localStorage.getItem('deliveryType') || 'delivery';
+    let selectedCategory = 'issiq';
+
+    function setCategory(cat) {
+      selectedCategory = cat;
+      renderMenu();
+      updateCategoryButtons();
+    }
+
+    function updateCategoryButtons() {
+      document.querySelectorAll('.category-buttons button').forEach(btn => {
+        const text = btn.innerText.toLowerCase();
+        btn.className = text.includes(selectedCategory) ? 'active' : 'inactive';
+      });
+    }
 
     function selectDeliveryType(type) {
       deliveryType = type;
       localStorage.setItem('deliveryType', type);
-      updateDeliveryButtons();
-    }
-
-    function updateDeliveryButtons() {
-      document.getElementById("deliveryTypeDelivery").style.backgroundColor = (deliveryType === 'delivery') ? "#4CAF50" : "#ccc";
-      document.getElementById("deliveryTypeDelivery").style.color = (deliveryType === 'delivery') ? "white" : "black";
-      document.getElementById("deliveryTypePickup").style.backgroundColor = (deliveryType === 'pickup') ? "#4CAF50" : "#ccc";
-      document.getElementById("deliveryTypePickup").style.color = (deliveryType === 'pickup') ? "white" : "black";
-    }
-
-    function saveOrderToStorage() {
-      localStorage.setItem('order', JSON.stringify(order));
-    }
-
-    function loadOrderFromStorage() {
-      const saved = localStorage.getItem('order');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        for (let item in parsed) {
-          if (menu.hasOwnProperty(item)) {
-            order[item] = parsed[item];
-          }
-        }
-      }
+      document.getElementById("deliveryTypeDelivery").className = type === 'delivery' ? 'active' : 'inactive';
+      document.getElementById("deliveryTypePickup").className = type === 'pickup' ? 'active' : 'inactive';
     }
 
     function renderMenu() {
@@ -191,17 +209,19 @@
       let total = 0;
 
       for (let item in menu) {
+        const food = menu[item];
+        if (food.category !== selectedCategory) continue;
         if (!(item in order)) order[item] = 0;
-        const { price, img } = menu[item];
+
         const quantity = order[item];
-        total += price * quantity;
+        total += food.price * quantity;
 
         const itemDiv = document.createElement("div");
         itemDiv.className = "item";
         itemDiv.innerHTML = `
-          <img src="${img}" alt="${item}">
+          <img src="${food.img}" alt="${item}">
           <div class="item-name">${item}</div>
-          <div class="item-price">$${price}</div>
+          <div class="item-price">$${food.price}</div>
           <div class="quantity-control">
             <button onclick="changeQty('${item}', -1)">➖</button>
             <span>${quantity}</span>
@@ -216,16 +236,13 @@
 
     function changeQty(item, delta) {
       order[item] = Math.max(0, order[item] + delta);
-      saveOrderToStorage();
+      localStorage.setItem('order', JSON.stringify(order));
       renderMenu();
     }
 
     function formatPhone(phone) {
       phone = phone.replace(/[^\d]/g, '');
-      if (!phone.startsWith("1")) {
-        phone = "1" + phone;
-      }
-      return `+${phone}`;
+      return phone.startsWith("1") ? `+${phone}` : `+1${phone}`;
     }
 
     function isValidPhone(phone) {
@@ -240,83 +257,52 @@
       const specialNote = document.getElementById("special-note").value.trim();
       const selected = Object.entries(order).filter(([_, qty]) => qty > 0);
 
-      if (!isValidPhone(phone)) {
-        alert("📵 Iltimos, to'g'ri telefon raqamini kiriting.");
-        return;
-      }
-
-      if (!deliveryDate) {
-        alert("📅 Iltimos, yetkazib berish kunini tanlang.");
-        return;
-      }
-
-      if (!deliveryTime) {
-        alert("⏰ Iltimos, yetkazib berish vaqtini tanlang.");
-        return;
-      }
-
-      if (selected.length === 0) {
-        alert("❗ Hech qanday taom tanlamadingiz.");
-        return;
-      }
+      if (!isValidPhone(phone)) return alert("📵 Noto‘g‘ri telefon raqami!");
+      if (!deliveryDate) return alert("📅 Yetkazish sanasini tanlang!");
+      if (!deliveryTime) return alert("⏰ Yetkazish vaqtini tanlang!");
+      if (selected.length === 0) return alert("❗ Hech qanday taom tanlanmagan!");
 
       const orderText = selected.map(([item, qty]) => `${item} x${qty} - $${menu[item].price * qty}`).join("\n");
       const total = selected.reduce((sum, [item, qty]) => sum + menu[item].price * qty, 0);
 
       let message = `📥 Yangi buyurtma:\n${orderText}\n💰 Umumiy summa: $${total}\n📞 Tel: ${phone}\n⏰ Vaqt: ${deliveryTime}\n📅 Kun: ${deliveryDate}\n📦 Yetkazish turi: ${deliveryType === 'delivery' ? 'Yetkazib berish' : 'Samovivoz'}`;
-      if (specialNote) {
-        message += `\n📝 Maxsus izoh: ${specialNote}`;
-      }
-
-      const botToken = config.botToken;
-      const adminId = config.adminId;
+      if (specialNote) message += `\n📝 Maxsus izoh: ${specialNote}`;
 
       const btn = document.querySelector(".submit-btn");
       btn.disabled = true;
       btn.innerText = "⏳ Yuborilmoqda...";
 
       await Promise.all([
-        fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+        fetch(`https://api.telegram.org/bot${config.botToken}/sendMessage`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ chat_id: adminId, text: message })
+          body: JSON.stringify({ chat_id: config.adminId, text: message })
         }),
-        fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+        fetch(`https://api.telegram.org/bot${config.botToken}/sendMessage`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ chat_id: "@chorsuorder", text: message })
         })
       ]);
 
-      alert(`✅ Buyurtmangiz yuborildi!\n\n📋 Buyurtma:\n${orderText}\n💰 $${total}\n📞 Tel: ${phone}\n⏰ ${deliveryTime}\n📅 ${deliveryDate}\n📦 ${deliveryType === 'delivery' ? 'Yetkazib berish' : 'Samovivoz'}\n📝 ${specialNote}`);
-
-      for (let item in order) {
-        order[item] = 0;
-      }
-      localStorage.removeItem('order');
+      alert("✅ Buyurtma yuborildi!");
+      for (let item in order) order[item] = 0;
+      localStorage.removeItem("order");
       document.getElementById("phone").value = "";
-      document.getElementById("delivery-time").value = "";
       document.getElementById("delivery-date").value = "";
+      document.getElementById("delivery-time").value = "";
       document.getElementById("special-note").value = "";
       renderMenu();
-
       btn.disabled = false;
       btn.innerText = "📥 Buyurtmani yuborish";
-
-      Telegram.WebApp.close();
     }
 
-    document.addEventListener("DOMContentLoaded", function () {
-      const today = new Date().toISOString().split("T")[0];
-      document.getElementById("delivery-date").setAttribute("min", today);
-
-      loadOrderFromStorage();
-      updateDeliveryButtons();
-
-      if (window.Telegram && Telegram.WebApp) {
-        Telegram.WebApp.ready();
-      }
-
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("delivery-date").min = new Date().toISOString().split("T")[0];
+      const saved = localStorage.getItem('order');
+      if (saved) Object.assign(order, JSON.parse(saved));
+      updateCategoryButtons();
+      selectDeliveryType(deliveryType);
       renderMenu();
     });
   </script>
