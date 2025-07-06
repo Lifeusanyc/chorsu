@@ -2,83 +2,88 @@
 <html lang="uz">
 <head>
   <meta charset="UTF-8">
-  <title>Menu</title>
+  <title>Menu </title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      margin: 0;
+      font-family: Arial, sans-serif;
       padding: 20px;
-      background: #f4f7fa;
-      color: #333;
+      background: #f1f1f1;
     }
 
     h2 {
       text-align: center;
-      font-size: 28px;
-      margin-bottom: 20px;
     }
 
     #menu {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin-top: 20px;
     }
 
     .item {
-      background-color: #fff;
-      border-radius: 16px;
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
-      padding: 12px;
-      transition: transform 0.2s;
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      padding: 10px;
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
     }
 
-    .item:hover {
-      transform: translateY(-5px);
-    }
-
     .item img {
       width: 100%;
-      height: 130px;
+      height: 120px;
       object-fit: cover;
-      border-radius: 12px;
-      margin-bottom: 10px;
+      border-radius: 10px;
+      margin-bottom: 8px;
     }
 
     .item-name {
-      font-weight: 600;
-      font-size: 17px;
-      margin-bottom: 4px;
+      font-weight: bold;
+      margin: 5px 0;
     }
 
     .item-price {
-      color: #16a085;
-      font-size: 15px;
-      margin-bottom: 8px;
+      color: #4CAF50;
+      margin-bottom: 10px;
     }
 
     .quantity-control {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
     }
 
     .quantity-control button {
-      background-color: #e9ecef;
-      border: none;
-      border-radius: 8px;
-      padding: 6px 12px;
+      padding: 4px 10px;
+      font-size: 16px;
+      margin: 0 6px;
+    }
+
+    .total {
       font-size: 18px;
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .submit-btn {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      font-size: 18px;
+      margin-top: 10px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 10px;
       cursor: pointer;
     }
 
-    .quantity-control button:hover {
-      background-color: #d0d6db;
+    .submit-btn:hover {
+      background-color: #45a049;
     }
 
     .input-group {
@@ -87,74 +92,26 @@
 
     .input-group label {
       display: block;
-      margin-bottom: 6px;
-      font-weight: 500;
+      margin-bottom: 5px;
     }
 
-    .input-group input,
-    .input-group select,
-    .input-group textarea {
+    .input-group input, .input-group select, .input-group textarea {
       width: 100%;
-      padding: 12px;
+      padding: 10px;
       font-size: 16px;
-      border-radius: 12px;
+      border-radius: 8px;
       border: 1px solid #ccc;
-      background-color: #fff;
-      box-shadow: inset 0 1px 2px rgba(0,0,0,0.04);
-    }
-
-    .total {
-      margin-top: 25px;
-      font-size: 22px;
-      font-weight: bold;
-      text-align: center;
-      color: #2c3e50;
-    }
-
-    .submit-btn {
-      width: 100%;
-      margin-top: 20px;
-      padding: 14px;
-      background-color: #27ae60;
-      color: white;
-      font-size: 18px;
-      font-weight: 600;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
-
-    .submit-btn:hover {
-      background-color: #219150;
-    }
-
-    @media (max-width: 480px) {
-      h2 {
-        font-size: 22px;
-      }
-
-      .item img {
-        height: 110px;
-      }
-
-      .total {
-        font-size: 18px;
-      }
-
-      .submit-btn {
-        font-size: 16px;
-      }
+      resize: vertical;
     }
   </style>
 </head>
 <body>
-  <h2>🍽 Taomni tanlang</h2>
+  <h2>🍽 Taomni tanlang:</h2>
   <div id="menu"></div>
 
   <div class="input-group">
     <label for="phone">📞 Telefon raqamingiz:</label>
-    <input type="tel" id="phone" placeholder="+998901234567">
+    <input type="tel" id="phone" placeholder="+1234567890">
   </div>
 
   <div class="input-group">
@@ -169,7 +126,7 @@
 
   <div class="input-group">
     <label for="special-note">📝 Maxsus izoh:</label>
-    <textarea id="special-note" rows="3" placeholder="Buyurtmangizga maxsus izoh kiriting..."></textarea>
+    <textarea id="special-note" rows="4" placeholder="Buyurtmangizga maxsus izohlar yoki talablar kiritish..."></textarea>
   </div>
 
   <div class="total" id="total">💰 Umumiy summa: $0</div>
@@ -180,15 +137,15 @@
 
   <script>
     const menu = {
-      "Norin-pound": { price: 23, img: "img/norin.jpg" },
-      "Xasip-pound": { price: 14, img: "img/xasip.jpg" },
-      "Gumma": { price: 3, img: "img/gumma.jpg" },
-      "Bozor Xonim": { price: 3, img: "img/xonim.jpg" },
-      "Non Kabob": { price: 15, img: "img/non_kabob.jpg" },
-      "Yupqa": { price: 4, img: "img/yupqa.jpg" },
-      "Tabaka": { price: 15, img: "img/tabaka.jpg" },
-      "Kuksi": { price: 15, img: "img/kuksi.jpg" }
-    };
+  "Norin-pound": { price: 23, img: "img/norin.jpg" },
+  "Xasip-pound": { price: 14, img: "img/xasip.jpg" },
+  "Gumma": { price: 3, img: "img/gumma.jpg" },
+  "Bozor Xonim": { price: 3, img: "img/xonim.jpg" },
+  "Non Kabob": { price: 15, img: "img/non_kabob.jpg" },
+  "Yupqa": { price: 4, img: "img/yupqa.jpg" },
+  "Tabaka": { price: 15, img: "img/tabaka.jpg" },
+  "Kuksi": { price: 15, img: "img/kuksi.jpg" },
+};
 
     const order = {};
 
@@ -201,7 +158,9 @@
       if (saved) {
         const parsed = JSON.parse(saved);
         for (let item in parsed) {
-          if (menu[item]) order[item] = parsed[item];
+          if (menu.hasOwnProperty(item)) {
+            order[item] = parsed[item];
+          }
         }
       }
     }
@@ -214,22 +173,22 @@
       for (let item in menu) {
         if (!(item in order)) order[item] = 0;
         const { price, img } = menu[item];
-        const qty = order[item];
-        total += price * qty;
+        const quantity = order[item];
+        total += price * quantity;
 
-        const div = document.createElement("div");
-        div.className = "item";
-        div.innerHTML = `
+        const itemDiv = document.createElement("div");
+        itemDiv.className = "item";
+        itemDiv.innerHTML = `
           <img src="${img}" alt="${item}">
           <div class="item-name">${item}</div>
           <div class="item-price">$${price}</div>
           <div class="quantity-control">
             <button onclick="changeQty('${item}', -1)">➖</button>
-            <span>${qty}</span>
+            <span>${quantity}</span>
             <button onclick="changeQty('${item}', 1)">➕</button>
           </div>
         `;
-        container.appendChild(div);
+        container.appendChild(itemDiv);
       }
 
       document.getElementById("total").innerText = `💰 Umumiy summa: $${total}`;
@@ -242,13 +201,15 @@
     }
 
     function formatPhone(phone) {
-      phone = phone.replace(/[^\d]/g, '');
-      if (!phone.startsWith("998")) phone = "998" + phone;
+      phone = phone.replace(/[^\d]/g, '');  // Remove non-digit characters
+      if (!phone.startsWith("1")) {
+        phone = "1" + phone;  // Add +1 if it doesn't start with 1
+      }
       return `+${phone}`;
     }
 
     function isValidPhone(phone) {
-      return /^\+?\d{9,15}$/.test(phone);
+      return /^\+?\d{10,15}$/.test(phone);
     }
 
     async function submitOrder() {
@@ -259,40 +220,59 @@
       const specialNote = document.getElementById("special-note").value.trim();
       const selected = Object.entries(order).filter(([_, qty]) => qty > 0);
 
-      if (!isValidPhone(phone)) return alert("📵 To‘g‘ri telefon raqamini kiriting.");
-      if (!deliveryDate) return alert("📅 Yetkazib berish sanasini tanlang.");
-      if (!deliveryTime) return alert("⏰ Yetkazib berish vaqtini tanlang.");
-      if (selected.length === 0) return alert("❗ Hech qanday taom tanlanmadi.");
+      if (!isValidPhone(phone)) {
+        alert("📵 Iltimos, to'g'ri telefon raqamini kiriting.");
+        return;
+      }
 
-      const orderText = selected.map(([item, qty]) =>
-        `${item} x${qty} - $${menu[item].price * qty}`
-      ).join("\n");
-      const total = selected.reduce((sum, [item, qty]) =>
-        sum + menu[item].price * qty, 0);
+      if (!deliveryDate) {
+        alert("📅 Iltimos, yetkazib berish kunini tanlang.");
+        return;
+      }
 
-      let message = `📥 Yangi buyurtma:\n${orderText}\n💰 Umumiy: $${total}\n📞 ${phone}\n📅 ${deliveryDate}\n⏰ ${deliveryTime}`;
-      if (specialNote) message += `\n📝 ${specialNote}`;
+      if (!deliveryTime) {
+        alert("⏰ Iltimos, yetkazib berish vaqtini tanlang.");
+        return;
+      }
+
+      if (selected.length === 0) {
+        alert("❗ Hech qanday taom tanlamadingiz.");
+        return;
+      }
+
+      const orderText = selected.map(([item, qty]) => `${item} x${qty} - $${menu[item].price * qty}`).join("\n");
+      const total = selected.reduce((sum, [item, qty]) => sum + menu[item].price * qty, 0);
+
+      let message = `📥 Yangi buyurtma:\n${orderText}\n💰 Umumiy summa: $${total}\n📞 Tel: ${phone}\n⏰ Vaqt: ${deliveryTime}\n📅 Kun: ${deliveryDate}`;
+      if (specialNote) {
+        message += `\n📝 Maxsus izoh: ${specialNote}`;
+      }
+
+      const botToken = config.botToken;
+      const adminId = config.adminId;
 
       const btn = document.querySelector(".submit-btn");
       btn.disabled = true;
       btn.innerText = "⏳ Yuborilmoqda...";
 
       await Promise.all([
-        fetch(`https://api.telegram.org/bot${config.botToken}/sendMessage`, {
+        fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ chat_id: config.adminId, text: message })
+          body: JSON.stringify({ chat_id: adminId, text: message })
         }),
-        fetch(`https://api.telegram.org/bot${config.botToken}/sendMessage`, {
+        fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ chat_id: "@chorsuorder", text: message })
         })
       ]);
 
-      alert("✅ Buyurtmangiz yuborildi!");
+      alert(`✅ Buyurtmangiz yuborildi!\n\n📋 Buyurtma:\n${orderText}\n💰 $${total}\n📞 Tel: ${phone}\n⏰ ${deliveryTime}\n📅 ${deliveryDate}\n📝 ${specialNote}`);
 
-      Object.keys(order).forEach(item => order[item] = 0);
+      for (let item in order) {
+        order[item] = 0;
+      }
       localStorage.removeItem('order');
       document.getElementById("phone").value = "";
       document.getElementById("delivery-time").value = "";
@@ -306,10 +286,16 @@
       Telegram.WebApp.close();
     }
 
-    document.addEventListener("DOMContentLoaded", () => {
-      document.getElementById("delivery-date").min = new Date().toISOString().split("T")[0];
+    document.addEventListener("DOMContentLoaded", function () {
+      const today = new Date().toISOString().split("T")[0];
+      document.getElementById("delivery-date").setAttribute("min", today);
+
       loadOrderFromStorage();
-      Telegram.WebApp?.ready();
+
+      if (window.Telegram && Telegram.WebApp) {
+        Telegram.WebApp.ready();
+      }
+
       renderMenu();
     });
   </script>
