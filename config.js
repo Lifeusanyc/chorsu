@@ -1,6 +1,6 @@
 // config.js
 
 const config = {
-  botToken: "7840378650:AAHCgR8CxegoUnTKGzJZCB4RorIJuKXbhaQ",
+  botToken: "8033665115:AAFeYss_8EULSfakVasodBpRoUjRHnW3y8E",
   adminId: "5161274048"
 };
