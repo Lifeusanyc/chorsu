@@ -106,6 +106,12 @@
   </style>
 </head>
 <body>
+
+  <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 10px;">
+    <button id="deliveryTypeDelivery" onclick="selectDeliveryType('delivery')" style="padding: 10px 15px; border-radius: 8px; border: none; background-color: #4CAF50; color: white;">🚚 Yetkazib berish</button>
+    <button id="deliveryTypePickup" onclick="selectDeliveryType('pickup')" style="padding: 10px 15px; border-radius: 8px; border: none; background-color: #ccc; color: black;">🏃‍♂️ Samovivoz</button>
+  </div>
+
   <h2>🍽 Taomni tanlang:</h2>
   <div id="menu"></div>
 
@@ -137,17 +143,31 @@
 
   <script>
     const menu = {
-  "Norin-pound": { price: 23, img: "img/norin.jpg" },
-  "Xasip-pound": { price: 14, img: "img/xasip.jpg" },
-  "Gumma": { price: 3, img: "img/gumma.jpg" },
-  "Bozor Xonim": { price: 3, img: "img/xonim.jpg" },
-  "Non Kabob": { price: 15, img: "img/non_kabob.jpg" },
-  "Yupqa": { price: 4, img: "img/yupqa.jpg" },
-  "Tabaka": { price: 15, img: "img/tabaka.jpg" },
-  "Kuksi": { price: 15, img: "img/kuksi.jpg" },
-};
+      "Norin-pound": { price: 23, img: "img/norin.jpg" },
+      "Xasip-pound": { price: 14, img: "img/xasip.jpg" },
+      "Gumma": { price: 3, img: "img/gumma.jpg" },
+      "Bozor Xonim": { price: 3, img: "img/xonim.jpg" },
+      "Non Kabob": { price: 15, img: "img/non_kabob.jpg" },
+      "Yupqa": { price: 4, img: "img/yupqa.jpg" },
+      "Tabaka": { price: 15, img: "img/tabaka.jpg" },
+      "Kuksi": { price: 15, img: "img/kuksi.jpg" },
+    };
 
     const order = {};
+    let deliveryType = localStorage.getItem('deliveryType') || 'delivery';
+
+    function selectDeliveryType(type) {
+      deliveryType = type;
+      localStorage.setItem('deliveryType', type);
+      updateDeliveryButtons();
+    }
+
+    function updateDeliveryButtons() {
+      document.getElementById("deliveryTypeDelivery").style.backgroundColor = (deliveryType === 'delivery') ? "#4CAF50" : "#ccc";
+      document.getElementById("deliveryTypeDelivery").style.color = (deliveryType === 'delivery') ? "white" : "black";
+      document.getElementById("deliveryTypePickup").style.backgroundColor = (deliveryType === 'pickup') ? "#4CAF50" : "#ccc";
+      document.getElementById("deliveryTypePickup").style.color = (deliveryType === 'pickup') ? "white" : "black";
+    }
 
     function saveOrderToStorage() {
       localStorage.setItem('order', JSON.stringify(order));
@@ -201,9 +221,9 @@
     }
 
     function formatPhone(phone) {
-      phone = phone.replace(/[^\d]/g, '');  // Remove non-digit characters
+      phone = phone.replace(/[^\d]/g, '');
       if (!phone.startsWith("1")) {
-        phone = "1" + phone;  // Add +1 if it doesn't start with 1
+        phone = "1" + phone;
       }
       return `+${phone}`;
     }
@@ -243,7 +263,7 @@
       const orderText = selected.map(([item, qty]) => `${item} x${qty} - $${menu[item].price * qty}`).join("\n");
       const total = selected.reduce((sum, [item, qty]) => sum + menu[item].price * qty, 0);
 
-      let message = `📥 Yangi buyurtma:\n${orderText}\n💰 Umumiy summa: $${total}\n📞 Tel: ${phone}\n⏰ Vaqt: ${deliveryTime}\n📅 Kun: ${deliveryDate}`;
+      let message = `📥 Yangi buyurtma:\n${orderText}\n💰 Umumiy summa: $${total}\n📞 Tel: ${phone}\n⏰ Vaqt: ${deliveryTime}\n📅 Kun: ${deliveryDate}\n📦 Yetkazish turi: ${deliveryType === 'delivery' ? 'Yetkazib berish' : 'Samovivoz'}`;
       if (specialNote) {
         message += `\n📝 Maxsus izoh: ${specialNote}`;
       }
@@ -268,7 +288,7 @@
         })
       ]);
 
-      alert(`✅ Buyurtmangiz yuborildi!\n\n📋 Buyurtma:\n${orderText}\n💰 $${total}\n📞 Tel: ${phone}\n⏰ ${deliveryTime}\n📅 ${deliveryDate}\n📝 ${specialNote}`);
+      alert(`✅ Buyurtmangiz yuborildi!\n\n📋 Buyurtma:\n${orderText}\n💰 $${total}\n📞 Tel: ${phone}\n⏰ ${deliveryTime}\n📅 ${deliveryDate}\n📦 ${deliveryType === 'delivery' ? 'Yetkazib berish' : 'Samovivoz'}\n📝 ${specialNote}`);
 
       for (let item in order) {
         order[item] = 0;
@@ -291,6 +311,7 @@
       document.getElementById("delivery-date").setAttribute("min", today);
 
       loadOrderFromStorage();
+      updateDeliveryButtons();
 
       if (window.Telegram && Telegram.WebApp) {
         Telegram.WebApp.ready();
